@@ -45,6 +45,11 @@ Route::group(['middleware' => ['admin.auth']], function () {
     Route::post('distributions/return', [\App\Http\Controllers\Admin\DistributionController::class, 'storeReturn'])->name('distributions.return');
     Route::post('distributions/transaction', [\App\Http\Controllers\Admin\DistributionController::class, 'storeTransaction'])->name('distributions.transaction');
 
+    // ── Expenses ───────────────────────────────────────────────────────
+    Route::get('expenses', [\App\Http\Controllers\Admin\ExpenseController::class, 'index'])->name('expenses.index');
+    Route::post('expenses/store', [\App\Http\Controllers\Admin\ExpenseController::class, 'store'])->name('expenses.store');
+    Route::delete('expenses/{expense}', [\App\Http\Controllers\Admin\ExpenseController::class, 'destroy'])->name('expenses.destroy');
+
     // ── Workers (HR & Attendance) ────────────────────────────────────────
     Route::resource('workers', \App\Http\Controllers\Admin\WorkerController::class);
     Route::get('attendance', [\App\Http\Controllers\Admin\WorkerAttendanceController::class, 'index'])->name('attendance.index');

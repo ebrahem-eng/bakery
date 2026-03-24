@@ -36,30 +36,52 @@ class WorkDayController extends Controller
     public function showCloseForm(WorkDay $workDay)
     {
         if ($workDay->status === 'closed') {
-            return redirect()->route('admin.work_days.index')->with('error', __('Work day is already closed.'));
+            return redirect()->route('admin.work_days.index')->with('error_message', __('Work day is already closed.'));
         }
         
-        // Note: Future dependency injection of consumed materials, shifts, cash collections will be built here
-        return view('Admin.WorkDays.close', compact('workDay'));
+        $workDay->load([
+            'supplies.currency',
+            'workerShifts.currency',
+            'workerTransactions.currency',
+            'distributions.currency',
+            'distributorReturns.currency',
+            'distributorTransactions.currency',
+            'expenses.currency'
+        ]);
+
+        // Aggregate computations
+        $totalSales = $workDay->distributions->sum('total_price');
+        
+        $totalExpenses = 0;
+        $totalExpenses += $workDay->supplies->sum('total_price');
+        $totalExpenses += $workDay->supplies->sum('unloading_fee');
+        $totalExpenses += $workDay->workerShifts->sum('snapshot_daily_wage');
+        $totalExpenses += $workDay->workerTransactions->where('type', 'allowance')->sum('amount');
+        $totalExpenses -= $workDay->workerTransactions->where('type', 'deduction')->sum('amount');
+        $totalExpenses += $workDay->expenses->sum('amount');
+
+        return view('Admin.WorkDays.close', compact('workDay', 'totalSales', 'totalExpenses'));
     }
 
     public function close(Request $request, WorkDay $workDay)
     {
         $request->validate([
-            'carried_over_bundles' => 'required|numeric',
-            'carried_over_money' => 'required|numeric'
+            'carried_over_bundles' => 'required|integer|min:0',
+            'carried_over_money' => 'required|numeric|min:0',
+            'total_expenses_at_close' => 'required|numeric',
+            'total_sales_at_close' => 'required|numeric',
         ]);
 
         $workDay->update([
             'status' => 'closed',
             'end_time' => now(),
             'closed_by' => auth()->guard('admin')->id(),
-            'total_expenses_at_close' => $request->total_expenses ?? 0,
-            'total_sales_at_close' => $request->total_sales ?? 0,
+            'total_expenses_at_close' => $request->total_expenses_at_close,
+            'total_sales_at_close' => $request->total_sales_at_close,
             'carried_over_bundles' => $request->carried_over_bundles,
             'carried_over_money' => $request->carried_over_money,
         ]);
 
-        return redirect()->route('admin.work_days.index')->with('success', __('Work Day closed successfully.'));
+        return redirect()->route('admin.work_days.index')->with('success_message', __('Work Day closed successfully. All operations frozen.'));
     }
 }

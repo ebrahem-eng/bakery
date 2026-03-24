@@ -1,45 +1,146 @@
 @extends('layouts.Admin.App')
 
 @section('content')
-<div class="mb-6">
-    <h1 class="text-2xl font-bold text-white tracking-tight">{{ __('Close Work Day') }} #{{ $workDay->id }}</h1>
-    <p class="text-sm text-slate-400 mt-1">{{ __('Finalize all operations and calculate carry-overs.') }}</p>
-</div>
-
-<form action="{{ route('admin.work_days.close', $workDay->id) }}" method="POST" class="glass-panel p-6 rounded-2xl border border-white/5 max-w-4xl">
-    @csrf
-    
-    <div class="p-4 rounded-xl border border-red-500/20 bg-red-500/5 mb-8">
-        <h3 class="text-red-400 font-bold mb-2 flex items-center">
-            <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-            {{ __('Warning: Irreversible Action') }}
-        </h3>
-        <p class="text-sm text-red-300">
-            {{ __('By closing this Work Day, you assert that all inputs (supplier payments, worker wages, distributions) are finalized. The carried over bundles will logically transfer their exact capital equivalent to the next Work Day balance.') }}
+<div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+    <div>
+        <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('End of Day') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">{{ __('Settlement') }}</span></h1>
+        <p class="text-sm text-slate-400">
+            {{ __('Reviewing active ledger matching exactly to sequence:') }} 
+            <span class="font-bold text-amber-500">{{ $workDay->start_time->format('Y-m-d h:i A') }}</span>
         </p>
     </div>
+    <a href="{{ route('admin.work_days.index') }}" class="text-slate-400 hover:text-white transition-colors text-sm font-medium flex items-center">
+        <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-1 rotate-180' : 'mr-1' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        {{ __('Back') }}
+    </a>
+</div>
 
-    <!-- Carry over bundles calculation -->
-    <div class="mb-8">
-        <h3 class="text-lg font-semibold text-white mb-4">{{ __('Carry Over Bundles & Cash Reconciliation') }}</h3>
+@if($errors->any())
+    <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <ul class="list-disc list-inside">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Summary Ledger -->
+    <div class="lg:col-span-2 space-y-6">
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label class="block text-sm font-medium text-slate-300 mb-2">{{ __('Total Leftover Bundles (Not Sold)') }}</label>
-                <input type="number" name="carried_over_bundles" required value="0" class="glass-input block w-full px-4 py-3 border-transparent rounded-xl leading-5 bg-black/30 text-white focus:outline-none focus:bg-black/50 focus:border-[#eab308] focus:ring-1 focus:ring-[#eab308] transition-all">
-                @error('carried_over_bundles') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
+        <!-- Sales Overview -->
+        <div class="glass-panel rounded-2xl border border-emerald-500/10 overflow-hidden">
+            <div class="p-5 bg-emerald-500/5 border-b border-emerald-500/10">
+                <h3 class="text-lg font-bold text-emerald-400">{{ __('Daily Revenue & Sales (Expected)') }}</h3>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-slate-300 mb-2">{{ __('Carried Over Equivalent Cash Value') }}</label>
-                <input type="number" step="0.01" name="carried_over_money" required value="0.00" class="glass-input block w-full px-4 py-3 border-transparent rounded-xl leading-5 bg-black/30 text-white focus:outline-none focus:bg-black/50 focus:border-[#eab308] focus:ring-1 focus:ring-[#eab308] transition-all">
-                @error('carried_over_money') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
+            <div class="p-6">
+                <div class="flex justify-between items-center py-3 border-b border-white/5">
+                    <span class="text-slate-400">{{ __('Total Bread Distributions Billed') }}</span>
+                    <span class="text-white font-bold">+ {{ number_format($workDay->distributions->sum('total_price'), 2) }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-white/5">
+                    <span class="text-slate-400">{{ __('Total Refunds Processed') }}</span>
+                    <span class="text-red-400 font-bold">- {{ number_format($workDay->distributorReturns->sum('total_refund'), 2) }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3">
+                    <span class="text-slate-400">{{ __('Net General Sales Logic (Gross)') }}</span>
+                    <span class="text-emerald-400 font-bold text-xl">{{ number_format($totalSales, 2) }}</span>
+                </div>
             </div>
         </div>
+
+        <!-- Expenses Overview -->
+        <div class="glass-panel rounded-2xl border border-red-500/10 overflow-hidden">
+            <div class="p-5 bg-red-500/5 border-b border-red-500/10">
+                <h3 class="text-lg font-bold text-red-400">{{ __('Daily Consumed Expenses & Payouts') }}</h3>
+            </div>
+            <div class="p-6">
+                <div class="flex justify-between items-center py-3 border-b border-white/5">
+                    <span class="text-slate-400">{{ __('Supplies Purchased (Flour, Yeast, Diesel...)') }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->supplies->sum('total_price'), 2) }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-white/5">
+                    <span class="text-slate-400">{{ __('Supplier Freight & Unloading Fees') }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->supplies->sum('unloading_fee'), 2) }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-white/5">
+                    <span class="text-slate-400">{{ __('Total Shift Base Wages Issued') }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->workerShifts->sum('snapshot_daily_wage'), 2) }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-white/5">
+                    <span class="text-slate-400">{{ __('Worker Advances/Allowances (Net Cost Add)') }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->workerTransactions->where('type', 'allowance')->sum('amount'), 2) }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-white/5">
+                    <span class="text-slate-400">{{ __('Worker Deductions (Net Cost Min)') }}</span>
+                    <span class="text-white font-bold">- {{ number_format($workDay->workerTransactions->where('type', 'deduction')->sum('amount'), 2) }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-white/5">
+                    <span class="text-slate-400">{{ __('General Operating/Logistics Drawings') }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->expenses->sum('amount'), 2) }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3">
+                    <span class="text-slate-400">{{ __('Total Expected Cash Outflow') }}</span>
+                    <span class="text-red-400 font-bold text-xl">{{ number_format($totalExpenses, 2) }}</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div class="flex justify-end gap-4 border-t border-white/5 pt-6">
-        <a href="{{ route('admin.work_days.index') }}" class="px-6 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors">{{ __('Cancel') }}</a>
-        <button type="submit" onclick="return confirm('{{ __('Are you absolutely sure you want to end this Work Day?') }}');" class="bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all px-6 py-2.5 rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(239,68,68,0.15)]">{{ __('Conclude Work Day') }}</button>
+    <!-- Closure Panel -->
+    <div class="lg:col-span-1">
+        <div class="glass-panel rounded-2xl border border-amber-500/20 overflow-hidden sticky top-6">
+            <div class="p-6 bg-gradient-to-br from-amber-500/10 to-orange-600/10 border-b border-amber-500/20">
+                <h2 class="text-xl font-bold text-amber-500 mb-2">{{ __('Finalize Settlement') }}</h2>
+                <p class="text-xs text-slate-400">{{ __('Please carefully enter the remaining physical materials and cash left in the drawer for the next shifts.') }}</p>
+            </div>
+            
+            <form action="{{ route('admin.work_days.close', $workDay) }}" method="POST" class="p-6 space-y-6">
+                @csrf
+                
+                <input type="hidden" name="total_expenses_at_close" value="{{ $totalExpenses }}">
+                <input type="hidden" name="total_sales_at_close" value="{{ $totalSales }}">
+
+                <div>
+                    <label class="block text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">
+                        {{ __('Carried Over Bundles (Unsold)') }}
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <input type="number" name="carried_over_bundles" required min="0" value="{{ old('carried_over_bundles') }}"
+                        class="block w-full px-4 py-3 bg-[#0f1115] border border-amber-500/30 rounded-xl text-lg text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-bold"
+                        placeholder="0">
+                    <p class="mt-1 text-[10px] text-slate-500">{{ __('Exact physical bundles remaining to be handed to the morning shift.') }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">
+                        {{ __('Carried Over Cash Balance') }}
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="number" step="0.01" name="carried_over_money" required min="0" value="{{ old('carried_over_money') }}"
+                            class="block w-full px-4 py-3 bg-[#0f1115] border border-amber-500/30 rounded-xl text-lg text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-bold"
+                            placeholder="0.00">
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                            <span class="text-slate-500 text-sm font-bold">{{ __('DEFAULT') }}</span>
+                        </div>
+                    </div>
+                    <p class="mt-1 text-[10px] text-slate-500">{{ __('Actual physical cash left in the drawer for the next shifts.') }}</p>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" 
+                        onclick="return confirm('{{ __('WARNING: Closing a work day freezes all sales, expenses, and HR shifts inside this interval permanently. Proceed?') }}');"
+                        class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white py-4 rounded-xl text-sm font-bold shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all uppercase tracking-widest">
+                        {{ __('Close Work Day Permanently') }}
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</form>
+</div>
 @endsection
