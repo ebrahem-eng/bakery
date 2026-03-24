@@ -1,0 +1,83 @@
+@extends('layouts.Admin.App')
+
+@section('content')
+<div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-white tracking-tight">{{ __('Work Days Management') }}</h1>
+        <p class="text-sm text-slate-400 mt-1">{{ __('Manage and track chronological accounting periods.') }}</p>
+    </div>
+    @if(!$activeWorkDay)
+    <form action="{{ route('admin.work_days.store') }}" method="POST" class="inline-block">
+        @csrf
+        <button type="submit" class="bg-[#eab308]/10 text-[#eab308] border border-[#eab308]/30 hover:bg-[#eab308] hover:text-[#451a03] transition-all px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-[0_0_15px_rgba(234,179,8,0.15)]">
+            <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            {{ __('Start New Work Day') }}
+        </button>
+    </form>
+    @else
+    <a href="{{ route('admin.work_days.showCloseForm', $activeWorkDay->id) }}" class="bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all px-4 py-2 rounded-xl text-sm font-medium flex items-center shadow-[0_0_15px_rgba(239,68,68,0.15)]">
+        <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+        </svg>
+        {{ __('Close Active Work Day') }}
+    </a>
+    @endif
+</div>
+
+@if(session('success'))
+<div class="mb-6 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
+    {{ session('success') }}
+</div>
+@endif
+@if(session('error'))
+<div class="mb-6 px-4 py-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl">
+    {{ session('error') }}
+</div>
+@endif
+
+<div class="glass-panel p-6 rounded-2xl border border-white/5">
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+            <thead>
+                <tr class="text-slate-400 text-xs uppercase tracking-wider border-b border-white/5">
+                    <th class="py-4 px-4 font-medium">#</th>
+                    <th class="py-4 px-4 font-medium">{{ __('Start Time') }}</th>
+                    <th class="py-4 px-4 font-medium">{{ __('End Time') }}</th>
+                    <th class="py-4 px-4 font-medium">{{ __('Status') }}</th>
+                    <th class="py-4 px-4 font-medium">{{ __('Opened By') }}</th>
+                    <th class="py-4 px-4 font-medium">{{ __('Closed By') }}</th>
+                    <th class="py-4 px-4 font-medium {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">{{ __('Actions') }}</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5 text-sm text-slate-300">
+                @forelse($workDays as $day)
+                <tr class="hover:bg-white/5 transition-colors">
+                    <td class="py-3 px-4 font-medium text-white">{{ $day->id }}</td>
+                    <td class="py-3 px-4">{{ $day->start_time->format('Y-m-d H:i') }}</td>
+                    <td class="py-3 px-4">{{ $day->end_time ? $day->end_time->format('Y-m-d H:i') : '--' }}</td>
+                    <td class="py-3 px-4">
+                        @if($day->status == 'active')
+                            <span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded-md border border-emerald-500/20 animate-pulse">{{ __('Active') }}</span>
+                        @else
+                            <span class="px-2 py-1 bg-slate-500/20 text-slate-400 text-xs rounded-md border border-slate-500/20">{{ __('Closed') }}</span>
+                        @endif
+                    </td>
+                    <td class="py-3 px-4">{{ $day->openedBy->first_name ?? '--' }}</td>
+                    <td class="py-3 px-4">{{ $day->closedBy->first_name ?? '--' }}</td>
+                    <td class="py-3 px-4 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">
+                        <a href="{{ route('admin.work_days.show', $day->id) }}" class="text-[#38bdf8] hover:text-white transition-colors">{{ __('View Log') }}</a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="py-8 text-center text-slate-500 italic">{{ __('No work days found.') }}</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+@endsection

@@ -22,8 +22,8 @@
                 </a>
 
                 <!-- Work Days -->
-                <a href="#" class="text-slate-400 hover:text-white hover:bg-white/5 flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
-                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} text-slate-500 group-hover:text-[#fde047] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('admin.work_days.index') }}" class="{{ request()->routeIs('admin.work_days.*') ? 'sidebar-item-active text-[#fde047]' : 'text-slate-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.work_days.*') ? 'text-[#f59e0b]' : 'text-slate-500 group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     {{ __('Work Days') }}
