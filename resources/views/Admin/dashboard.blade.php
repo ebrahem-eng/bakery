@@ -13,7 +13,7 @@
 <!-- Active Work Day Status Area -->
 @if($activeWorkDay)
     <div class="glass-panel rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6 mb-8 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0 -translate-x-1/4' : 'right-0 translate-x-1/4' }} w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2"></div>
         <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
                 <div class="flex items-center gap-3 mb-2">
@@ -54,28 +54,28 @@
 <!-- Today's Financial Quick Stats -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div class="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
         <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">{{ __('Live Sales Volume') }}</p>
         <h3 class="text-3xl font-black text-white">{{ number_format($todaySales, 2) }} <span class="text-sm text-emerald-400">USD / Gross</span></h3>
         <p class="text-xs text-slate-500 mt-2">{{ number_format($todayBundlesSold) }} {{ __('Bundles Distributed') }}</p>
     </div>
     
     <div class="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl group-hover:bg-red-500/20 transition-all"></div>
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-24 h-24 bg-red-500/10 rounded-full blur-2xl group-hover:bg-red-500/20 transition-all"></div>
         <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">{{ __('Live Cost / Expenses') }}</p>
         <h3 class="text-3xl font-black text-white">{{ number_format($todayExpenses, 2) }} <span class="text-sm text-red-400">USD / Out</span></h3>
         <p class="text-xs text-slate-500 mt-2">{{ __('Raw materials, HR deductions & logistics') }}</p>
     </div>
 
     <div class="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
         <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">{{ __('Registered Workers') }}</p>
         <h3 class="text-3xl font-black text-white">{{ number_format($totalWorkers) }}</h3>
         <p class="text-xs text-slate-500 mt-2">{{ __('Manageable via Personnel HR') }}</p>
     </div>
 
     <div class="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
         <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">{{ __('Sales Channels') }}</p>
         <h3 class="text-3xl font-black text-white">{{ number_format($totalDistributors) }}</h3>
         <p class="text-xs text-slate-500 mt-2">{{ __('Active Wholesale Distributors') }}</p>
