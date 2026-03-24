@@ -95,10 +95,16 @@
     <div class="lg:col-span-1">
         <div class="glass-panel rounded-2xl border border-amber-500/20 overflow-hidden sticky top-6">
             <div class="p-6 bg-gradient-to-br from-amber-500/10 to-orange-600/10 border-b border-amber-500/20">
-                <h2 class="text-xl font-bold text-amber-500 mb-2">{{ __('Finalize Settlement') }}</h2>
-                <p class="text-xs text-slate-400">{{ __('Please carefully enter the remaining physical materials and cash left in the drawer for the next shifts.') }}</p>
+                @if($workDay->status == 'closed')
+                    <h2 class="text-xl font-bold text-amber-500 mb-2">{{ __('Settlement Completed') }}</h2>
+                    <p class="text-xs text-slate-400">{{ __('This period has been permanently sealed and locked.') }}</p>
+                @else
+                    <h2 class="text-xl font-bold text-amber-500 mb-2">{{ __('Finalize Settlement') }}</h2>
+                    <p class="text-xs text-slate-400">{{ __('Please carefully enter the remaining physical materials and cash left in the drawer for the next shifts.') }}</p>
+                @endif
             </div>
             
+            @if($workDay->status == 'active')
             <form action="{{ route('admin.work_days.close', $workDay) }}" method="POST" class="p-6 space-y-6">
                 @csrf
                 
@@ -140,6 +146,19 @@
                     </button>
                 </div>
             </form>
+            @else
+            <div class="p-6 text-center space-y-4">
+                <div class="p-4 rounded-xl border border-white/5 bg-[#0f1115]">
+                    <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">{{ __('Carried Over Bundles (Unsold)') }}</p>
+                    <p class="text-white font-bold text-xl">{{ $workDay->carried_over_bundles }}</p>
+                </div>
+                <div class="p-4 rounded-xl border border-white/5 bg-[#0f1115]">
+                    <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">{{ __('Carried Over Cash Balance') }}</p>
+                    <p class="text-white font-bold text-xl">{{ number_format($workDay->carried_over_money, 2) }}</p>
+                </div>
+                <p class="text-emerald-400 font-bold uppercase tracking-widest text-xs py-2">{{ __('Work day is already closed.') }}</p>
+            </div>
+            @endif
         </div>
     </div>
 </div>

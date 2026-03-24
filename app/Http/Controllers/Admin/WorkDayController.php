@@ -15,6 +15,23 @@ class WorkDayController extends Controller
         return view('Admin.WorkDays.index', compact('workDays', 'activeWorkDay'));
     }
 
+    public function show($id)
+    {
+        $workDay = WorkDay::with(['distributions', 'supplies', 'expenses', 'workerShifts', 'workerTransactions', 'distributorReturns'])->findOrFail($id);
+        
+        $totalSales = $workDay->distributions->sum('total_price') - $workDay->distributorReturns->sum('total_refund');
+        
+        $totalExpenses = 0;
+        $totalExpenses += $workDay->supplies->sum('total_cost');
+        $totalExpenses += $workDay->supplies->sum('unloading_fee');
+        $totalExpenses += $workDay->workerShifts->sum('snapshot_daily_wage');
+        $totalExpenses += $workDay->workerTransactions->where('type', 'allowance')->sum('amount');
+        $totalExpenses -= $workDay->workerTransactions->where('type', 'deduction')->sum('amount');
+        $totalExpenses += $workDay->expenses->sum('amount');
+
+        return view('Admin.WorkDays.close', compact('workDay', 'totalSales', 'totalExpenses'));
+    }
+
     public function store(Request $request)
     {
         $active = WorkDay::where('status', 'active')->first();
