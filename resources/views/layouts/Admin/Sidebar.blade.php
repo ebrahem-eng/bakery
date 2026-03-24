@@ -68,12 +68,20 @@
                 </a>
 
                 <!-- Distributors -->
-                <a href="#" class="text-slate-400 hover:text-white hover:bg-white/5 flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
-                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} text-slate-500 group-hover:text-[#fde047] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {{ __('Distributors & Sales') }}
-                </a>
+                <div x-data="{ open: {{ request()->routeIs('admin.distributors.*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" class="{{ request()->routeIs('admin.distributors.*') ? 'sidebar-item-active text-amber-500' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} w-full flex justify-between items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.distributors.*') ? 'text-amber-400' : 'text-slate-500' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ __('Distributors & Sales') }}
+                        </div>
+                        <svg :class="{'rotate-180': open}" class="w-4 h-4 transition-transform text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="open" class="my-1 space-y-1">
+                        <a href="{{ route('admin.distributors.index') }}" class="{{ request()->routeIs('admin.distributors.*') ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }} block {{ app()->getLocale() == 'ar' ? 'pr-12' : 'pl-12' }} py-2 text-xs transition-colors">{{ __('Manage Distributors') }}</a>
+                    </div>
+                </div>
 
                 <!-- Workers (HR) -->
                 <div x-data="{ open: {{ request()->routeIs('admin.workers.*') ? 'true' : 'false' }} }">
