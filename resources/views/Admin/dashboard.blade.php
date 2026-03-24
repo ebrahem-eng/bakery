@@ -22,8 +22,8 @@
 
 <!-- Quick Access Grid -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-    <a href="{{ route('admin.supplies.create') }}" class="glass-panel p-4 rounded-xl border border-transparent hover:border-[#0ea5e9]/30 hover:bg-slate-100 dark:hover:bg-white/5 hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-2 group">
-        <div class="p-3 rounded-full bg-blue-500/20 text-[#0ea5e9] group-hover:scale-110 transition-transform">
+    <a href="{{ route('admin.supplies.create') }}" class="glass-panel p-4 rounded-xl border border-transparent hover:border-blue-500/30 hover:bg-slate-100 dark:hover:bg-white/5 hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-2 group">
+        <div class="p-3 rounded-full bg-blue-500/20 text-blue-500 group-hover:scale-110 transition-transform">
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
         </div>
         <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ __('Add Supply') }}</span>

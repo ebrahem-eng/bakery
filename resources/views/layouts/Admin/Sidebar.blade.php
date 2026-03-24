@@ -5,10 +5,14 @@
             
             <!-- Logo area -->
             <div class="flex items-center justify-center px-6 mb-8 logo-container gap-3">
-                <img src="{{ asset('build/assets/admin_page/logo.svg') }}" alt="Admin Logo" class="w-10 h-10 drop-shadow-md">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-orange-400 p-[1px] shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                    <div class="w-full h-full bg-[#121419] rounded-xl flex items-center justify-center">
+                        <img src="{{ asset('logo.svg') }}" alt="Bakery Logo" class="w-7 h-7">
+                    </div>
+                </div>
                 <div>
-                    <h2 class="text-xl font-bold text-slate-800 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-[#0ea5e9] dark:to-[#818cf8]">{{ __('Bakery') }}</h2>
-                    <p class="text-[10px] uppercase tracking-widest text-[#38bdf8] opacity-80">{{ __('Admin Portal') }}</p>
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-amber-400 dark:to-orange-500">{{ __('Bakery') }}</h2>
+                    <p class="text-[10px] uppercase tracking-widest text-amber-500 opacity-80">{{ __('System Portal') }}</p>
                 </div>
             </div>
 
@@ -32,9 +36,9 @@
 
                 <!-- Supplies & Suppliers -->
                 <div x-data="{ open: {{ request()->routeIs('admin.suppliers.*') || request()->routeIs('admin.supplies.*') ? 'true' : 'false' }} }">
-                    <button @click="open = !open" class="{{ request()->routeIs('admin.suppliers.*') || request()->routeIs('admin.supplies.*') ? 'sidebar-item-active text-[#0ea5e9]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} w-full flex justify-between items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
+                    <button @click="open = !open" class="{{ request()->routeIs('admin.suppliers.*') || request()->routeIs('admin.supplies.*') ? 'sidebar-item-active text-amber-500' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} w-full flex justify-between items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
                         <div class="flex items-center">
-                            <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.suppliers.*') || request()->routeIs('admin.supplies.*') ? 'text-[#38bdf8]' : 'text-slate-500' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.suppliers.*') || request()->routeIs('admin.supplies.*') ? 'text-amber-400' : 'text-slate-500' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                             {{ __('Purchases & Suppliers') }}
@@ -73,9 +77,9 @@
 
                 <!-- Workers (HR) -->
                 <div x-data="{ open: {{ request()->routeIs('admin.workers.*') ? 'true' : 'false' }} }">
-                    <button @click="open = !open" class="{{ request()->routeIs('admin.workers.*') ? 'sidebar-item-active text-[#0ea5e9]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} w-full flex justify-between items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
+                    <button @click="open = !open" class="{{ request()->routeIs('admin.workers.*') ? 'sidebar-item-active text-amber-500' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} w-full flex justify-between items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
                         <div class="flex items-center">
-                            <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.workers.*') ? 'text-[#38bdf8]' : 'text-slate-500' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.workers.*') ? 'text-amber-400' : 'text-slate-500' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
                             {{ __('Workers HR') }}

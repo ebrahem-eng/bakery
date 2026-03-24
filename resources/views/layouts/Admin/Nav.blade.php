@@ -16,7 +16,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
-                            <input type="text" class="glass-input block w-full pl-9 pr-3 py-2 border-transparent rounded-xl leading-5 bg-black/30 text-slate-300 placeholder-slate-500 focus:outline-none focus:bg-black/50 focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8] transition-all" placeholder="Search patterns, nodes, logs...">
+                            <input type="text" class="glass-input block w-full pl-9 pr-3 py-2 border-transparent rounded-xl leading-5 bg-black/30 text-slate-300 placeholder-slate-500 focus:outline-none focus:bg-black/50 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="Search tools, metrics, logs...">
                         </div>
                     </div>
 
@@ -70,7 +70,7 @@
                                 </div>
                                 @if(auth()->guard('admin')->user()->unreadNotifications->count() > 0)
                                 <div class="px-4 py-2 border-t border-white/5 text-center">
-                                    <button type="button" onclick="markAllNotificationsReadAdmin()" class="text-xs font-medium text-[#38bdf8] hover:text-white transition-colors">Clear All Unread</button>
+                                    <button type="button" onclick="markAllNotificationsReadAdmin()" class="text-xs font-medium text-amber-500 hover:text-white transition-colors">Clear All Unread</button>
                                 </div>
                                 @endif
                             </div>
@@ -116,11 +116,11 @@
 
                         <!-- Profile Dropdown -->
                         <div class="relative">
-                            <button @click="profileOpen = !profileOpen" @click.away="profileOpen = false" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-[#38bdf8] border border-white/10 hover:border-white/30 transition-colors">
+                            <button @click="profileOpen = !profileOpen" @click.away="profileOpen = false" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-amber-500 border border-white/10 hover:border-white/30 transition-colors">
                                 @if(auth()->guard('admin')->user()->img)
                                     <img class="h-8 w-8 rounded-full object-cover" src="{{ asset('storage/' . auth()->guard('admin')->user()->img) }}" alt="{{ auth()->guard('admin')->user()->name }}">
                                 @else
-                                    <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name={{ urlencode(auth()->guard('admin')->user()->name) }}&background=0f172a&color=38bdf8" alt="Admin">
+                                    <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name={{ urlencode(auth()->guard('admin')->user()->name) }}&background=0f172a&color=f59e0b" alt="Admin">
                                 @endif
                             </button>
                             <div x-show="profileOpen" x-transition class="absolute right-0 mt-2 w-48 glass-dropdown rounded-xl py-1 z-50 origin-top-right" style="display: none;">

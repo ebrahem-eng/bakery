@@ -1,81 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login | Neural Admin Portal</title>
-    <!-- Tailwind CSS for rapid modern styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ asset('build/assets/admin_page/style.css') }}">
+    <title>Admin Login | Bakery Secure</title>
+    <!-- Tailwind CSS -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #0f1115; }
+        .glass-login {
+            background: rgba(18, 20, 25, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+        .bg-grid-pattern {
+            background-image: linear-gradient(to right, rgba(245, 158, 11, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(245, 158, 11, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
 </head>
-<body class="min-h-screen flex items-center justify-center relative">
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden text-slate-200">
 
-    <!-- Global Loader -->
-    @include('layouts.Admin.Loader')
+    <!-- Global Background & Glow -->
+    <div class="fixed inset-0 z-0 bg-[#0f1115]">
+        <div class="absolute inset-0 bg-grid-pattern"></div>
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-amber-500/10 blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-600/10 blur-[120px] pointer-events-none"></div>
+    </div>
 
-    <!-- Decorative exact background match from logo -->
-    <div class="fixed inset-0 z-0 bg-gradient-to-br from-[#0f172a] to-[#0d1b2e]"></div>
-    
-    <!-- Animated background orbs matching neural nodes -->
-    <div class="bg-orb-1"></div>
-    <div class="bg-orb-2"></div>
-
-    <!-- Subtle grid overlay (like the one inside the logo circle) -->
-    <div class="fixed inset-0 z-0 opacity-[0.02]" style="background-image: linear-gradient(#94a3b8 1px, transparent 1px), linear-gradient(90deg, #94a3b8 1px, transparent 1px); background-size: 40px 40px;"></div>
-
-    <!-- Main Login Container -->
+    <!-- Login Container -->
     <div class="relative z-10 w-full max-w-md px-6 py-12">
-        <div class="glass-panel rounded-3xl p-8 sm:p-10 relative overflow-hidden">
+        <div class="glass-login rounded-3xl p-8 relative overflow-hidden">
             
             <!-- Top shimmer line -->
-            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#38bdf8] to-transparent opacity-60"></div>
+            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-80"></div>
 
             <!-- Logo -->
-            <div class="flex justify-center mb-8 logo-container">
-                <img src="{{ asset('build/assets/admin_page/logo.svg') }}" alt="Neural Admin Logo" class="w-[110px] h-[110px] drop-shadow-2xl">
+            <div class="flex justify-center mb-6">
+                <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-amber-600 to-orange-400 p-[2px] shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+                    <div class="w-full h-full bg-[#121419] rounded-2xl flex items-center justify-center">
+                        <img src="{{ asset('logo.svg') }}" alt="Bakery Logo" class="w-10 h-10">
+                    </div>
+                </div>
             </div>
 
-            <!-- Title Section -->
+            <!-- Title -->
             <div class="text-center mb-8">
-                <h1 class="text-2xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-[#0ea5e9] to-[#818cf8]">
-                    System Access
+                <h1 class="text-2xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
+                    {{ __('Bakery Portal') }}
                 </h1>
-                <p class="text-sm font-light text-slate-400 mt-2">Neural Admin Authentication</p>
+                <p class="text-xs font-light tracking-widest text-slate-400 mt-2 uppercase">{{ __('Secure Admin Access') }}</p>
             </div>
 
             <!-- Alerts -->
             @if(session('error_message'))
-                <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center">
+                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     {{ session('error_message') }}
-                </div>
-            @endif
-
-            @if(session('success_message'))
-                <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {{ session('success_message') }}
-                </div>
-            @endif
-
-            @if($errors->any())
-                <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-                    <div class="flex items-center mb-2 font-medium">
-                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                        Authentication Failed
-                    </div>
-                    <ul class="list-disc pl-11 space-y-1 text-xs">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
                 </div>
             @endif
 
@@ -85,67 +72,60 @@
                 
                 <!-- Email Field -->
                 <div>
-                    <label for="email" class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
+                    <label for="email" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Email Address') }}</label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-[#3b82f6] opacity-70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'right-0 pr-3' : 'left-0 pl-3' }} flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-amber-500/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                             </svg>
                         </div>
                         <input type="email" id="email" name="email" value="{{ old('email') }}" required 
-                            class="glass-input block w-full pl-10 pr-3 py-3 rounded-xl text-sm placeholder-slate-500 text-white focus:outline-none focus:ring-1 focus:ring-[#38bdf8]" 
-                            placeholder="admin@neural.network">
+                            class="block w-full {{ app()->getLocale() == 'ar' ? 'pr-10 pl-3' : 'pl-10 pr-3' }} py-3.5 bg-[#0f1115] border border-white/5 rounded-xl text-sm placeholder-slate-600 text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
+                            placeholder="admin@bakery.com">
                     </div>
                 </div>
 
                 <!-- Password Field -->
                 <div>
-                    <label for="password" class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Security Key</label>
+                    <label for="password" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Security Key') }}</label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-[#6366f1] opacity-70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'right-0 pr-3' : 'left-0 pl-3' }} flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-amber-500/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </div>
                         <input type="password" id="password" name="password" required 
-                            class="glass-input block w-full pl-10 pr-3 py-3 rounded-xl text-sm placeholder-slate-500 text-white" 
+                            class="block w-full {{ app()->getLocale() == 'ar' ? 'pr-10 pl-3' : 'pl-10 pr-3' }} py-3.5 bg-[#0f1115] border border-white/5 rounded-xl text-sm placeholder-slate-600 text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
                             placeholder="••••••••">
                     </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="flex items-center justify-between text-sm">
-                    <label class="flex items-center text-slate-300 cursor-pointer group">
-                        <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-600 bg-slate-900/50 text-[#0ea5e9] focus:ring-[#0ea5e9] focus:ring-offset-slate-900 border-opacity-30">
-                        <span class="ml-2 group-hover:text-white transition-colors">Remember sequence</span>
+                <div class="flex items-center justify-between text-sm mt-4">
+                    <label class="flex items-center text-slate-400 cursor-pointer group hover:text-white transition-colors">
+                        <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-700 bg-[#0f1115] text-amber-500 focus:ring-amber-500/50">
+                        <span class="{{ app()->getLocale() == 'ar' ? 'mr-2' : 'ml-2' }}">{{ __('Remember me') }}</span>
                     </label>
-                    
-                    <a href="#" class="text-[#38bdf8] hover:text-white transition-colors duration-300">Recover access</a>
                 </div>
 
                 <!-- Submit Button -->
                 <button type="submit" 
-                    class="w-full py-3.5 px-4 bg-gradient-to-r from-[#0ea5e9] via-[#3b82f6] to-[#6366f1] hover:from-[#38bdf8] hover:via-[#60a5fa] hover:to-[#818cf8] text-white font-medium rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] hover:scale-[1.01] active:scale-[0.99] flex justify-center items-center group relative overflow-hidden">
-                    
-                    <!-- Button inner glow element -->
-                    <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-
-                    <span class="relative z-10 flex items-center">
-                        Initialize Connection
-                        <svg class="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="w-full mt-2 py-3.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-[#0f1115] font-bold rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] active:scale-95 flex justify-center items-center group relative overflow-hidden">
+                    <span class="relative z-10 flex items-center uppercase tracking-wider text-sm">
+                        {{ __('Authorize') }}
+                        <svg class="{{ app()->getLocale() == 'ar' ? 'mr-2 rotate-180 group-hover:-translate-x-1' : 'ml-2 group-hover:translate-x-1' }} w-4 h-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
                     </span>
                 </button>
             </form>
-            
-            <!-- Bottom styling elements -->
-            <div class="mt-8 flex justify-center gap-2 pb-2">
-                <span class="w-2 h-2 rounded-full bg-[#0ea5e9] opacity-40"></span>
-                <span class="w-2 h-2 rounded-full bg-[#3b82f6] opacity-60"></span>
-                <span class="w-2 h-2 rounded-full bg-[#6366f1] opacity-40"></span>
-            </div>
-            
+        </div>
+        
+        <div class="text-center mt-6">
+            <a href="{{ route('admin.lang.switch', app()->getLocale() == 'en' ? 'ar' : 'en') }}" class="text-xs font-semibold text-slate-500 hover:text-amber-500 transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
+                {{ app()->getLocale() == 'en' ? 'عربي' : 'English' }}
+            </a>
         </div>
     </div>
 </body>

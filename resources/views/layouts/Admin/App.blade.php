@@ -11,8 +11,11 @@
     <!-- Global Loader -->
     @include('layouts.Admin.Loader')
 
-    <!-- Decorative exact background match from logo -->
-    <div class="fixed inset-0 z-[-2] bg-slate-50 dark:bg-gradient-to-br dark:from-[#0f172a] dark:to-[#0d1b2e] transition-colors duration-300"></div>
+    <!-- Global Background & Glow -->
+    <div class="fixed inset-0 z-[-2] bg-slate-50 dark:bg-[#0f1115] transition-colors duration-300">
+        <div class="hidden dark:block absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-amber-500/10 blur-[120px] pointer-events-none"></div>
+        <div class="hidden dark:block absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-600/10 blur-[120px] pointer-events-none"></div>
+    </div>
 
     <!-- Subtle grid overlay -->
     <div class="fixed inset-0 z-[-1] opacity-[0.05] dark:opacity-[0.02] pointer-events-none" style="background-image: linear-gradient(#94a3b8 1px, transparent 1px), linear-gradient(90deg, #94a3b8 1px, transparent 1px); background-size: 40px 40px;"></div>
