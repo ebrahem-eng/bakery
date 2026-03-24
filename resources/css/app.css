@@ -9,7 +9,7 @@
     --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
 }
 
-@utility glass-panel {
+.glass-panel {
     background-color: rgba(255, 255, 255, 1);
     border: 1px solid rgba(226, 232, 240, 1);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
@@ -23,7 +23,7 @@
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
 }
 
-@utility glass-input {
+.glass-input {
     background-color: rgba(248, 250, 252, 1);
     border: 1px solid rgba(226, 232, 240, 1);
     color: rgba(15, 23, 42, 1);
@@ -33,6 +33,12 @@
     background-color: rgba(15, 17, 21, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.05);
     color: rgba(248, 250, 252, 1);
+    outline: none !important;
+}
+
+.dark .glass-input:focus {
+    border-color: rgba(245, 158, 11, 0.5);
+    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.5);
 }
 
 .sidebar-item-active {
