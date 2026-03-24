@@ -70,3 +70,8 @@ A comprehensive management and accounting system built for a 24/7 bakery operati
 - **Status**: Formulated the `Supplier` & `Category` relationship schema, generating migrations and controllers.
 - **Action**: Created interactive Supplier CRUD resolving N-to-N category overlap and multiple mobile allocations natively via AlpineJS arrays. Repaired Sidebar links.
 - **Next Horizon**: Stepping into the composite "Supply Registration" logic processing multi-currency partial payments and volume derivations.
+
+### Log: [2026-03-24/25] - Phase 4 Part 2 (Supply Purchases Ledger)
+- **Status**: Implemented multi-currency volume tracking for Raw Materials explicitly.
+- **Action**: Conceived a responsive Math-driven Vue.js/Alpine ledger validating live partial-debt reductions natively parsing Supplier dependencies on Work Day boundaries.
+- **Next Horizon**: Moving onto "Phase 5: Worker & Advanced Attendance Management Modules" for tracking shifts.

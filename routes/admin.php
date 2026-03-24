@@ -34,4 +34,7 @@ Route::group(['middleware' => ['admin.auth']], function () {
 
     // ── Suppliers ──────────────────────────────────────────────────────
     Route::resource('suppliers', \App\Http\Controllers\Admin\SupplierController::class);
+
+    // ── Supplies (Purchases) ───────────────────────────────────────────
+    Route::resource('supplies', \App\Http\Controllers\Admin\SupplyController::class)->except(['edit', 'update', 'destroy']);
 });
