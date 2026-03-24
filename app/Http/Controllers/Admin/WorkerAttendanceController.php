@@ -1,0 +1,111 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Worker;
+use App\Models\WorkerShift;
+use App\Models\WorkerTransaction;
+use App\Models\WorkDay;
+use Illuminate\Http\Request;
+
+class WorkerAttendanceController extends Controller
+{
+    public function index()
+    {
+        $activeWorkDay = WorkDay::where('status', 'active')->first();
+        if (!$activeWorkDay) {
+            return redirect()->route('admin.dashboard')->with('error_message', 'No active work day found. Please start a day first.');
+        }
+
+        $workers = Worker::with([
+            'shifts' => function ($query) use ($activeWorkDay) {
+                $query->where('work_day_id', $activeWorkDay->id);
+            },
+            'transactions' => function ($query) use ($activeWorkDay) {
+                $query->where('work_day_id', $activeWorkDay->id);
+            },
+            'currency'
+        ])->get();
+
+        return view('Admin.Attendance.index', compact('workers', 'activeWorkDay'));
+    }
+
+    public function clockIn(Request $request)
+    {
+        $request->validate([
+            'worker_id' => 'required|exists:workers,id',
+        ]);
+
+        $activeWorkDay = WorkDay::where('status', 'active')->first();
+        if (!$activeWorkDay) {
+            return back()->with('error_message', 'No active work day found.');
+        }
+
+        $worker = Worker::findOrFail($request->worker_id);
+
+        // Check if already checked in and not checked out
+        $existingShift = WorkerShift::where('worker_id', $worker->id)
+            ->where('work_day_id', $activeWorkDay->id)
+            ->whereNull('check_out')
+            ->first();
+
+        if ($existingShift) {
+            return back()->with('error_message', 'Worker is already clocked in.');
+        }
+
+        $rate = $worker->currency->is_local ? 1 : $worker->currency->exchange_rate;
+
+        WorkerShift::create([
+            'worker_id' => $worker->id,
+            'work_day_id' => $activeWorkDay->id,
+            'check_in' => now(),
+            'snapshot_daily_wage' => $worker->daily_wage,
+            'snapshot_currency_id' => $worker->currency_id,
+            'snapshot_exchange_rate' => $rate,
+        ]);
+
+        return back()->with('success_message', 'Worker clocked in successfully.');
+    }
+
+    public function clockOut(WorkerShift $shift)
+    {
+        if ($shift->check_out) {
+            return back()->with('error_message', 'Worker is already clocked out.');
+        }
+
+        $shift->update([
+            'check_out' => now()
+        ]);
+
+        return back()->with('success_message', 'Worker clocked out successfully.');
+    }
+
+    public function storeTransaction(Request $request)
+    {
+        $request->validate([
+            'worker_id' => 'required|exists:workers,id',
+            'type' => 'required|in:advance,allowance,deduction',
+            'amount' => 'required|numeric|min:0.01',
+            'notes' => 'nullable|string',
+        ]);
+
+        $activeWorkDay = WorkDay::where('status', 'active')->first();
+        if (!$activeWorkDay) return back()->with('error_message', 'No active work day.');
+
+        $worker = Worker::findOrFail($request->worker_id);
+        $rate = $worker->currency->is_local ? 1 : $worker->currency->exchange_rate;
+
+        WorkerTransaction::create([
+            'worker_id' => $worker->id,
+            'work_day_id' => $activeWorkDay->id,
+            'type' => $request->type,
+            'amount' => $request->amount,
+            'currency_id' => $worker->currency_id,
+            'exchange_rate' => $rate,
+            'notes' => $request->notes,
+        ]);
+
+        return back()->with('success_message', ucfirst($request->type) . ' recorded successfully.');
+    }
+}

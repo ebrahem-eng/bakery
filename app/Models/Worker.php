@@ -13,4 +13,6 @@ class Worker extends Model
 
     public function mobiles() { return $this->hasMany(WorkerMobile::class); }
     public function currency() { return $this->belongsTo(Currency::class); }
+    public function shifts() { return $this->hasMany(WorkerShift::class); }
+    public function transactions() { return $this->hasMany(WorkerTransaction::class); }
 }

@@ -38,6 +38,10 @@ Route::group(['middleware' => ['admin.auth']], function () {
     // ── Supplies (Purchases) ───────────────────────────────────────────
     Route::resource('supplies', \App\Http\Controllers\Admin\SupplyController::class)->except(['edit', 'update', 'destroy']);
 
-    // ── Workers (HR) ───────────────────────────────────────────────────
+    // ── Workers (HR & Attendance) ────────────────────────────────────────
     Route::resource('workers', \App\Http\Controllers\Admin\WorkerController::class);
+    Route::get('attendance', [\App\Http\Controllers\Admin\WorkerAttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('attendance/clock-in', [\App\Http\Controllers\Admin\WorkerAttendanceController::class, 'clockIn'])->name('attendance.clock_in');
+    Route::post('attendance/{shift}/clock-out', [\App\Http\Controllers\Admin\WorkerAttendanceController::class, 'clockOut'])->name('attendance.clock_out');
+    Route::post('attendance/transaction', [\App\Http\Controllers\Admin\WorkerAttendanceController::class, 'storeTransaction'])->name('attendance.transaction');
 });

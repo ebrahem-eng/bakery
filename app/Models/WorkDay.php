@@ -27,4 +27,14 @@ class WorkDay extends Model
     {
         return $this->belongsTo(Admin::class, 'closed_by');
     }
+
+    public function workerShifts()
+    {
+        return $this->hasMany(WorkerShift::class);
+    }
+
+    public function workerTransactions()
+    {
+        return $this->hasMany(WorkerTransaction::class);
+    }
 }
