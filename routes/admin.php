@@ -7,16 +7,16 @@ use App\Http\Controllers\Admin\AdminController;
 Route::get('/login', [AuthController::class, 'loginPage'])->name('login.page');
 Route::post('/login/check', [AuthController::class, 'login'])->name('login');
 
+// ── Localization Toggle (Global for Admin) ───────────────────────
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'ar'])) {
+        session()->put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('setLang');
+
 Route::group(['middleware' => ['admin.auth']], function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-    // ── Localization Toggle ──────────────────────────────────────────
-    Route::get('/lang/{locale}', function ($locale) {
-        if (in_array($locale, ['en', 'ar'])) {
-            session()->put('locale', $locale);
-        }
-        return redirect()->back();
-    })->name('setLang');
 
     // ── Dashboard ──────────────────────────────────────────────────────
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
