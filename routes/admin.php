@@ -38,7 +38,7 @@ Route::group(['middleware' => ['admin.auth']], function () {
             $todaySales = $activeWorkDay->distributions->sum('total_price') - $activeWorkDay->distributorReturns->sum('total_refund');
             $todayBundlesSold = $activeWorkDay->distributions->sum('bundle_count');
             
-            $todayExpenses += $activeWorkDay->supplies->sum('total_price') + $activeWorkDay->supplies->sum('unloading_fee');
+            $todayExpenses += $activeWorkDay->supplies->sum('total_cost') + $activeWorkDay->supplies->sum('unloading_fee');
             $todayExpenses += $activeWorkDay->workerShifts->sum('snapshot_daily_wage');
             $todayExpenses += $activeWorkDay->workerTransactions->where('type', 'allowance')->sum('amount');
             $todayExpenses -= $activeWorkDay->workerTransactions->where('type', 'deduction')->sum('amount');

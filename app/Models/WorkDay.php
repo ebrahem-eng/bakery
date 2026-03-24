@@ -57,4 +57,9 @@ class WorkDay extends Model
     {
         return $this->hasMany(Expense::class);
     }
+
+    public function supplies()
+    {
+        return $this->hasMany(Supply::class);
+    }
 }
