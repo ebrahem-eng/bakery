@@ -4,10 +4,11 @@
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 {{ app()->getLocale() == 'ar' ? 'right-0' : 'left-0' }} z-30 w-64 glass-sidebar transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 h-full flex flex-col pt-6 pb-4">
             
             <!-- Logo area -->
-            <div class="flex items-center justify-center px-6 mb-8 logo-container">
+            <div class="flex items-center justify-center px-6 mb-8 logo-container gap-3">
+                <img src="{{ asset('build/assets/admin_page/logo.svg') }}" alt="Admin Logo" class="w-10 h-10 drop-shadow-md">
                 <div>
-                    <h2 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#eab308] to-[#f59e0b]">{{ __('Bakery') }}</h2>
-                    <p class="text-[10px] uppercase tracking-widest text-[#fbbf24] opacity-80">{{ __('Admin Portal') }}</p>
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-[#0ea5e9] dark:to-[#818cf8]">{{ __('Bakery') }}</h2>
+                    <p class="text-[10px] uppercase tracking-widest text-[#38bdf8] opacity-80">{{ __('Admin Portal') }}</p>
                 </div>
             </div>
 

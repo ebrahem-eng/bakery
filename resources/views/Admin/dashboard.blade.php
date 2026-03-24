@@ -4,51 +4,47 @@
 <!-- Page Header -->
 <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
     <div>
-        <h1 class="text-2xl lg:text-3xl font-bold text-white mb-1 tracking-tight">{{ __('System') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#eab308] to-[#f59e0b]">{{ __('Overview') }}</span></h1>
+        <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('System') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#eab308] to-[#f59e0b]">{{ __('Overview') }}</span></h1>
         <p class="text-sm text-slate-400">{{ __('Bakery management dashboard is operating smoothly.') }}</p>
     </div>
     <div class="flex gap-3">
-        <button class="bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all px-4 py-2 rounded-xl text-sm font-medium flex items-center shadow-[0_0_15px_rgba(239,68,68,0.15)] hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]">
-            <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
-            </svg>
-            {{ __('End Work Day') }}
-        </button>
-        <button class="bg-[#eab308]/10 text-[#eab308] border border-[#eab308]/30 hover:bg-[#eab308] hover:text-[#451a03] transition-all px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-[0_0_15px_rgba(234,179,8,0.15)] hover:shadow-[0_0_20px_rgba(234,179,8,0.4)]">
-            <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            {{ __('Start New Work Day') }}
-        </button>
+        <form action="{{ route('admin.work_days.store') }}" method="POST">
+            @csrf
+            <button type="submit" class="bg-[#eab308]/10 text-amber-600 dark:text-[#eab308] border border-amber-300 dark:border-[#eab308]/30 hover:bg-[#eab308] hover:text-[#451a03] transition-all px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-[0_0_15px_rgba(234,179,8,0.15)] hover:shadow-[0_0_20px_rgba(234,179,8,0.4)]">
+                <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                {{ __('Start New Work Day') }}
+            </button>
+        </form>
     </div>
 </div>
 
 <!-- Quick Access Grid -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-    <button class="glass-panel p-4 rounded-xl border border-white/5 hover:bg-white/5 hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-2 group">
-        <div class="p-3 rounded-full bg-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
+    <a href="{{ route('admin.suppliers.index') }}" class="glass-panel p-4 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-2 group">
+        <div class="p-3 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
         </div>
-        <span class="text-sm font-medium text-slate-300">{{ __('Add Supply') }}</span>
-    </button>
-    <button class="glass-panel p-4 rounded-xl border border-white/5 hover:bg-white/5 hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-2 group">
-        <div class="p-3 rounded-full bg-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
+        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ __('Add Supply') }}</span>
+    </a>
+    <button class="glass-panel p-4 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-2 group">
+        <div class="p-3 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         </div>
-        <span class="text-sm font-medium text-slate-300">{{ __('Add Distribution') }}</span>
+        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ __('Add Distribution') }}</span>
     </button>
-    <button class="glass-panel p-4 rounded-xl border border-white/5 hover:bg-white/5 hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-2 group">
-        <div class="p-3 rounded-full bg-red-500/20 text-red-400 group-hover:scale-110 transition-transform">
+    <button class="glass-panel p-4 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-2 group">
+        <div class="p-3 rounded-full bg-red-500/20 text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform">
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
         </div>
-        <span class="text-sm font-medium text-slate-300">{{ __('Add Expense/Draw') }}</span>
+        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ __('Add Expense/Draw') }}</span>
     </button>
-    <button class="glass-panel p-4 rounded-xl border border-white/5 hover:bg-white/5 hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-2 group">
-        <div class="p-3 rounded-full bg-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
+    <button class="glass-panel p-4 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-2 group">
+        <div class="p-3 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
         </div>
-        <span class="text-sm font-medium text-slate-300">{{ __('Worker Advance') }}</span>
+        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ __('Worker Advance') }}</span>
     </button>
 </div>
 

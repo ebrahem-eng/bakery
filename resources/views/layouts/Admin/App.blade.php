@@ -6,20 +6,16 @@
     <title>{{ __('Bakery Accounting System') }}</title>
     @include('layouts.Admin.Links')
 </head>
-<body class="antialiased font-sans text-slate-300" x-data="{ sidebarOpen: false, profileOpen: false, notificationsOpen: false }">
+<body class="antialiased font-sans text-slate-800 dark:text-slate-300 transition-colors duration-300" x-data="{ sidebarOpen: false, profileOpen: false, notificationsOpen: false }">
 
     <!-- Global Loader -->
     @include('layouts.Admin.Loader')
 
     <!-- Decorative exact background match from logo -->
-    <div class="fixed inset-0 z-[-2] bg-gradient-to-br from-[#0f172a] to-[#0d1b2e]"></div>
-    
-    <!-- Animated background orbs matching neural nodes -->
-    <div class="bg-orb-1 fixed z-[-1] pointer-events-none"></div>
-    <div class="bg-orb-2 fixed z-[-1] pointer-events-none"></div>
+    <div class="fixed inset-0 z-[-2] bg-slate-50 dark:bg-gradient-to-br dark:from-[#0f172a] dark:to-[#0d1b2e] transition-colors duration-300"></div>
 
     <!-- Subtle grid overlay -->
-    <div class="fixed inset-0 z-[-1] opacity-[0.02] pointer-events-none" style="background-image: linear-gradient(#94a3b8 1px, transparent 1px), linear-gradient(90deg, #94a3b8 1px, transparent 1px); background-size: 40px 40px;"></div>
+    <div class="fixed inset-0 z-[-1] opacity-[0.05] dark:opacity-[0.02] pointer-events-none" style="background-image: linear-gradient(#94a3b8 1px, transparent 1px), linear-gradient(90deg, #94a3b8 1px, transparent 1px); background-size: 40px 40px;"></div>
 
     <div class="flex h-screen overflow-hidden">
         

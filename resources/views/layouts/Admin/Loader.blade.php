@@ -13,7 +13,7 @@
             <!-- Inner spinning ring (reverse) -->
             <div class="absolute inset-2 rounded-full border-b-2 border-l-2 border-[#6366f1] opacity-60 animate-spin" style="animation-duration: 2s; animation-direction: reverse;"></div>
             
-            <!-- Central Neural Node -->
+            <!-- Central Arc -->
             <div class="absolute inset-0 flex items-center justify-center">
                 <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0ea5e9] to-[#818cf8] shadow-[0_0_20px_#0ea5e9] animate-pulse"></div>
             </div>
@@ -29,9 +29,9 @@
 
         <!-- Text -->
         <h2 class="text-lg font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-[#0ea5e9] to-[#818cf8] animate-pulse">
-            INITIALIZING
+            {{ strtoupper(__('Bakery Accounting System')) }}
         </h2>
-        <p class="text-xs text-slate-500 mt-2 tracking-widest uppercase">Establishing Neural Links...</p>
+        <p class="text-xs text-slate-500 mt-2 tracking-widest uppercase">{{ __('Loading Assets...') }}</p>
     </div>
 </div>
 
