@@ -20,4 +20,10 @@ Route::group(['middleware' => ['admin.auth']], function () {
 
     // ── Dashboard ──────────────────────────────────────────────────────
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
+    // ── Roles & Permissions ────────────────────────────────────────────
+    Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
+
+    // ── Admins Management ──────────────────────────────────────────────
+    Route::resource('manage_admins', \App\Http\Controllers\Admin\ManageAdminsController::class);
 });

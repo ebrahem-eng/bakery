@@ -5,15 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class Admin extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     protected $guard = 'admin';
+    protected $guard_name = 'admin';
 
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
+        'title',
+        'address',
         'email',
         'email_verified_at',
         'password',
@@ -21,11 +26,15 @@ class Admin extends Authenticatable
         'status',
         'age',
         'birthday',
-        'phone',
         'img',
         'last_login_at',
         'last_login_ip',
     ];
+
+    public function mobiles()
+    {
+        return $this->hasMany(AdminMobile::class);
+    }
 
     protected $hidden = [
         'password',
