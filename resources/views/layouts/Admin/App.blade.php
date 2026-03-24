@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}" x-data="{ isDark: localStorage.getItem('theme') !== 'light' }" :class="{ 'dark': isDark }" x-init="$watch('isDark', val => localStorage.setItem('theme', val ? 'dark' : 'light'))">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Neural Admin Portal</title>
+    <title>{{ __('Bakery Accounting System') }}</title>
     @include('layouts.Admin.Links')
 </head>
 <body class="antialiased font-sans text-slate-300" x-data="{ sidebarOpen: false, profileOpen: false, notificationsOpen: false }">

@@ -9,7 +9,7 @@
                     </button>
 
                     <!-- Search Bar -->
-                    <div class="hidden sm:flex flex-1 max-w-md ml-4 text-sm font-medium">
+                    <div class="hidden sm:flex flex-1 max-w-md {{ app()->getLocale() == 'ar' ? 'mr-4' : 'ml-4' }} text-sm font-medium">
                         <div class="relative w-full">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -20,7 +20,22 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center ml-auto gap-3 sm:gap-5">
+                    <div class="flex items-center {{ app()->getLocale() == 'ar' ? 'mr-auto' : 'ml-auto' }} gap-3 sm:gap-5">
+                        <!-- Theme Toggle -->
+                        <button @click="isDark = !isDark" class="text-slate-400 hover:text-white p-1.5 rounded-full hover:bg-white/5 transition-colors focus:outline-none">
+                            <svg x-show="!isDark" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                            <svg x-show="isDark" style="display: none;" class="w-5 h-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </button>
+
+                        <!-- Lang Toggle -->
+                        <a href="{{ route('admin.setLang', app()->getLocale() == 'ar' ? 'en' : 'ar') }}" class="text-slate-400 hover:text-white font-bold px-2 py-1 rounded-full hover:bg-white/5 transition-colors text-xs border border-white/5">
+                            {{ app()->getLocale() == 'ar' ? 'English' : 'العربية' }}
+                        </a>
+
                         <!-- Notifications -->
                         <div class="relative" x-data="{ notificationsOpen: false }">
                             <button @click="notificationsOpen = !notificationsOpen" @click.away="notificationsOpen = false" class="text-slate-400 hover:text-white relative p-1.5 rounded-full hover:bg-white/5 transition-colors outline-none">

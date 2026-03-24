@@ -10,6 +10,14 @@ Route::post('/login/check', [AuthController::class, 'login'])->name('login');
 Route::group(['middleware' => ['admin.auth']], function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    // ── Localization Toggle ──────────────────────────────────────────
+    Route::get('/lang/{locale}', function ($locale) {
+        if (in_array($locale, ['en', 'ar'])) {
+            session()->put('locale', $locale);
+        }
+        return redirect()->back();
+    })->name('setLang');
+
     // ── Dashboard ──────────────────────────────────────────────────────
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 });
