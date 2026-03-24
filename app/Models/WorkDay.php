@@ -37,4 +37,19 @@ class WorkDay extends Model
     {
         return $this->hasMany(WorkerTransaction::class);
     }
+
+    public function distributions()
+    {
+        return $this->hasMany(Distribution::class);
+    }
+
+    public function distributorReturns()
+    {
+        return $this->hasMany(DistributorReturn::class);
+    }
+
+    public function distributorTransactions()
+    {
+        return $this->hasMany(DistributorTransaction::class);
+    }
 }

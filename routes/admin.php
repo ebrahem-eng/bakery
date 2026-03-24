@@ -38,6 +38,13 @@ Route::group(['middleware' => ['admin.auth']], function () {
     // ── Supplies (Purchases) ───────────────────────────────────────────
     Route::resource('supplies', \App\Http\Controllers\Admin\SupplyController::class)->except(['edit', 'update', 'destroy']);
 
+    // ── Distributions (Sales) ──────────────────────────────────────────
+    Route::resource('distributors', \App\Http\Controllers\Admin\DistributorController::class);
+    Route::get('distributions', [\App\Http\Controllers\Admin\DistributionController::class, 'index'])->name('distributions.index');
+    Route::post('distributions/store', [\App\Http\Controllers\Admin\DistributionController::class, 'storeDistribution'])->name('distributions.store');
+    Route::post('distributions/return', [\App\Http\Controllers\Admin\DistributionController::class, 'storeReturn'])->name('distributions.return');
+    Route::post('distributions/transaction', [\App\Http\Controllers\Admin\DistributionController::class, 'storeTransaction'])->name('distributions.transaction');
+
     // ── Workers (HR & Attendance) ────────────────────────────────────────
     Route::resource('workers', \App\Http\Controllers\Admin\WorkerController::class);
     Route::get('attendance', [\App\Http\Controllers\Admin\WorkerAttendanceController::class, 'index'])->name('attendance.index');

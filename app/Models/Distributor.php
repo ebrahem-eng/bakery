@@ -20,4 +20,19 @@ class Distributor extends Model
     {
         return $this->belongsTo(Currency::class, 'preferred_currency_id');
     }
+
+    public function distributions()
+    {
+        return $this->hasMany(Distribution::class);
+    }
+
+    public function returns()
+    {
+        return $this->hasMany(DistributorReturn::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(DistributorTransaction::class);
+    }
 }
