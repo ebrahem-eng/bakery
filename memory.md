@@ -65,3 +65,8 @@ A comprehensive management and accounting system built for a 24/7 bakery operati
 - **Status**: Implemented multi-currency structure and logical Work Day timeline constraints.
 - **Action**: Seeded the core currencies (USD, SYP Old, SYP New). Designed the complex 'Close Work Day' module mapping irreversible cash carry-overs to guarantee accounting immutability.
 - **Next Horizon**: Advancing to the Suppliers module (Purchasing and Categories integration) to support dynamic raw material logs.
+
+### Log: [2026-03-24] - Phase 4 Baseline (Suppliers & Categories)
+- **Status**: Formulated the `Supplier` & `Category` relationship schema, generating migrations and controllers.
+- **Action**: Created interactive Supplier CRUD resolving N-to-N category overlap and multiple mobile allocations natively via AlpineJS arrays. Repaired Sidebar links.
+- **Next Horizon**: Stepping into the composite "Supply Registration" logic processing multi-currency partial payments and volume derivations.

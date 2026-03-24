@@ -30,8 +30,8 @@
                 </a>
 
                 <!-- Supplies & Suppliers -->
-                <a href="#" class="text-slate-400 hover:text-white hover:bg-white/5 flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
-                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} text-slate-500 group-hover:text-[#fde047] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('admin.suppliers.index') }}" class="{{ request()->routeIs('admin.suppliers.*') ? 'sidebar-item-active text-[#fde047]' : 'text-slate-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.suppliers.*') ? 'text-[#f59e0b]' : 'text-slate-500 group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                     {{ __('Purchases & Suppliers') }}
@@ -64,8 +64,8 @@
                 <div class="border-t border-white/5 my-2"></div>
 
                 <!-- Admin Accounts -->
-                <a href="#" class="text-slate-400 hover:text-white hover:bg-white/5 flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
-                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} text-slate-500 group-hover:text-[#fde047] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('admin.manage_admins.index') }}" class="{{ request()->routeIs('admin.manage_admins.*') ? 'sidebar-item-active text-[#fde047]' : 'text-slate-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.manage_admins.*') ? 'text-[#f59e0b]' : 'text-slate-500 group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                     {{ __('Admin Accounts') }}

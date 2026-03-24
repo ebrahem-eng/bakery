@@ -31,4 +31,7 @@ Route::group(['middleware' => ['admin.auth']], function () {
     Route::resource('work_days', \App\Http\Controllers\Admin\WorkDayController::class);
     Route::get('/work_days/{workDay}/close', [\App\Http\Controllers\Admin\WorkDayController::class, 'showCloseForm'])->name('work_days.showCloseForm');
     Route::post('/work_days/{workDay}/close', [\App\Http\Controllers\Admin\WorkDayController::class, 'close'])->name('work_days.close');
+
+    // ── Suppliers ──────────────────────────────────────────────────────
+    Route::resource('suppliers', \App\Http\Controllers\Admin\SupplierController::class);
 });
