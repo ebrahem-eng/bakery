@@ -55,6 +55,14 @@
                     {{ __('Workers & Wages') }}
                 </a>
 
+                <!-- Expenses -->
+                <a href="#" class="text-slate-400 hover:text-white hover:bg-white/5 flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} text-slate-500 group-hover:text-[#fde047] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ __('Expenses & Drawings') }}
+                </a>
+
                 <!-- Distributors -->
                 <a href="#" class="text-slate-400 hover:text-white hover:bg-white/5 flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
                     <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} text-slate-500 group-hover:text-[#fde047] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,13 +71,21 @@
                     {{ __('Distributors & Sales') }}
                 </a>
 
-                <!-- Expenses -->
-                <a href="#" class="text-slate-400 hover:text-white hover:bg-white/5 flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
-                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} text-slate-500 group-hover:text-[#fde047] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {{ __('Expenses & Drawings') }}
-                </a>
+                <!-- Workers (HR) -->
+                <div x-data="{ open: {{ request()->routeIs('admin.workers.*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" class="{{ request()->routeIs('admin.workers.*') ? 'sidebar-item-active text-[#0ea5e9]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} w-full flex justify-between items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.workers.*') ? 'text-[#38bdf8]' : 'text-slate-500' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            {{ __('Workers HR') }}
+                        </div>
+                        <svg :class="{'rotate-180': open}" class="w-4 h-4 transition-transform text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="open" class="my-1 space-y-1">
+                        <a href="{{ route('admin.workers.index') }}" class="{{ request()->routeIs('admin.workers.*') ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }} block {{ app()->getLocale() == 'ar' ? 'pr-12' : 'pl-12' }} py-2 text-xs transition-colors">{{ __('Personnel Roster') }}</a>
+                    </div>
+                </div>
 
                 <div class="border-t border-white/5 my-2"></div>
 
