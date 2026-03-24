@@ -19,7 +19,34 @@ Route::group(['middleware' => ['admin.auth']], function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // ── Dashboard ──────────────────────────────────────────────────────
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', function () {
+        $activeWorkDay = \App\Models\WorkDay::where('status', 'active')
+            ->with(['distributions', 'supplies', 'expenses', 'workerShifts', 'workerTransactions', 'distributorReturns'])
+            ->first();
+            
+        $lastDays = \App\Models\WorkDay::where('status', 'closed')
+            ->orderBy('id', 'desc')->take(5)->get();
+            
+        $totalWorkers = \App\Models\Worker::count();
+        $totalDistributors = \App\Models\Distributor::count();
+
+        $todaySales = 0;
+        $todayExpenses = 0;
+        $todayBundlesSold = 0;
+        
+        if ($activeWorkDay) {
+            $todaySales = $activeWorkDay->distributions->sum('total_price') - $activeWorkDay->distributorReturns->sum('total_refund');
+            $todayBundlesSold = $activeWorkDay->distributions->sum('bundle_count');
+            
+            $todayExpenses += $activeWorkDay->supplies->sum('total_price') + $activeWorkDay->supplies->sum('unloading_fee');
+            $todayExpenses += $activeWorkDay->workerShifts->sum('snapshot_daily_wage');
+            $todayExpenses += $activeWorkDay->workerTransactions->where('type', 'allowance')->sum('amount');
+            $todayExpenses -= $activeWorkDay->workerTransactions->where('type', 'deduction')->sum('amount');
+            $todayExpenses += $activeWorkDay->expenses->sum('amount');
+        }
+
+        return view('Admin.dashboard', compact('activeWorkDay', 'lastDays', 'totalWorkers', 'totalDistributors', 'todaySales', 'todayExpenses', 'todayBundlesSold'));
+    })->name('dashboard');
 
     // ── Roles & Permissions ────────────────────────────────────────────
     Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
