@@ -16,6 +16,12 @@ class SupplierController extends Controller
         return view('Admin.Suppliers.index', compact('suppliers'));
     }
 
+    public function show(Supplier $supplier)
+    {
+        $supplier->load(['mobiles', 'categories', 'supplies.category', 'supplies.currency', 'supplies.workDay.openedBy']);
+        return view('Admin.Suppliers.show', compact('supplier'));
+    }
+
     public function create()
     {
         $categories = Category::where('is_active', true)->get();

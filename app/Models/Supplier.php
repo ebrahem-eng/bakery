@@ -17,4 +17,9 @@ class Supplier extends Model
     {
         return $this->belongsToMany(Category::class);
     }
+
+    public function supplies()
+    {
+        return $this->hasMany(Supply::class);
+    }
 }

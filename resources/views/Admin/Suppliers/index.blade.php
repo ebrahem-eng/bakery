@@ -49,6 +49,7 @@
                         @endforeach
                     </td>
                     <td class="py-3 px-4 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">
+                        <a href="{{ route('admin.suppliers.show', $supplier->id) }}" class="text-[#38bdf8] hover:text-white transition-colors {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('View Profile') }}</a>
                         <a href="{{ route('admin.suppliers.edit', $supplier->id) }}" class="text-[#eab308] hover:text-white transition-colors {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('Edit') }}</a>
                         <form action="{{ route('admin.suppliers.destroy', $supplier->id) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Delete Supplier completely?') }}');">
                             @csrf @method('DELETE')
