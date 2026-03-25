@@ -1,7 +1,7 @@
         <!-- Mobile sidebar backdrop -->
         <div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-20 bg-black/50 lg:hidden" @click="sidebarOpen = false" style="display: none;"></div>
 
-        <aside :class="sidebarOpen ? 'translate-x-0' : '{{ app()->getLocale() == 'ar' ? 'translate-x-full' : '-translate-x-full' }}'" class="fixed inset-y-0 {{ app()->getLocale() == 'ar' ? 'right-0 border-l' : 'left-0 border-r' }} z-40 w-64 bg-slate-50 dark:bg-[#0b0d10] border-slate-200 dark:border-white/5 shadow-2xl lg:shadow-none transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 h-full flex flex-col pt-6 pb-4">
+        <aside :class="sidebarOpen ? 'translate-x-0' : '{{ app()->getLocale() == 'ar' ? 'translate-x-full' : '-translate-x-full' }}'" class="fixed inset-y-0 {{ app()->getLocale() == 'ar' ? 'right-0 border-l' : 'left-0 border-r' }} z-40 w-64 glass-sidebar border-slate-200 dark:border-white/5 shadow-2xl lg:shadow-none transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 h-full flex flex-col pt-6 pb-4">
             
             <!-- Logo area -->
             <div class="flex items-center justify-center px-6 mb-8 logo-container gap-3">
