@@ -212,18 +212,15 @@
                             }
                             
                             // Sort by date to calculate running balance
-                            $sortedActivities = $activities->sortBy('date');
                             $runningBalance = 0;
                             $counter = 0;
-                            foreach($sortedActivities as &$activity) {
+                            $displayActivities = $activities->sortBy('date')->map(function($activity) use (&$runningBalance, &$counter) {
                                 $counter++;
                                 $runningBalance += ($activity['debit'] - $activity['credit']);
                                 $activity['running_balance'] = $runningBalance;
                                 $activity['index'] = $counter;
-                            }
-                            
-                            // Reverse for display (Newest first)
-                            $displayActivities = $sortedActivities->reverse();
+                                return $activity;
+                            })->reverse();
                         @endphp
 
                         @forelse($displayActivities as $activity)
