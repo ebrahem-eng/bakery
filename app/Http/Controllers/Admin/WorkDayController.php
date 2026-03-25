@@ -121,8 +121,19 @@ class WorkDayController extends Controller
             return $s->cash_collected * $s->cash_exchange_rate;
         });
 
+        // ── Raw Material Categories for Consumption ──────────────────
+        $materialNames = ['طحين', 'مازوت', 'خميرة', 'ملح'];
+        $materialCategories = \App\Models\Category::whereIn('name', $materialNames)
+            ->withSum('supplies as total_in', 'quantity')
+            ->withSum('consumptions as total_out', 'quantity')
+            ->get()
+            ->map(function($cat) {
+                $cat->available = ($cat->total_in ?? 0) - ($cat->total_out ?? 0);
+                return $cat;
+            });
+
         return view('Admin.WorkDays.close', compact(
-            'workDay', 'defaultCurrency', 'currencyCode', 'currencies', 'materialCategories',
+            'workDay', 'defaultCurrency', 'currencyCode', 'currencies', 'materialCategories', 'calculatedRemainingBundles', 'totalCashFromShifts',
             // Sales
             'totalSales', 'totalRefunds', 'totalPaymentsReceived', 'netSales',
             // Expenses
