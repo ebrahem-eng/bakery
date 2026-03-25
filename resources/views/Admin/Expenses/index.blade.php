@@ -3,7 +3,7 @@
 @section('content')
 <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
     <div>
-        <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Daily') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-500">{{ __('Expenses') }}</span></h1>
+        <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Daily Expenses') }}</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400">
             {{ __('Track operational outgoings for Active Work Day:') }} 
             <span class="font-bold text-amber-600 dark:text-amber-500">{{ $activeWorkDay->start_time->format('Y-m-d h:i A') }}</span>
@@ -144,7 +144,11 @@
 </div>
 
 <!-- Add Expense Modal -->
-<div x-data="{ open: false, selectedCurrencyId: '{{ $defaultCurrency->id ?? '' }}' }"
+<div x-data="{ 
+         open: false, 
+         selectedCurrencyId: '{{ $defaultCurrency->id ?? '' }}',
+         sypIds: @json($currencies->filter(fn($c) => str_contains($c->code, 'SYP'))->pluck('id'))
+     }"
      @open-expense-modal.window="open = true" 
      x-show="open" 
      class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
@@ -200,8 +204,8 @@
                     </div>
                 </div>
 
-                <!-- Exchange Rate (Shown if selected currency is not default) -->
-                <div x-show="selectedCurrencyId != '{{ $defaultCurrency->id ?? '' }}'" x-transition class="p-4 bg-amber-500/5 border border-amber-500/10 rounded-xl">
+                <!-- Exchange Rate (Shown only for foreign currencies, hidden for any SYP) -->
+                <div x-show="!sypIds.includes(parseInt(selectedCurrencyId))" x-transition class="p-4 bg-amber-500/5 border border-amber-500/10 rounded-xl">
                     <label class="block text-[10px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-widest mb-2">{{ __('Exchange Rate (Relative to ') }}{{ $defaultCurrency->code ?? 'Local' }})</label>
                     <input type="number" step="0.000001" name="exchange_rate" 
                         class="block w-full px-4 py-2 bg-white dark:bg-[#0f1115] border border-amber-500/20 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 transition-all font-mono" 

@@ -96,7 +96,8 @@ A comprehensive management and accounting system built for a 24/7 bakery operati
 - **Status**: Achieved full system-wide consistency for Light/Dark modes and resolved critical Expenses infrastructure gaps.
 - **Action**: 
     - Resolved "White Flash" on load by injecting a blocking theme-check script in the HTML head.
-    - Fixed a critical SQL crash in `ExpenseController` (removed invalid `is_active` filter).
-    - Implemented a dynamic "Exchange Rate" field in the Expenses modal, controlled via Alpine.js.
-    - Built a dedicated "View Details" module for Expenses, including an `admin_id` tracking column (added via migration) to record the logging entity for audit purposes.
+    - Set Syrian Pound (SYPN) as the system's default base currency.
+    - Automated the "Remove 00" rule for Old Syrian Pounds (SYPO) in `ExpenseController` (1 SYPO = 0.01 SYPN).
+    - Refined the Expenses modal to hide the redundant exchange rate field for both SYPN and SYPO, only showing it for foreign currencies like USD.
+    - Built a dedicated "View Details" module for Expenses, including an `admin_id` tracking column.
     - Systematically replaced hardcoded white text and dark backgrounds across all view files with theme-aware utility classes.

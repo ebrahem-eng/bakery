@@ -40,8 +40,17 @@ class ExpenseController extends Controller
 
         $currency = Currency::findOrFail($request->currency_id);
         
-        // Use provided rate, or currency default, or 1.0 for the default system currency
-        $rate = $request->exchange_rate ?? ($currency->is_default ? 1.0 : $currency->exchange_rate);
+        // Automated Conversion Logic
+        $rate = $request->exchange_rate;
+        if (!$rate) {
+            if ($currency->code === 'SYPN' || $currency->is_default) {
+                $rate = 1.0;
+            } elseif ($currency->code === 'SYPO') {
+                $rate = 0.01; // The "Remove 00" rule: 120,000 SYPO = 1,200 SYPN
+            } else {
+                $rate = $currency->exchange_rate;
+            }
+        }
 
         Expense::create([
             'work_day_id' => $activeWorkDay->id,

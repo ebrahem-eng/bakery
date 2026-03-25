@@ -10,7 +10,7 @@ class Expense extends Model
     use HasFactory;
 
     protected $fillable = [
-        'work_day_id', 'category', 'title', 'amount', 
+        'work_day_id', 'admin_id', 'category', 'title', 'amount', 
         'currency_id', 'exchange_rate', 'notes'
     ];
 
@@ -22,5 +22,10 @@ class Expense extends Model
     public function currency()
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class);
     }
 }
