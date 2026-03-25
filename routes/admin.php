@@ -87,7 +87,7 @@ Route::group(['middleware' => ['admin.auth']], function () {
     Route::post('attendance/transaction', [\App\Http\Controllers\Admin\WorkerAttendanceController::class, 'storeTransaction'])->name('attendance.transaction');
 
     // ── Activity Log (Monitoring) ─────────────────────────────────────
-    Route::middleware('permission:view activity log')->group(function () {
+    Route::middleware('permission:view activity log,admin')->group(function () {
         Route::get('activity-log', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::get('activity-log/{activity}', [\App\Http\Controllers\Admin\ActivityLogController::class, 'show'])->name('activity-log.show');
         Route::delete('activity-log/{activity}', [\App\Http\Controllers\Admin\ActivityLogController::class, 'destroy'])->name('activity-log.destroy');
