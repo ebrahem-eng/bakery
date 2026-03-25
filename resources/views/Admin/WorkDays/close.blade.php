@@ -232,7 +232,19 @@
             </div>
             
             @if($workDay->status == 'active')
-            <form action="{{ route('admin.work_days.close', $workDay) }}" method="POST" class="p-5 space-y-5">
+            <form action="{{ route('admin.work_days.close', $workDay) }}" method="POST" class="p-5 space-y-5"
+                  x-data="{
+                      currencyId: '{{ $defaultCurrency->id ?? '' }}',
+                      isLocal: true,
+                      exchangeRate: 1,
+                      setCurrency(id) {
+                          this.currencyId = id;
+                          const currencies = @js($currencies->map(fn($c) => ['id' => $c->id, 'is_default' => $c->is_default, 'exchange_rate' => $c->exchange_rate]));
+                          const found = currencies.find(c => c.id == id);
+                          this.isLocal = found ? found.is_default : true;
+                          this.exchangeRate = found ? found.exchange_rate : 1;
+                      }
+                  }">
                 @csrf
                 
                 <input type="hidden" name="total_expenses_at_close" value="{{ $totalExpenses }}">
@@ -250,17 +262,28 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2">
-                        {{ __('Carried Over Bundles (Unsold)') }}
-                        <span class="text-red-500">*</span>
-                    </label>
-                    <input type="number" name="carried_over_bundles" required min="0" value="{{ old('carried_over_bundles', $calculatedRemainingBundles) }}"
-                        class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-amber-500/30 rounded-xl text-lg text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-bold"
-                        placeholder="0">
-                    <p class="mt-1 text-[10px] text-slate-500">{{ __('Auto-calculated from shift returns. Adjust if needed.') }}</p>
+                {{-- Auto-Calculated Bundles (Read-Only) --}}
+                <div class="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">{{ __('Carried Over Bundles (Unsold)') }}</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">{{ __('Auto-calculated from shift returns.') }}</p>
+                        </div>
+                        <span class="text-2xl font-black text-blue-600 dark:text-blue-400">{{ $calculatedRemainingBundles }}</span>
+                    </div>
                 </div>
 
+                {{-- Cash Collected from Shifts Summary --}}
+                @if($totalCashFromShifts > 0)
+                <div class="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5">
+                    <div class="flex justify-between items-center">
+                        <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{{ __('Cash Collected from Shifts') }}</p>
+                        <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400">{{ number_format($totalCashFromShifts, 2) }} {{ __($currencyCode) }}</span>
+                    </div>
+                </div>
+                @endif
+
+                {{-- Carried Over Cash --}}
                 <div>
                     <label class="block text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2">
                         {{ __('Carried Over Cash Balance') }}
@@ -270,11 +293,31 @@
                         <input type="number" step="0.01" name="carried_over_money" required min="0" value="{{ old('carried_over_money') }}"
                             class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-amber-500/30 rounded-xl text-lg text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-bold"
                             placeholder="0.00">
-                        <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'left-0 pl-4' : 'right-0 pr-4' }} flex items-center pointer-events-none">
-                            <span class="text-slate-500 text-sm font-bold">{{ __($currencyCode) }}</span>
-                        </div>
                     </div>
                     <p class="mt-1 text-[10px] text-slate-500">{{ __('Physical cash left in the drawer for the next work day.') }}</p>
+                </div>
+
+                {{-- Currency Selection --}}
+                <div>
+                    <label class="block text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2">
+                        {{ __('Currency') }}
+                    </label>
+                    <select name="carried_over_currency_id" x-model="currencyId" @change="setCurrency($event.target.value)"
+                        class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-amber-500/30 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-medium appearance-none">
+                        @foreach($currencies as $curr)
+                            <option value="{{ $curr->id }}" {{ $curr->is_default ? 'selected' : '' }}>{{ $curr->code }} - {{ $curr->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Exchange Rate (if non-local) --}}
+                <div x-show="!isLocal" x-transition>
+                    <label class="block text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2">
+                        {{ __('Exchange Rate') }}
+                    </label>
+                    <input type="number" step="0.01" name="carried_over_exchange_rate" :value="exchangeRate" min="0"
+                        class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-amber-500/30 rounded-xl text-lg text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-bold"
+                        placeholder="1.00">
                 </div>
 
                 <div class="pt-2">
@@ -293,7 +336,7 @@
                 </div>
                 <div class="p-4 rounded-xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0f1115]">
                     <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">{{ __('Carried Over Cash Balance') }}</p>
-                    <p class="text-slate-900 dark:text-white font-bold text-xl">{{ number_format($workDay->carried_over_money, 2) }} {{ __($currencyCode) }}</p>
+                    <p class="text-slate-900 dark:text-white font-bold text-xl">{{ number_format($workDay->carried_over_money, 2) }} {{ $workDay->carriedOverCurrency ? $workDay->carriedOverCurrency->code : __($currencyCode) }}</p>
                 </div>
                 <p class="text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-widest text-xs py-2">{{ __('Work day is already closed.') }}</p>
             </div>
@@ -302,3 +345,4 @@
     </div>
 </div>
 @endsection
+

@@ -141,7 +141,19 @@
                         {{ __('Add Transaction') }}
                     </button>
                     
-                    <form action="{{ route('admin.attendance.clock_out', $activeShift->id) }}" method="POST" class="flex-1 space-y-2">
+                    <form action="{{ route('admin.attendance.clock_out', $activeShift->id) }}" method="POST" class="flex-1 space-y-2"
+                          x-data="{ 
+                              cashCurrencyId: '', 
+                              isLocal: true,
+                              exchangeRate: 1,
+                              setCurrency(id) {
+                                  this.cashCurrencyId = id;
+                                  const curr = @js($currencies->map(fn($c) => ['id' => $c->id, 'is_default' => $c->is_default, 'exchange_rate' => $c->exchange_rate]));
+                                  const found = curr.find(c => c.id == id);
+                                  this.isLocal = found ? found.is_default : true;
+                                  this.exchangeRate = found ? found.exchange_rate : 1;
+                              }
+                          }">
                         @csrf
                         <div>
                             <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Bundles Returned') }}</label>
@@ -149,6 +161,35 @@
                                 class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium"
                                 placeholder="0">
                         </div>
+
+                        {{-- Cash Collected --}}
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Cash Collected') }}</label>
+                            <input type="number" step="0.01" name="cash_collected" value="0" min="0" 
+                                class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium"
+                                placeholder="0.00">
+                        </div>
+
+                        {{-- Cash Currency --}}
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Currency') }}</label>
+                            <select name="cash_currency_id" x-model="cashCurrencyId" @change="setCurrency($event.target.value)"
+                                class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium appearance-none">
+                                <option value="">{{ __('Select Currency...') }}</option>
+                                @foreach($currencies as $curr)
+                                    <option value="{{ $curr->id }}" {{ $curr->is_default ? 'selected' : '' }}>{{ $curr->code }} - {{ $curr->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Exchange Rate (only for non-local) --}}
+                        <div x-show="!isLocal" x-transition>
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Exchange Rate') }}</label>
+                            <input type="number" step="0.01" name="cash_exchange_rate" :value="exchangeRate" min="0"
+                                class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium"
+                                placeholder="1.00">
+                        </div>
+
                         <button type="submit" class="w-full py-2.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-600 dark:text-amber-500 border border-amber-500/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors focus:ring-2 focus:ring-amber-500">
                             {{ __('Clock Out') }}
                         </button>

@@ -21,6 +21,9 @@ class WorkerShift extends Model
         'snapshot_exchange_rate',
         'bundles_received',
         'bundles_returned',
+        'cash_collected',
+        'cash_currency_id',
+        'cash_exchange_rate',
         'admin_id',
         'notes'
     ];
@@ -57,5 +60,10 @@ class WorkerShift extends Model
     public function admin()
     {
         return $this->belongsTo(Admin::class);
+    }
+
+    public function cashCurrency()
+    {
+        return $this->belongsTo(Currency::class, 'cash_currency_id');
     }
 }

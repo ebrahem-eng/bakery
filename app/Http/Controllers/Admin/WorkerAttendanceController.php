@@ -7,6 +7,7 @@ use App\Models\Worker;
 use App\Models\WorkerShift;
 use App\Models\WorkerTransaction;
 use App\Models\WorkDay;
+use App\Models\Currency;
 use Illuminate\Http\Request;
 
 class WorkerAttendanceController extends Controller
@@ -28,7 +29,9 @@ class WorkerAttendanceController extends Controller
             'currency'
         ])->get();
 
-        return view('Admin.Attendance.index', compact('workers', 'activeWorkDay'));
+        $currencies = Currency::all();
+
+        return view('Admin.Attendance.index', compact('workers', 'activeWorkDay', 'currencies'));
     }
 
     public function clockIn(Request $request)
@@ -78,9 +81,28 @@ class WorkerAttendanceController extends Controller
             return back()->with('error_message', __('Worker is already clocked out.'));
         }
 
+        $request->validate([
+            'bundles_returned' => 'nullable|integer|min:0',
+            'cash_collected' => 'nullable|numeric|min:0',
+            'cash_currency_id' => 'nullable|exists:currencies,id',
+            'cash_exchange_rate' => 'nullable|numeric|min:0',
+        ]);
+
+        // Resolve exchange rate
+        $cashExchangeRate = 1;
+        if ($request->cash_currency_id) {
+            $currency = Currency::find($request->cash_currency_id);
+            if ($currency && !$currency->is_default) {
+                $cashExchangeRate = $request->cash_exchange_rate ?? $currency->exchange_rate;
+            }
+        }
+
         $shift->update([
             'check_out' => now(),
             'bundles_returned' => $request->bundles_returned ?? 0,
+            'cash_collected' => $request->cash_collected ?? 0,
+            'cash_currency_id' => $request->cash_currency_id,
+            'cash_exchange_rate' => $cashExchangeRate,
         ]);
 
         return back()->with('success_message', __('Worker clocked out successfully.'));

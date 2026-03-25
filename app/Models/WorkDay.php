@@ -13,7 +13,8 @@ class WorkDay extends Model
     protected $fillable = [
         'start_time', 'end_time', 'status', 'is_holiday', 'holiday_reason',
         'opened_by', 'closed_by', 'total_expenses_at_close', 'total_sales_at_close',
-        'carried_over_bundles', 'carried_over_money'
+        'carried_over_bundles', 'carried_over_money',
+        'carried_over_currency_id', 'carried_over_exchange_rate'
     ];
 
     protected $casts = [
@@ -74,5 +75,10 @@ class WorkDay extends Model
     public function supplies()
     {
         return $this->hasMany(Supply::class);
+    }
+
+    public function carriedOverCurrency()
+    {
+        return $this->belongsTo(Currency::class, 'carried_over_currency_id');
     }
 }

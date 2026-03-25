@@ -112,8 +112,16 @@ class WorkDayController extends Controller
         $calculatedRemainingBundles = $previousCarryOverBundles + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors;
         if ($calculatedRemainingBundles < 0) $calculatedRemainingBundles = 0;
 
+        // ── Currencies for settlement form ────────────────────────────
+        $currencies = \App\Models\Currency::all();
+
+        // ── Cash collected from shifts ────────────────────────────────
+        $totalCashFromShifts = $workDay->workerShifts->sum(function($s) {
+            return $s->cash_collected * $s->cash_exchange_rate;
+        });
+
         return view('Admin.WorkDays.close', compact(
-            'workDay', 'defaultCurrency', 'currencyCode',
+            'workDay', 'defaultCurrency', 'currencyCode', 'currencies',
             // Sales
             'totalSales', 'totalRefunds', 'totalPaymentsReceived', 'netSales',
             // Expenses
@@ -123,18 +131,46 @@ class WorkDayController extends Controller
             // Bundles
             'bundlesDistributed', 'bundlesReturnedByDistributors',
             'bundlesReceivedByShifts', 'bundlesReturnedByShifts',
-            'previousCarryOverBundles', 'calculatedRemainingBundles'
+            'previousCarryOverBundles', 'calculatedRemainingBundles',
+            // Cash
+            'totalCashFromShifts'
         ));
     }
 
     public function close(Request $request, WorkDay $workDay)
     {
         $request->validate([
-            'carried_over_bundles' => 'required|integer|min:0',
             'carried_over_money' => 'required|numeric|min:0',
+            'carried_over_currency_id' => 'nullable|exists:currencies,id',
+            'carried_over_exchange_rate' => 'nullable|numeric|min:0',
             'total_expenses_at_close' => 'required|numeric',
             'total_sales_at_close' => 'required|numeric',
         ]);
+
+        // Auto-calculate bundles from shift data
+        $workDay->load(['workerShifts', 'distributions', 'distributorReturns']);
+        
+        $bundlesReturnedByShifts = $workDay->workerShifts->sum('bundles_returned');
+        $bundlesDistributed = $workDay->distributions->sum('bundle_count');
+        $bundlesReturnedByDistributors = $workDay->distributorReturns->sum('bundle_count');
+        
+        $previousDay = WorkDay::where('status', 'closed')
+            ->where('id', '<', $workDay->id)
+            ->orderBy('id', 'desc')
+            ->first();
+        $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
+        
+        $calculatedBundles = $previousCarryOverBundles + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors;
+        if ($calculatedBundles < 0) $calculatedBundles = 0;
+
+        // Resolve exchange rate
+        $exchangeRate = 1;
+        if ($request->carried_over_currency_id) {
+            $currency = \App\Models\Currency::find($request->carried_over_currency_id);
+            if ($currency && !$currency->is_default) {
+                $exchangeRate = $request->carried_over_exchange_rate ?? $currency->exchange_rate;
+            }
+        }
 
         $workDay->update([
             'status' => 'closed',
@@ -142,8 +178,10 @@ class WorkDayController extends Controller
             'closed_by' => auth()->guard('admin')->id(),
             'total_expenses_at_close' => $request->total_expenses_at_close,
             'total_sales_at_close' => $request->total_sales_at_close,
-            'carried_over_bundles' => $request->carried_over_bundles,
+            'carried_over_bundles' => $calculatedBundles,
             'carried_over_money' => $request->carried_over_money,
+            'carried_over_currency_id' => $request->carried_over_currency_id,
+            'carried_over_exchange_rate' => $exchangeRate,
         ]);
 
         return redirect()->route('admin.work_days.index')->with('success_message', __('Work Day closed successfully. All operations frozen.'));

@@ -656,5 +656,10 @@
     "Auto-calculated from shift returns. Adjust if needed.": "محسوب تلقائياً من مرتجعات الورديات. عدّل إذا لزم الأمر.",
     "Physical cash left in the drawer for the next work day.": "النقد المادي المتبقي في الدرج ليوم العمل التالي.",
     "Confirm remaining bread bundles and cash for the next work day.": "تأكيد الربطات المتبقية والنقد ليوم العمل التالي.",
-    "WARNING: Closing a work day freezes all sales, expenses, and HR shifts permanently. Proceed?": "تحذير: إغلاق يوم العمل يجمّد جميع المبيعات والمصاريف والورديات نهائياً. هل تريد المتابعة؟"
+    "WARNING: Closing a work day freezes all sales, expenses, and HR shifts permanently. Proceed?": "تحذير: إغلاق يوم العمل يجمّد جميع المبيعات والمصاريف والورديات نهائياً. هل تريد المتابعة؟",
+    "Cash Collected": "النقد المُحصّل",
+    "Cash Currency": "عملة النقد",
+    "Carried Over Currency": "عملة الترحيل",
+    "Auto-calculated from shift returns.": "محسوب تلقائياً من مرتجعات الورديات.",
+    "Cash Collected from Shifts": "النقد المُحصّل من الورديات"
 }
