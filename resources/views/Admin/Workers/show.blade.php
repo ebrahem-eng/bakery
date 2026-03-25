@@ -23,7 +23,7 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <!-- Total Earned -->
     <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
-        <div class="absolute top-0 right-0 rtl:right-auto rtl:left-0 p-3 opacity-10 group-hover:scale-110 transition-transform">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform">
             <svg class="w-12 h-12 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         </div>
         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Total Earned') }}</h3>
@@ -35,7 +35,7 @@
 
     <!-- Total Advances/Payments -->
     <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group border-sky-500/20">
-        <div class="absolute top-0 right-0 rtl:right-auto rtl:left-0 p-3 opacity-10 group-hover:scale-110 transition-transform text-sky-500">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform text-sky-500">
             <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
         </div>
         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Advances & Payments') }}</h3>
@@ -47,7 +47,7 @@
 
     <!-- Total Discounts -->
     <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group border-amber-500/20">
-        <div class="absolute top-0 right-0 rtl:right-auto rtl:left-0 p-3 opacity-10 group-hover:scale-110 transition-transform text-amber-500">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform text-amber-500">
             <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
         </div>
         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Total Discounts') }}</h3>
@@ -59,7 +59,7 @@
 
     <!-- Net Balance -->
     <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group border-[#0ea5e9]/30 bg-gradient-to-br from-[#0ea5e9]/5 to-transparent">
-        <div class="absolute top-0 right-0 rtl:right-auto rtl:left-0 p-3 opacity-20 group-hover:scale-110 transition-transform text-[#0ea5e9]">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-20 group-hover:scale-110 transition-transform text-[#0ea5e9]">
             <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         </div>
         <h3 class="text-xs font-bold text-[#0ea5e9] uppercase tracking-widest mb-1">{{ __('Net Balance') }}</h3>
