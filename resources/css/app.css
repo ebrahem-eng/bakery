@@ -9,6 +9,8 @@
     --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 .glass-panel {
     background-color: rgba(255, 255, 255, 1);
     border: 1px solid rgba(226, 232, 240, 1);

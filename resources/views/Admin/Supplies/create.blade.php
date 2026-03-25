@@ -11,7 +11,7 @@
     
     <!-- Top Level Invoice Data -->
     <div class="glass-panel p-6 rounded-2xl mb-6">
-        <label class="block text-sm font-bold text-slate-300 mb-2">{{ __('Select Supplier') }}</label>
+        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Select Supplier') }}</label>
         <select name="supplier_id" x-model="supplier_id" required class="glass-input block w-full lg:w-1/2 px-4 py-3 rounded-xl focus:ring-[#eab308]">
             <option value="">{{ __('Select Supplier...') }}</option>
             @foreach($suppliers as $supplier)
@@ -23,7 +23,7 @@
     <!-- Items Array -->
     <div class="space-y-6">
         <template x-for="(item, index) in items" :key="item.id">
-            <div class="glass-panel p-6 rounded-2xl border border-white/10 relative overflow-hidden transition-all hover:border-white/20">
+            <div class="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-white/10 relative overflow-hidden transition-all hover:border-amber-500/30 dark:hover:border-white/20">
                 <!-- Delete Button -->
                 <button type="button" @click="removeItem(index)" class="absolute top-4 {{ app()->getLocale() == 'ar' ? 'left-4' : 'right-4' }} text-red-400 hover:text-red-300" title="{{ __('Remove Item') }}">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -62,16 +62,16 @@
                 </div>
 
                 <!-- Dynamic Polymorphic Fields -->
-                <div class="p-4 bg-black/20 rounded-xl mb-4 border border-white/5">
+                <div class="p-4 bg-slate-100/50 dark:bg-black/20 rounded-xl mb-4 border border-slate-200 dark:border-white/5">
                     <!-- FLOUR LOGIC -->
                     <template x-if="item.category_name === 'طحين'">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs text-slate-300 mb-1">{{ __('Weight in Tons (1000kg)') }}</label>
+                                <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Weight in Tons (1000kg)') }}</label>
                                 <input type="number" step="0.001" x-bind:name="`supplies[${index}][quantity]`" x-model="item.quantity" class="glass-input w-full px-3 py-2 rounded-lg text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-300 mb-1">{{ __('Flour Type (e.g Zero, Number 1)') }}</label>
+                                <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Flour Type (e.g Zero, Number 1)') }}</label>
                                 <input type="text" x-bind:name="`supplies[${index}][material_type_name]`" x-model="item.material_type_name" class="glass-input w-full px-3 py-2 rounded-lg text-sm">
                             </div>
                         </div>
@@ -81,11 +81,11 @@
                     <template x-if="item.category_name === 'خميرة'">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-xs text-slate-300 mb-1">{{ __('Boxes Count') }}</label>
+                                <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Boxes Count') }}</label>
                                 <input type="number" step="1" x-bind:name="`supplies[${index}][boxes_count]`" x-model="item.boxes_count" class="glass-input w-full px-3 py-2 rounded-lg text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-300 mb-1">{{ __('Weight per Box (kg)') }}</label>
+                                <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Weight per Box (kg)') }}</label>
                                 <input type="number" step="0.01" x-bind:name="`supplies[${index}][box_weight]`" x-model="item.box_weight" class="glass-input w-full px-3 py-2 rounded-lg text-sm">
                             </div>
                             <div class="flex flex-col justify-end">
@@ -100,7 +100,7 @@
                     <!-- DIESEL / SALT LOGIC -->
                     <template x-if="item.category_name === 'مازوت' || item.category_name === 'ملح'">
                         <div>
-                            <label class="block text-xs text-slate-300 mb-1" x-text="item.category_name === 'مازوت' ? '{{ __('Total Liters') }}' : '{{ __('Total Kilos') }}'"></label>
+                            <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1" x-text="item.category_name === 'مازوت' ? '{{ __('Total Liters') }}' : '{{ __('Total Kilos') }}'"></label>
                             <input type="number" step="0.01" x-bind:name="`supplies[${index}][quantity]`" x-model="item.quantity" class="glass-input w-full md:w-1/2 px-3 py-2 rounded-lg text-sm">
                         </div>
                     </template>
@@ -117,8 +117,8 @@
                         <textarea x-bind:name="`supplies[${index}][notes]`" x-model="item.notes" rows="2" class="glass-input w-full px-3 py-2 rounded-lg text-sm"></textarea>
                     </div>
 
-                    <div class="lg:col-span-5 bg-white/5 p-3 rounded-xl border border-white/10">
-                        <div class="text-xs font-bold text-slate-300 mb-2">{{ __('Unloading Specifications') }}</div>
+                    <div class="lg:col-span-12 bg-slate-100 dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/10">
+                        <div class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Unloading Specifications') }}</div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">{{ __('Fee Paid By') }}</label>
@@ -147,8 +147,8 @@
 
                     <div class="lg:col-span-4 flex flex-col justify-between h-full">
                         <div class="text-right">
-                            <div class="text-[10px] text-slate-400 uppercase tracking-wider">{{ __('Total Native Cost') }}</div>
-                            <div class="text-xl font-bold font-mono text-white" x-text="item.total_cost.toLocaleString(undefined, {minimumFractionDigits: 2})"></div>
+                            <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Total Native Cost') }}</div>
+                            <div class="text-xl font-bold font-mono text-slate-900 dark:text-white" x-text="item.total_cost.toLocaleString(undefined, {minimumFractionDigits: 2})"></div>
                         </div>
                         <div class="mt-2">
                             <label class="block text-[10px] text-emerald-400 mb-1 {{ app()->getLocale() == 'ar' ? 'text-right' : 'text-left' }}">{{ __('Amount Paid From Register') }}</label>
@@ -167,8 +167,8 @@
     </div>
 
     <!-- Actions -->
-    <div class="mt-6 flex flex-col sm:flex-row justify-between items-center bg-black/20 p-4 rounded-2xl border border-white/5">
-        <button type="button" @click="addItem()" class="bg-white/5 hover:bg-white/10 text-white transition-all px-4 py-2 rounded-xl text-sm font-medium flex items-center mb-4 sm:mb-0 border border-white/10">
+    <div class="mt-6 flex flex-col sm:flex-row justify-between items-center bg-slate-100 dark:bg-black/20 p-4 rounded-2xl border border-slate-200 dark:border-white/5">
+        <button type="button" @click="addItem()" class="bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-slate-900 dark:text-white transition-all px-4 py-2 rounded-xl text-sm font-medium flex items-center mb-4 sm:mb-0 border border-slate-200 dark:border-white/10">
             <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
             {{ __('Add Another Material') }}
         </button>
