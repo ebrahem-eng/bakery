@@ -112,39 +112,39 @@
         </div>
 
         <!-- Full Transaction History with Filters -->
-        <div x-data="{ filterType: '', searchRef: '' }" class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
+        <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
             <div class="p-6 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                         <span class="w-1.5 h-5 bg-amber-500 rounded-full"></span>
                         {{ __('Full Transaction History') }}
                     </h3>
-                    <button @click="filterType = ''; searchRef = ''" class="text-[10px] uppercase tracking-widest font-bold text-slate-500 hover:text-amber-500 transition-colors">{{ __('Reset All') }}</button>
+                    <a href="{{ route('admin.distributors.show', $distributor) }}" class="text-[10px] uppercase tracking-widest font-bold text-slate-500 hover:text-amber-500 transition-colors">{{ __('Reset All') }}</a>
                 </div>
                 
-                <!-- Filter Controls -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <!-- Filter Controls (Server Side) -->
+                <form action="{{ route('admin.distributors.show', $distributor) }}" method="GET" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <!-- Search Reference -->
                     <div class="sm:col-span-2">
                         <div class="relative">
                             <svg class="w-4 h-4 text-slate-400 absolute top-1/2 -translate-y-1/2 {{ app()->getLocale() == 'ar' ? 'right-3' : 'left-3' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
-                            <input type="text" x-model="searchRef" placeholder="{{ __('Search by reference or note...') }}" class="block w-full {{ app()->getLocale() == 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4' }} py-2.5 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm placeholder-slate-400 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search by reference or note...') }}" class="block w-full {{ app()->getLocale() == 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4' }} py-2.5 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm placeholder-slate-400 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all">
                         </div>
                     </div>
                     
                     <!-- Type Filter -->
-                    <div>
-                        <select x-model="filterType" class="block w-full px-4 py-2.5 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all appearance-none">
+                    <div class="relative">
+                        <select name="type" onchange="this.form.submit()" class="block w-full px-4 py-2.5 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all appearance-none">
                             <option value="">{{ __('All Transactions') }}</option>
-                            <option value="Sale">{{ __('Sales Only') }}</option>
-                            <option value="Payment">{{ __('Payments Only') }}</option>
-                            <option value="Return">{{ __('Returns Only') }}</option>
-                            <option value="Discount">{{ __('Discounts Only') }}</option>
+                            <option value="Sale" {{ request('type') == 'Sale' ? 'selected' : '' }}>{{ __('Sales Only') }}</option>
+                            <option value="Payment" {{ request('type') == 'Payment' ? 'selected' : '' }}>{{ __('Payments Only') }}</option>
+                            <option value="Return" {{ request('type') == 'Return' ? 'selected' : '' }}>{{ __('Returns Only') }}</option>
+                            <option value="Discount" {{ request('type') == 'Discount' ? 'selected' : '' }}>{{ __('Discounts Only') }}</option>
                         </select>
                     </div>
-                </div>
+                </form>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -161,77 +161,8 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-white/5">
-                        @php
-                            $activities = collect();
-                            // 1. Sales (Charges)
-                            foreach($distributor->distributions as $d) {
-                                // The Sale itself (Full Price)
-                                $activities->push([
-                                    'date' => $d->created_at,
-                                    'type' => 'Sale',
-                                    'ref' => '#'.$d->id . ' - ' . $d->bundle_count . ' ' . __('Bundles'),
-                                    'debit' => $d->total_price,
-                                    'credit' => 0,
-                                    'color' => 'blue',
-                                    'admin' => $d->createdBy ? $d->createdBy->first_name : '--'
-                                ]);
-                                
-                                // The initial payment (if any)
-                                if($d->amount_paid > 0) {
-                                    $activities->push([
-                                        'date' => $d->created_at->addSecond(),
-                                        'type' => 'Payment',
-                                        'ref' => __('Down Payment for') . ' #' . $d->id,
-                                        'debit' => 0,
-                                        'credit' => $d->amount_paid,
-                                        'color' => 'emerald',
-                                        'admin' => $d->createdBy ? $d->createdBy->first_name : '--'
-                                    ]);
-                                }
-                            }
-                            
-                            // 2. Returns
-                            foreach($distributor->returns as $r) {
-                                $activities->push([
-                                    'date' => $r->created_at,
-                                    'type' => 'Return',
-                                    'ref' => '#'.$r->id . ' - ' . $r->bundle_count . ' ' . __('Bundles'),
-                                    'debit' => 0,
-                                    'credit' => $r->total_refund,
-                                    'color' => 'amber',
-                                    'admin' => $r->createdBy ? $r->createdBy->first_name : '--'
-                                ]);
-                            }
-                            
-                            // 3. Independent Ledger Transactions
-                            foreach($distributor->transactions as $t) {
-                                $activities->push([
-                                    'date' => $t->created_at,
-                                    'type' => ucfirst($t->type),
-                                    'ref' => $t->notes ?? __('Direct Transaction'),
-                                    'debit' => 0,
-                                    'credit' => $t->amount,
-                                    'color' => $t->type == 'payment' ? 'emerald' : ($t->type == 'discount' ? 'rose' : 'slate'),
-                                    'admin' => $t->createdBy ? $t->createdBy->first_name : '--'
-                                ]);
-                            }
-                            
-                            // Sort by date to calculate running balance
-                            $runningBalance = 0;
-                            $counter = 0;
-                            $displayActivities = $activities->sortBy('date')->map(function($activity) use (&$runningBalance, &$counter) {
-                                $counter++;
-                                $runningBalance += ($activity['debit'] - $activity['credit']);
-                                $activity['running_balance'] = $runningBalance;
-                                $activity['index'] = $counter;
-                                return $activity;
-                            })->reverse();
-                        @endphp
-
-                        @forelse($displayActivities as $activity)
-                        <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
-                            x-show="(filterType === '' || '{{ $activity['type'] }}' === filterType) && (searchRef === '' || '{{ addslashes(strtolower($activity['ref'])) }}'.includes(searchRef.toLowerCase()))"
-                            x-transition>
+                        @forelse($history as $activity)
+                        <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                             <td class="p-4 text-xs text-slate-400 font-mono">{{ $activity['index'] }}</td>
                             <td class="p-4 text-xs text-slate-500 whitespace-nowrap">{{ $activity['date']->format('Y-m-d H:i') }}</td>
                             <td class="p-4">
@@ -262,6 +193,15 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+            
+            <div class="px-6 py-4 bg-slate-50 dark:bg-black/20 border-t border-slate-200 dark:border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="text-xs text-slate-500 font-medium">
+                    {{ __('Showing') }} {{ $history->firstItem() ?? 0 }} {{ __('to') }} {{ $history->lastItem() ?? 0 }} {{ __('of') }} {{ $history->total() }} {{ __('transactions') }}
+                </div>
+                <div>
+                    {{ $history->links() }}
+                </div>
             </div>
         </div>
     </div>
