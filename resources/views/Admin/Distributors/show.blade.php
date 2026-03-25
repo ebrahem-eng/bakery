@@ -5,7 +5,7 @@
     <div>
         <div class="flex items-center gap-3 mb-1">
             <a href="{{ route('admin.distributors.index') }}" class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-500 hover:text-amber-500 transition-colors">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'rotate-180' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
             </a>
@@ -30,7 +30,7 @@
     <!-- Left Column: Primary Info -->
     <div class="lg:col-span-1 space-y-6">
         <div class="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-white/5 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10">
+            <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-4 opacity-10">
                 <svg class="w-20 h-20 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                 </svg>
@@ -136,7 +136,7 @@
                                 $activities->push([
                                     'date' => $d->created_at,
                                     'type' => 'Sale',
-                                    'ref' => '#'.$d->id . ' - ' . $d->bundle_count . ' Bundles',
+                                    'ref' => '#'.$d->id . ' - ' . $d->bundle_count . ' ' . __('Bundles'),
                                     'amount' => $d->total_price,
                                     'color' => 'blue'
                                 ]);
@@ -145,7 +145,7 @@
                                 $activities->push([
                                     'date' => $r->created_at,
                                     'type' => 'Return',
-                                    'ref' => '#'.$r->id . ' - ' . $r->bundle_count . ' Bundles',
+                                    'ref' => '#'.$r->id . ' - ' . $r->bundle_count . ' ' . __('Bundles'),
                                     'amount' => -$r->total_refund,
                                     'color' => 'amber'
                                 ]);
