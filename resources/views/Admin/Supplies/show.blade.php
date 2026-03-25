@@ -75,18 +75,18 @@
             
             <div class="flex justify-between items-end mb-4">
                 <div class="text-xs text-slate-500 dark:text-slate-400">{{ __('Unit Price') }}</div>
-                <div class="text-sm font-bold text-slate-900 dark:text-white font-mono">{{ number_format($supply->unit_price, 2) }} {{ $supply->currency->symbol }}</div>
+                <div class="text-sm font-bold text-slate-900 dark:text-white font-mono">{{ number_format($supply->unit_price, 2) }} {{ $supply->currency->code ?? '' }}</div>
             </div>
             
             <div class="flex justify-between items-end mb-4">
                 <div class="text-xs text-slate-500 dark:text-slate-400">{{ __('Total Invoice Cost') }}</div>
-                <div class="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">{{ number_format($supply->total_cost, 2) }} {{ $supply->currency->symbol }}</div>
+                <div class="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">{{ number_format($supply->total_cost, 2) }} {{ $supply->currency->code ?? '' }}</div>
             </div>
 
             <div class="flex justify-between items-end mb-6 pb-6 border-b border-slate-200 dark:border-white/5">
                 <div class="text-xs text-slate-500 dark:text-slate-400">{{ __('Amount Paid') }}</div>
                 <div class="text-sm font-bold {{ $supply->paid_amount < $supply->total_cost ? 'text-red-500 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400' }} font-mono">
-                    {{ number_format($supply->paid_amount, 2) }} {{ $supply->currency->symbol }}
+                    {{ number_format($supply->paid_amount, 2) }} {{ $supply->currency->code ?? '' }}
                 </div>
             </div>
 
@@ -99,7 +99,7 @@
                 </div>
                 <div class="flex justify-between items-center mb-1">
                     <span class="text-[10px] text-slate-500">{{ __('Fee Amount') }}</span>
-                    <span class="text-xs font-bold font-mono text-slate-900 dark:text-white">{{ number_format($supply->unloading_fee, 2) }} {{ $supply->unloadingFeeCurrency->symbol ?? '' }}</span>
+                    <span class="text-xs font-bold font-mono text-slate-900 dark:text-white">{{ number_format($supply->unloading_fee, 2) }} {{ $supply->unloadingFeeCurrency->code ?? '' }}</span>
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-[10px] text-slate-500">{{ __('Exchange Rate') }}</span>

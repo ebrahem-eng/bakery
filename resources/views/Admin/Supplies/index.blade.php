@@ -53,11 +53,11 @@
                         @if($supply->boxes_count)
                             <div class="text-[10px] text-slate-500 mt-1 font-mono">{{ $supply->boxes_count }} {{ __('Boxes') }} × {{ $supply->box_weight }} {{ __('KG') }}</div>
                         @endif
-                        <div class="text-[11px] text-slate-500 mt-1">{{ __('At') }} {{ number_format($supply->unit_price, 2) }} {{ $supply->currency->symbol }} / {{ __('Unit') }}</div>
+                        <div class="text-[11px] text-slate-500 mt-1">{{ __('At') }} {{ number_format($supply->unit_price, 2) }} {{ $supply->currency->code ?? '' }} / {{ __('Unit') }}</div>
                     </td>
                     <td class="py-3 px-4 text-right">
                         <div class="text-sm font-bold text-slate-900 dark:text-white font-mono">
-                            {{ number_format($supply->total_cost, 2) }} {{ $supply->currency->symbol }}
+                            {{ number_format($supply->total_cost, 2) }} {{ $supply->currency->code ?? '' }}
                         </div>
                         @if($supply->paid_amount < $supply->total_cost)
                             <div class="text-[10px] text-red-500 mt-1 font-bold tracking-wider">{{ __('Unpaid:') }} {{ number_format($supply->total_cost - $supply->paid_amount, 2) }} {{ $supply->currency->code }}</div>

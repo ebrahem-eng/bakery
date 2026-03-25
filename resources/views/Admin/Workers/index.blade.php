@@ -38,7 +38,7 @@
                     </td>
                     <td class="py-3 px-4">
                         <span class="px-2 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs rounded-md border border-emerald-500/20 font-bold whitespace-nowrap">
-                            {{ number_format($worker->daily_wage, 2) }} {{ $worker->currency?->symbol ?? '' }}
+                            {{ number_format($worker->daily_wage, 2) }} {{ $worker->currency?->code ?? '' }}
                         </span>
                     </td>
                     <td class="py-3 px-4">
