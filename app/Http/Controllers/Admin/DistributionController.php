@@ -51,6 +51,7 @@ class DistributionController extends Controller
             'exchange_rate' => $rate,
             'amount_paid' => $request->amount_paid,
             'notes' => $request->notes,
+            'created_by' => auth('admin')->id(),
         ]);
 
         return back()->with('success_message', __('Distribution recorded successfully.'));
@@ -81,6 +82,7 @@ class DistributionController extends Controller
             'currency_id' => $distributor->preferred_currency_id,
             'exchange_rate' => $rate,
             'notes' => $request->notes,
+            'created_by' => auth('admin')->id(),
         ]);
 
         return back()->with('success_message', __('Returns recorded successfully.'));
@@ -109,6 +111,7 @@ class DistributionController extends Controller
             'currency_id' => $distributor->preferred_currency_id,
             'exchange_rate' => $rate,
             'notes' => $request->notes,
+            'created_by' => auth('admin')->id(),
         ]);
 
         return back()->with('success_message', __('Transaction recorded successfully.'));

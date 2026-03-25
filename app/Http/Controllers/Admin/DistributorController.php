@@ -52,7 +52,7 @@ class DistributorController extends Controller
 
     public function show(Distributor $distributor)
     {
-        $distributor->load(['mobiles', 'currency', 'distributions', 'returns', 'transactions']);
+        $distributor->load(['mobiles', 'currency', 'distributions.createdBy', 'returns.createdBy', 'transactions.createdBy']);
         return view('Admin.Distributors.show', compact('distributor'));
     }
 

@@ -12,7 +12,7 @@ class Distribution extends Model
     protected $fillable = [
         'distributor_id', 'work_day_id', 'bundle_count',
         'price_per_bundle', 'total_price', 'currency_id',
-        'exchange_rate', 'amount_paid', 'notes'
+        'exchange_rate', 'amount_paid', 'notes', 'created_by'
     ];
 
     public function distributor()
@@ -28,5 +28,10 @@ class Distribution extends Model
     public function currency()
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(Admin::class, 'created_by');
     }
 }

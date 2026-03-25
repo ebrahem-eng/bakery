@@ -154,6 +154,7 @@
                             <th class="p-4">{{ __('Date') }}</th>
                             <th class="p-4">{{ __('Type') }}</th>
                             <th class="p-4">{{ __('Reference') }}</th>
+                            <th class="p-4">{{ __('Created By') }}</th>
                             <th class="p-4 text-right">{{ __('Debit') }} (+)</th>
                             <th class="p-4 text-right">{{ __('Credit') }} (-)</th>
                             <th class="p-4 text-right bg-slate-100/50 dark:bg-white/5">{{ __('Balance') }}</th>
@@ -171,7 +172,8 @@
                                     'ref' => '#'.$d->id . ' - ' . $d->bundle_count . ' ' . __('Bundles'),
                                     'debit' => $d->total_price,
                                     'credit' => 0,
-                                    'color' => 'blue'
+                                    'color' => 'blue',
+                                    'admin' => $d->createdBy ? $d->createdBy->first_name : '--'
                                 ]);
                                 
                                 // The initial payment (if any)
@@ -182,7 +184,8 @@
                                         'ref' => __('Down Payment for') . ' #' . $d->id,
                                         'debit' => 0,
                                         'credit' => $d->amount_paid,
-                                        'color' => 'emerald'
+                                        'color' => 'emerald',
+                                        'admin' => $d->createdBy ? $d->createdBy->first_name : '--'
                                     ]);
                                 }
                             }
@@ -195,7 +198,8 @@
                                     'ref' => '#'.$r->id . ' - ' . $r->bundle_count . ' ' . __('Bundles'),
                                     'debit' => 0,
                                     'credit' => $r->total_refund,
-                                    'color' => 'amber'
+                                    'color' => 'amber',
+                                    'admin' => $r->createdBy ? $r->createdBy->first_name : '--'
                                 ]);
                             }
                             
@@ -207,7 +211,8 @@
                                     'ref' => $t->notes ?? __('Direct Transaction'),
                                     'debit' => 0,
                                     'credit' => $t->amount,
-                                    'color' => $t->type == 'payment' ? 'emerald' : ($t->type == 'discount' ? 'rose' : 'slate')
+                                    'color' => $t->type == 'payment' ? 'emerald' : ($t->type == 'discount' ? 'rose' : 'slate'),
+                                    'admin' => $t->createdBy ? $t->createdBy->first_name : '--'
                                 ]);
                             }
                             
@@ -235,6 +240,9 @@
                                 </span>
                             </td>
                             <td class="p-4 text-xs text-slate-700 dark:text-slate-300">{{ $activity['ref'] }}</td>
+                            <td class="p-4">
+                                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">{{ $activity['admin'] }}</span>
+                            </td>
                             <td class="p-4 text-right font-medium text-slate-900 dark:text-white">
                                 {{ $activity['debit'] > 0 ? number_format($activity['debit'], 2) : '-' }}
                             </td>
@@ -247,7 +255,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="p-8 text-center text-slate-500 italic text-sm">
+                            <td colspan="8" class="p-8 text-center text-slate-500 italic text-sm">
                                 {{ __('No transactions found for this distributor.') }}
                             </td>
                         </tr>
