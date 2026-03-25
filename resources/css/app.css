@@ -41,6 +41,44 @@
     box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.5);
 }
 
+.glass-navbar {
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(226, 232, 240, 1);
+}
+
+.dark .glass-navbar {
+    background-color: rgba(15, 17, 21, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-dropdown {
+    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(226, 232, 240, 1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.dark .glass-dropdown {
+    background-color: rgba(18, 20, 25, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.glass-card {
+    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(226, 232, 240, 1);
+}
+
+.dark .glass-card {
+    background-color: rgba(30, 41, 59, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 .sidebar-item-active {
     background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, transparent 100%);
     border-left: 3px solid #f59e0b;

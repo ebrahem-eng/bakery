@@ -11,24 +11,24 @@
                     </div>
                 </div>
                 <div>
-                    <h2 class="text-xl font-bold text-slate-800 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-amber-400 dark:to-orange-500">{{ __('Bakery') }}</h2>
-                    <p class="text-[10px] uppercase tracking-widest text-amber-500 opacity-80">{{ __('System Portal') }}</p>
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-amber-400 dark:to-orange-500">{{ __('Bakery') }}</h2>
+                    <p class="text-[10px] uppercase tracking-widest text-amber-600 dark:text-amber-500 opacity-80">{{ __('System Portal') }}</p>
                 </div>
             </div>
 
             <!-- Navigation Links -->
             <nav class="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar">
                 <!-- Dashboard -->
-                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'sidebar-item-active text-[#fde047]' : 'text-slate-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
-                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.dashboard') ? 'text-[#f59e0b]' : 'text-slate-500 group-hover:text-[#fde047] transition-colors' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'sidebar-item-active text-amber-600 dark:text-[#fde047]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.dashboard') ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047] transition-colors' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                     </svg>
                     {{ __('Dashboard') }}
                 </a>
 
                 <!-- Work Days -->
-                <a href="{{ route('admin.work_days.index') }}" class="{{ request()->routeIs('admin.work_days.*') ? 'sidebar-item-active text-[#fde047]' : 'text-slate-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
-                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.work_days.*') ? 'text-[#f59e0b]' : 'text-slate-500 group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('admin.work_days.index') }}" class="{{ request()->routeIs('admin.work_days.*') ? 'sidebar-item-active text-amber-600 dark:text-[#fde047]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.work_days.*') ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     {{ __('Work Days') }}
@@ -53,8 +53,8 @@
 
 
                 <!-- Expenses -->
-                <a href="{{ route('admin.expenses.index') }}" class="{{ request()->routeIs('admin.expenses.*') ? 'sidebar-item-active text-[#fde047]' : 'text-slate-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
-                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.expenses.*') ? 'text-[#fde047]' : 'text-slate-500 group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('admin.expenses.index') }}" class="{{ request()->routeIs('admin.expenses.*') ? 'sidebar-item-active text-amber-600 dark:text-[#fde047]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.expenses.*') ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     {{ __('Expenses & Drawings') }}
@@ -97,16 +97,16 @@
                 <div class="border-t border-white/5 my-2"></div>
 
                 <!-- Admin Accounts -->
-                <a href="{{ route('admin.manage_admins.index') }}" class="{{ request()->routeIs('admin.manage_admins.*') ? 'sidebar-item-active text-[#fde047]' : 'text-slate-400 hover:text-white hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
-                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.manage_admins.*') ? 'text-[#f59e0b]' : 'text-slate-500 group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('admin.manage_admins.index') }}" class="{{ request()->routeIs('admin.manage_admins.*') ? 'sidebar-item-active text-amber-600 dark:text-[#fde047]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.manage_admins.*') ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                     {{ __('Admin Accounts') }}
                 </a>
 
                 <!-- Settings -->
-                <a href="#" class="text-slate-400 hover:text-white hover:bg-white/5 flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
-                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} text-slate-500 group-hover:text-[#fde047] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="#" class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5 flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -115,14 +115,14 @@
             </nav>
 
             <div class="px-4 mt-auto">
-                <div class="p-3 glass-card rounded-xl flex items-center justify-between border border-white/5">
+                <div class="p-3 glass-card rounded-xl flex items-center justify-between border border-slate-200 dark:border-white/5">
                     <div class="flex items-center">
                         <div class="relative w-8 h-8 rounded-full bg-gradient-to-tr from-[#f59e0b] to-[#fbbf24] flex items-center justify-center text-[#451a03] font-bold text-sm overflow-hidden border border-[#f59e0b]/30">
                             {{ substr(auth()->guard('admin')->user()->name ?? 'A', 0, 1) }}
                         </div>
                         <div class="{{ app()->getLocale() == 'ar' ? 'mr-3' : 'ml-3' }}">
-                            <p class="text-xs font-semibold text-white truncate max-w-[120px]" title="{{ auth()->guard('admin')->user()->name ?? 'Admin' }}">{{ auth()->guard('admin')->user()->name ?? 'Admin' }}</p>
-                            <p class="text-[10px] text-slate-400 truncate max-w-[120px]">{{ __('System Manager') }}</p>
+                            <p class="text-xs font-semibold text-slate-900 dark:text-white truncate max-w-[120px]" title="{{ auth()->guard('admin')->user()->name ?? 'Admin' }}">{{ auth()->guard('admin')->user()->name ?? 'Admin' }}</p>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[120px]">{{ __('System Manager') }}</p>
                         </div>
                     </div>
                 </div>

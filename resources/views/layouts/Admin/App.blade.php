@@ -6,7 +6,7 @@
     <title>{{ __('Bakery Accounting System') }}</title>
     @include('layouts.Admin.Links')
 </head>
-<body class="antialiased font-sans text-slate-800 dark:text-slate-300 transition-colors duration-300" x-data="{ sidebarOpen: false, profileOpen: false, notificationsOpen: false }">
+<body class="antialiased font-sans text-slate-900 dark:text-slate-300 transition-colors duration-500" x-data="{ sidebarOpen: false, profileOpen: false, notificationsOpen: false }">
 
     <!-- Global Loader -->
     @include('layouts.Admin.Loader')

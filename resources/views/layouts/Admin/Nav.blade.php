@@ -1,5 +1,5 @@
             <!-- Navbar -->
-            <header class="glass-navbar border-b border-white/5 z-10 w-full">
+            <header class="glass-navbar border-b border-slate-200 dark:border-white/5 z-10 w-full transition-colors duration-500">
                 <div class="flex items-center justify-between px-6 py-4">
                     <!-- Hamburger Toggle -->
                     <button @click="sidebarOpen = true" class="text-slate-400 hover:text-white lg:hidden">
@@ -16,14 +16,14 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
-                            <input type="text" class="glass-input block w-full pl-9 pr-3 py-2 border-transparent rounded-xl leading-5 bg-black/30 text-slate-300 placeholder-slate-500 focus:outline-none focus:bg-black/50 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="Search tools, metrics, logs...">
+                            <input type="text" class="glass-input block w-full pl-9 pr-3 py-2 border-transparent rounded-xl leading-5 bg-slate-100 dark:bg-black/30 text-slate-900 dark:text-slate-300 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:bg-white dark:focus:bg-black/50 focus:border-amber-500 dark:focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" placeholder="Search tools, metrics, logs...">
                         </div>
                     </div>
 
                     <div class="flex items-center {{ app()->getLocale() == 'ar' ? 'mr-auto' : 'ml-auto' }} gap-3 sm:gap-5">
                         <!-- Theme Toggle -->
-                        <button @click="isDark = !isDark" class="text-slate-400 hover:text-white p-1.5 rounded-full hover:bg-white/5 transition-colors focus:outline-none">
-                            <svg x-show="!isDark" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <button @click="isDark = !isDark" class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-full hover:bg-slate-200/50 dark:hover:bg-white/5 transition-colors focus:outline-none">
+                            <svg x-show="!isDark" class="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                             </svg>
                             <svg x-show="isDark" style="display: none;" class="w-5 h-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -32,7 +32,7 @@
                         </button>
 
                         <!-- Lang Toggle -->
-                        <a href="{{ route('admin.setLang', app()->getLocale() == 'ar' ? 'en' : 'ar') }}" class="text-slate-400 hover:text-white font-bold px-2 py-1 rounded-full hover:bg-white/5 transition-colors text-xs border border-white/5">
+                        <a href="{{ route('admin.setLang', app()->getLocale() == 'ar' ? 'en' : 'ar') }}" class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold px-3 py-1.5 rounded-full hover:bg-slate-200/50 dark:hover:bg-white/5 transition-colors text-xs border border-slate-200 dark:border-white/5">
                             {{ app()->getLocale() == 'ar' ? 'English' : 'العربية' }}
                         </a>
 
@@ -48,19 +48,19 @@
                                 @endif
                             </button>
                             <!-- Notification Dropdown -->
-                            <div x-show="notificationsOpen" x-transition class="absolute right-0 mt-2 w-80 glass-dropdown rounded-2xl py-2 z-50 origin-top-right shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-white/10" style="display: none;">
-                                <div class="px-4 py-2 border-b border-white/5 flex justify-between items-center">
-                                    <h3 class="text-sm font-semibold text-white">System Alerts</h3>
+                            <div x-show="notificationsOpen" x-transition class="absolute right-0 mt-2 w-80 glass-dropdown rounded-2xl py-2 z-50 origin-top-right shadow-2xl border border-slate-200 dark:border-white/10" style="display: none;">
+                                <div class="px-4 py-2 border-b border-slate-100 dark:border-white/5 flex justify-between items-center">
+                                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">System Alerts</h3>
                                     @if(auth()->guard('admin')->user()->unreadNotifications->count() > 0)
                                         <span class="text-[10px] font-bold text-[#f43f5e] bg-[#f43f5e]/10 px-2 py-0.5 rounded-full" id="admin-notif-badge">{{ auth()->guard('admin')->user()->unreadNotifications->count() }} New</span>
                                     @endif
                                 </div>
                                 <div class="max-h-64 overflow-y-auto" id="admin-notif-list">
                                     @forelse(auth()->guard('admin')->user()->unreadNotifications as $notification)
-                                        <a href="{{ $notification->data['url'] ?? '#' }}" class="block px-4 py-3 hover:bg-white/5 transition-colors group border-b border-white/5 last:border-0 notif-item" data-id="{{ $notification->id }}" onclick="markNotificationReadAdmin('{{ $notification->id }}', event, '{{ $notification->data['url'] ?? '#' }}')">
-                                            <p class="text-sm text-slate-300 group-hover:text-white font-medium">{{ $notification->data['title'] ?? 'Alert' }}</p>
-                                            <p class="text-xs text-slate-400 mt-1">{{ collect($notification->data)->get('message', 'System Notification') }}</p>
-                                            <p class="text-[10px] text-slate-500 mt-1 uppercase tracking-wider">{{ $notification->created_at->diffForHumans() }}</p>
+                                        <a href="{{ $notification->data['url'] ?? '#' }}" class="block px-4 py-3 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group border-b border-slate-100 dark:border-white/5 last:border-0 notif-item" data-id="{{ $notification->id }}" onclick="markNotificationReadAdmin('{{ $notification->id }}', event, '{{ $notification->data['url'] ?? '#' }}')">
+                                            <p class="text-sm text-slate-700 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-white font-medium">{{ $notification->data['title'] ?? 'Alert' }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ collect($notification->data)->get('message', 'System Notification') }}</p>
+                                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-wider">{{ $notification->created_at->diffForHumans() }}</p>
                                         </a>
                                     @empty
                                         <div class="px-4 py-6 text-center text-slate-500 text-sm">
@@ -123,12 +123,12 @@
                                     <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name={{ urlencode(auth()->guard('admin')->user()->name) }}&background=0f172a&color=f59e0b" alt="Admin">
                                 @endif
                             </button>
-                            <div x-show="profileOpen" x-transition class="absolute right-0 mt-2 w-48 glass-dropdown rounded-xl py-1 z-50 origin-top-right" style="display: none;">
-                                <a href="{{ route('admin.manage_admins.show', auth()->guard('admin')->id()) }}" class="block px-4 py-2 text-sm text-slate-300 hover:bg-white/10 hover:text-white transition-colors">System Preferences</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-slate-300 hover:bg-white/10 hover:text-white transition-colors">Access Tokens</a>
+                            <div x-show="profileOpen" x-transition class="absolute right-0 mt-2 w-48 glass-dropdown rounded-xl py-1 z-50 origin-top-right shadow-xl border border-slate-200 dark:border-white/10" style="display: none;">
+                                <a href="{{ route('admin.manage_admins.show', auth()->guard('admin')->id()) }}" class="block px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 hover:text-amber-600 dark:hover:text-white transition-colors">System Preferences</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 hover:text-amber-600 dark:hover:text-white transition-colors">Access Tokens</a>
                                 <form method="POST" action="{{ route('admin.logout') }}">
                                     @csrf
-                                    <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-400 hover:bg-white/10 hover:text-red-300 transition-colors border-t border-white/5 mt-1 pt-2">Terminate Session</button>
+                                    <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-white/10 hover:text-red-600 dark:hover:text-red-300 transition-colors border-t border-slate-100 dark:border-white/5 mt-1 pt-2">Terminate Session</button>
                                 </form>
                             </div>
                         </div>
