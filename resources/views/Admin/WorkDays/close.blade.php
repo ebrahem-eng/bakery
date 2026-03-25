@@ -47,7 +47,7 @@
                 </div>
                 <div class="flex justify-between items-center py-3">
                     <span class="text-slate-400">{{ __('Net General Sales Logic (Gross)') }}</span>
-                    <span class="text-emerald-400 font-bold text-xl">{{ number_format($totalSales, 2) }}</span>
+                    <span class="text-emerald-400 font-bold text-xl">{{ number_format($totalSales, 2) }} {{ $defaultCurrency->code ?? '' }}</span>
                 </div>
             </div>
         </div>
@@ -60,31 +60,31 @@
             <div class="p-6">
                 <div class="flex justify-between items-center py-3 border-b border-white/5">
                     <span class="text-slate-400">{{ __('Supplies Purchased (Flour, Yeast, Diesel...)') }}</span>
-                    <span class="text-white font-bold">{{ number_format($workDay->supplies->sum('total_cost'), 2) }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->supplies->sum('total_cost'), 2) }} {{ $defaultCurrency->code ?? '' }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 border-b border-white/5">
                     <span class="text-slate-400">{{ __('Supplier Freight & Unloading Fees') }}</span>
-                    <span class="text-white font-bold">{{ number_format($workDay->supplies->where('unloading_fee_payer', 'bakery')->sum(function($s) { return $s->unloading_fee * ($s->unloading_fee_exchange_rate ?? 1); }), 2) }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->supplies->where('unloading_fee_payer', 'bakery')->sum(function($s) { return $s->unloading_fee * ($s->unloading_fee_exchange_rate ?? 1); }), 2) }} {{ $defaultCurrency->code ?? '' }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 border-b border-white/5">
                     <span class="text-slate-400">{{ __('Total Shift Base Wages Issued') }}</span>
-                    <span class="text-white font-bold">{{ number_format($workDay->workerShifts->sum('snapshot_daily_wage'), 2) }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->workerShifts->sum('snapshot_daily_wage'), 2) }} {{ $defaultCurrency->code ?? '' }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 border-b border-white/5">
                     <span class="text-slate-400">{{ __('Worker Advances/Allowances (Net Cost Add)') }}</span>
-                    <span class="text-white font-bold">{{ number_format($workDay->workerTransactions->where('type', 'allowance')->sum('amount'), 2) }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->workerTransactions->where('type', 'allowance')->sum('amount'), 2) }} {{ $defaultCurrency->code ?? '' }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 border-b border-white/5">
                     <span class="text-slate-400">{{ __('Worker Deductions (Net Cost Min)') }}</span>
-                    <span class="text-white font-bold">- {{ number_format($workDay->workerTransactions->where('type', 'deduction')->sum('amount'), 2) }}</span>
+                    <span class="text-white font-bold">- {{ number_format($workDay->workerTransactions->where('type', 'deduction')->sum('amount'), 2) }} {{ $defaultCurrency->code ?? '' }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 border-b border-white/5">
                     <span class="text-slate-400">{{ __('General Operating/Logistics Drawings') }}</span>
-                    <span class="text-white font-bold">{{ number_format($workDay->expenses->sum('amount'), 2) }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->expenses->sum('amount'), 2) }} {{ $defaultCurrency->code ?? '' }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3">
                     <span class="text-slate-400">{{ __('Total Expected Cash Outflow') }}</span>
-                    <span class="text-red-400 font-bold text-xl">{{ number_format($totalExpenses, 2) }}</span>
+                    <span class="text-red-400 font-bold text-xl">{{ number_format($totalExpenses, 2) }} {{ $defaultCurrency->code ?? '' }}</span>
                 </div>
             </div>
         </div>

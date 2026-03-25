@@ -70,7 +70,7 @@
     @foreach($stats as $key => $total)
     <div class="glass-panel p-4 rounded-2xl border border-{{ $colors[$key] }}-500/10 bg-{{ $colors[$key] }}-500/5">
         <p class="text-xs text-{{ $colors[$key] }}-400 uppercase tracking-wider mb-1 font-semibold">{{ $labels[$key] }}</p>
-        <p class="text-xl font-bold text-white">{{ number_format($total, 2) }}</p>
+        <p class="text-xl font-bold text-white">{{ number_format($total, 2) }} <span class="text-sm text-{{ $colors[$key] }}-400">{{ $defaultCurrency->code ?? '' }}</span></p>
     </div>
     @endforeach
 </div>

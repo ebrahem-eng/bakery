@@ -19,8 +19,9 @@ class ExpenseController extends Controller
 
         $expenses = Expense::with('currency')->where('work_day_id', '=', $activeWorkDay->id)->orderBy('id', 'desc')->get();
         $currencies = Currency::where('is_active', true)->get();
+        $defaultCurrency = \App\Models\Currency::where('is_default', true)->first();
 
-        return view('Admin.Expenses.index', compact('expenses', 'currencies', 'activeWorkDay'));
+        return view('Admin.Expenses.index', compact('expenses', 'currencies', 'activeWorkDay', 'defaultCurrency'));
     }
 
     public function store(Request $request)

@@ -56,14 +56,14 @@
     <div class="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group">
         <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
         <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">{{ __('Live Sales Volume') }}</p>
-        <h3 class="text-3xl font-black text-white">{{ number_format($todaySales, 2) }} <span class="text-sm text-emerald-400">USD / Gross</span></h3>
+        <h3 class="text-3xl font-black text-white">{{ number_format($todaySales, 2) }} <span class="text-sm text-emerald-400">{{ $defaultCurrency->code ?? 'USD' }} / {{ __('Gross') }}</span></h3>
         <p class="text-xs text-slate-500 mt-2">{{ number_format($todayBundlesSold) }} {{ __('Bundles Distributed') }}</p>
     </div>
     
     <div class="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group">
         <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-24 h-24 bg-red-500/10 rounded-full blur-2xl group-hover:bg-red-500/20 transition-all"></div>
         <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">{{ __('Live Cost / Expenses') }}</p>
-        <h3 class="text-3xl font-black text-white">{{ number_format($todayExpenses, 2) }} <span class="text-sm text-red-400">USD / Out</span></h3>
+        <h3 class="text-3xl font-black text-white">{{ number_format($todayExpenses, 2) }} <span class="text-sm text-red-400">{{ $defaultCurrency->code ?? 'USD' }} / {{ __('Out') }}</span></h3>
         <p class="text-xs text-slate-500 mt-2">{{ __('Raw materials, HR deductions & logistics') }}</p>
     </div>
 

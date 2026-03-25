@@ -44,8 +44,9 @@ Route::group(['middleware' => ['admin.auth']], function () {
             $todayExpenses -= $activeWorkDay->workerTransactions->where('type', 'deduction')->sum('amount');
             $todayExpenses += $activeWorkDay->expenses->sum('amount');
         }
+        $defaultCurrency = \App\Models\Currency::where('is_default', true)->first();
 
-        return view('Admin.dashboard', compact('activeWorkDay', 'lastDays', 'totalWorkers', 'totalDistributors', 'todaySales', 'todayExpenses', 'todayBundlesSold'));
+        return view('Admin.dashboard', compact('activeWorkDay', 'lastDays', 'totalWorkers', 'totalDistributors', 'todaySales', 'todayExpenses', 'todayBundlesSold', 'defaultCurrency'));
     })->name('dashboard');
 
     // ── Roles & Permissions ────────────────────────────────────────────

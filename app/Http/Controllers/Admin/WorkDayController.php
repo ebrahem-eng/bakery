@@ -31,7 +31,8 @@ class WorkDayController extends Controller
         $totalExpenses -= $workDay->workerTransactions->where('type', 'deduction')->sum('amount');
         $totalExpenses += $workDay->expenses->sum('amount');
 
-        return view('Admin.WorkDays.close', compact('workDay', 'totalSales', 'totalExpenses'));
+        $defaultCurrency = \App\Models\Currency::where('is_default', true)->first();
+        return view('Admin.WorkDays.close', compact('workDay', 'totalSales', 'totalExpenses', 'defaultCurrency'));
     }
 
     public function store(Request $request)

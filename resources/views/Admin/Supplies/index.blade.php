@@ -60,12 +60,12 @@
                             {{ number_format($supply->total_cost, 2) }} {{ $supply->currency->symbol }}
                         </div>
                         @if($supply->paid_amount < $supply->total_cost)
-                            <div class="text-[10px] text-red-500 mt-1 font-bold tracking-wider">{{ __('Unpaid:') }} {{ number_format($supply->total_cost - $supply->paid_amount, 2) }}</div>
+                            <div class="text-[10px] text-red-500 mt-1 font-bold tracking-wider">{{ __('Unpaid:') }} {{ number_format($supply->total_cost - $supply->paid_amount, 2) }} {{ $supply->currency->code }}</div>
                         @else
                             <div class="text-[10px] text-emerald-500 mt-1 font-bold tracking-wider">{{ __('Fully Paid') }}</div>
                         @endif
                         @if($supply->unloading_fee > 0)
-                            <div class="text-[10px] text-amber-600 dark:text-amber-500 mt-1">{{ __('+ Unloading:') }} {{ number_format($supply->unloading_fee, 2) }}</div>
+                            <div class="text-[10px] text-amber-600 dark:text-amber-500 mt-1">{{ __('+ Unloading:') }} {{ number_format($supply->unloading_fee, 2) }} {{ $supply->unloadingFeeCurrency->code ?? '' }}</div>
                         @endif
                     </td>
                     <td class="py-3 px-4 text-center">

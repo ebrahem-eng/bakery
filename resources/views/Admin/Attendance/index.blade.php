@@ -88,11 +88,11 @@
                 <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/5 text-xs">
                     <div class="glass-panel p-3 rounded-xl border border-white/5">
                         <p class="text-slate-500 mb-1">{{ __('Advances (سلف)') }}</p>
-                        <p class="text-red-400 font-bold">{{ number_format($advances, 2) }}</p>
+                        <p class="text-red-400 font-bold">{{ number_format($advances, 2) }} <span class="text-[10px] text-red-400/70">{{ $worker->currency->code }}</span></p>
                     </div>
                     <div class="glass-panel p-3 rounded-xl border border-white/5">
                         <p class="text-slate-500 mb-1">{{ __('Allowances / Ded') }}</p>
-                        <p class="text-slate-200 font-bold">+{{ number_format($allowances, 2) }} / -{{ number_format($deductions, 2) }}</p>
+                        <p class="text-slate-200 font-bold">+{{ number_format($allowances, 2) }} / -{{ number_format($deductions, 2) }} <span class="text-[10px] text-slate-500">{{ $worker->currency->code }}</span></p>
                     </div>
                 </div>
                 
