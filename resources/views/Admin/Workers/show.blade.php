@@ -9,7 +9,7 @@
             </a>
             <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ $worker->first_name }} {{ $worker->last_name }}</h1>
         </div>
-        <p class="text-sm text-slate-500 mt-1 {{ app()->getLocale() == 'ar' ? 'mr-12' : 'ml-12' }}">{{ $worker->title ?: __('Worker') }} • {{ __('Daily Wage:') }} {{ number_format($worker->daily_wage, 2) }} {{ $worker->currency?->code }}</p>
+        <p class="text-sm text-slate-500 mt-1 ms-12">{{ $worker->title ?: __('Worker') }} • {{ __('Daily Wage:') }} {{ number_format($worker->daily_wage, 2) }} {{ $worker->currency?->code }}</p>
     </div>
     <div class="flex gap-3">
         <a href="{{ route('admin.workers.edit', $worker->id) }}" class="px-4 py-2 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all flex items-center gap-2">
@@ -108,7 +108,7 @@
                     <th class="py-4 px-6 font-bold">{{ __('Type / Description') }}</th>
                     <th class="py-4 px-6 font-bold">{{ __('Amount Recorded') }}</th>
                     <th class="py-4 px-6 font-bold">{{ __('Exchange') }}</th>
-                    <th class="py-4 px-6 font-bold text-right">{{ __('Total Local (SYPN)') }}</th>
+                    <th class="py-4 px-6 font-bold text-end">{{ __('Total Local (SYPN)') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-200 dark:divide-white/5 text-sm">
@@ -140,7 +140,7 @@
                             1 {{ $item['currency'] }} ≈ {{ number_format($item['rate'], 0) }}
                         </div>
                     </td>
-                    <td class="py-4 px-6 text-right">
+                    <td class="py-4 px-6 text-end">
                         <span class="px-2 py-1 rounded-md text-[11px] font-black tracking-tight {{ $item['type'] == 'wage' ? 'bg-emerald-500/10 text-emerald-500' : ($item['type'] == 'discount' ? 'bg-amber-500/10 text-amber-500' : 'bg-sky-500/10 text-sky-500') }}">
                             {{ $item['type'] == 'wage' ? '+' : '-' }} {{ number_format($item['total_sypn'], 0) }}
                         </span>
