@@ -17,7 +17,7 @@ class ExpenseController extends Controller
             return redirect()->route('admin.dashboard')->with('error_message', 'No active work day found. Please start a day first.');
         }
 
-        $expenses = Expense::with('currency')->where('work_day_id', '=', $activeWorkDay->id)->orderBy('id', 'desc')->get();
+        $expenses = Expense::with('currency')->where('work_day_id', $activeWorkDay->id)->orderBy('id', 'desc')->get();
         $currencies = Currency::all();
         $defaultCurrency = \App\Models\Currency::where('is_default', true)->first();
 

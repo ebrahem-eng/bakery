@@ -85,4 +85,12 @@ Route::group(['middleware' => ['admin.auth']], function () {
     Route::post('attendance/clock-in', [\App\Http\Controllers\Admin\WorkerAttendanceController::class, 'clockIn'])->name('attendance.clock_in');
     Route::post('attendance/{shift}/clock-out', [\App\Http\Controllers\Admin\WorkerAttendanceController::class, 'clockOut'])->name('attendance.clock_out');
     Route::post('attendance/transaction', [\App\Http\Controllers\Admin\WorkerAttendanceController::class, 'storeTransaction'])->name('attendance.transaction');
+
+    // ── Activity Log (Monitoring) ─────────────────────────────────────
+    Route::middleware('permission:view activity log')->group(function () {
+        Route::get('activity-log', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-log.index');
+        Route::get('activity-log/{activity}', [\App\Http\Controllers\Admin\ActivityLogController::class, 'show'])->name('activity-log.show');
+        Route::delete('activity-log/{activity}', [\App\Http\Controllers\Admin\ActivityLogController::class, 'destroy'])->name('activity-log.destroy');
+        Route::delete('activity-log-clear/all', [\App\Http\Controllers\Admin\ActivityLogController::class, 'clear'])->name('activity-log.clear');
+    });
 });

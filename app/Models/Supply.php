@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class Supply extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'admin_id',
@@ -29,6 +31,15 @@ class Supply extends Model
         'unloading_fee_exchange_rate',
         'notes',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->setDescriptionForEvent(fn(string $eventName) => "Supply was {$eventName}");
+    }
 
     public function unloadingFeeCurrency() { return $this->belongsTo(Currency::class, 'unloading_fee_currency_id'); }
     public function admin() { return $this->belongsTo(Admin::class); }

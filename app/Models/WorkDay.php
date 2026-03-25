@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class WorkDay extends Model
 {
+    use LogsActivity;
+
     protected $fillable = [
         'start_time', 'end_time', 'status', 'is_holiday', 'holiday_reason',
         'opened_by', 'closed_by', 'total_expenses_at_close', 'total_sales_at_close',
@@ -17,6 +21,15 @@ class WorkDay extends Model
         'end_time' => 'datetime',
         'is_holiday' => 'boolean',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->setDescriptionForEvent(fn(string $eventName) => "Work day was {$eventName}");
+    }
 
     public function openedBy()
     {
