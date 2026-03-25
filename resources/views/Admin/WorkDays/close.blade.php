@@ -34,7 +34,7 @@
         </div>
         <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Net Sales') }}</p>
         <div class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($netSales, 2) }}</div>
-        <div class="mt-1 text-[10px] text-emerald-500 font-bold uppercase tracking-wider">{{ $currencyCode }}</div>
+        <div class="mt-1 text-[10px] text-emerald-500 font-bold uppercase tracking-wider">{{ __($currencyCode) }}</div>
     </div>
     {{-- Total Expenses --}}
     <div class="glass-panel p-6 rounded-2xl border border-red-500/10 relative overflow-hidden group">
@@ -43,7 +43,7 @@
         </div>
         <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Total Expenses') }}</p>
         <div class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($totalExpenses, 2) }}</div>
-        <div class="mt-1 text-[10px] text-red-500 font-bold uppercase tracking-wider">{{ $currencyCode }}</div>
+        <div class="mt-1 text-[10px] text-red-500 font-bold uppercase tracking-wider">{{ __($currencyCode) }}</div>
     </div>
     {{-- Net Balance --}}
     <div class="glass-panel p-6 rounded-2xl border border-amber-500/10 relative overflow-hidden group">
@@ -52,7 +52,7 @@
         </div>
         <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Net Balance') }}</p>
         <div class="text-2xl font-black {{ $netDayBalance >= 0 ? 'text-emerald-500' : 'text-red-500' }}">{{ number_format($netDayBalance, 2) }}</div>
-        <div class="mt-1 text-[10px] text-slate-400 font-bold uppercase tracking-wider">{{ $currencyCode }}</div>
+        <div class="mt-1 text-[10px] text-slate-400 font-bold uppercase tracking-wider">{{ __($currencyCode) }}</div>
     </div>
     {{-- Bundles Status --}}
     <div class="glass-panel p-6 rounded-2xl border border-blue-500/10 relative overflow-hidden group">
@@ -155,19 +155,19 @@
             <div class="p-5 space-y-1">
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Total Distributions Billed') }}</span>
-                    <span class="font-bold text-slate-900 dark:text-white">+ {{ number_format($totalSales, 2) }} <span class="text-xs text-slate-400">{{ $currencyCode }}</span></span>
+                    <span class="font-bold text-slate-900 dark:text-white">+ {{ number_format($totalSales, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Refunds Processed') }}</span>
-                    <span class="font-bold text-red-600 dark:text-red-400">- {{ number_format($totalRefunds, 2) }} <span class="text-xs text-red-400/50">{{ $currencyCode }}</span></span>
+                    <span class="font-bold text-red-600 dark:text-red-400">- {{ number_format($totalRefunds, 2) }} <span class="text-xs text-red-400/50">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Payments Received') }}</span>
-                    <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ number_format($totalPaymentsReceived, 2) }} <span class="text-xs text-emerald-400/50">{{ $currencyCode }}</span></span>
+                    <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ number_format($totalPaymentsReceived, 2) }} <span class="text-xs text-emerald-400/50">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-3 bg-emerald-500/5 rounded-xl px-3 -mx-1 mt-2">
                     <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">{{ __('Net Sales') }}</span>
-                    <span class="font-bold text-emerald-600 dark:text-emerald-400 text-lg">{{ number_format($netSales, 2) }} {{ $currencyCode }}</span>
+                    <span class="font-bold text-emerald-600 dark:text-emerald-400 text-lg">{{ number_format($netSales, 2) }} {{ __($currencyCode) }}</span>
                 </div>
             </div>
         </div>
@@ -183,35 +183,35 @@
             <div class="p-5 space-y-1">
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Supplies Purchased') }}</span>
-                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($suppliesCost, 2) }} <span class="text-xs text-slate-400">{{ $currencyCode }}</span></span>
+                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($suppliesCost, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Freight & Unloading Fees') }}</span>
-                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($unloadingFees, 2) }} <span class="text-xs text-slate-400">{{ $currencyCode }}</span></span>
+                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($unloadingFees, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Worker Shift Wages') }}</span>
-                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($shiftWages, 2) }} <span class="text-xs text-slate-400">{{ $currencyCode }}</span></span>
+                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($shiftWages, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Worker Allowances') }}</span>
-                    <span class="font-bold text-slate-900 dark:text-white">+ {{ number_format($workerAllowances, 2) }} <span class="text-xs text-slate-400">{{ $currencyCode }}</span></span>
+                    <span class="font-bold text-slate-900 dark:text-white">+ {{ number_format($workerAllowances, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Worker Advances Paid') }}</span>
-                    <span class="font-bold text-amber-600 dark:text-amber-400">{{ number_format($workerAdvances, 2) }} <span class="text-xs text-amber-400/50">{{ $currencyCode }}</span></span>
+                    <span class="font-bold text-amber-600 dark:text-amber-400">{{ number_format($workerAdvances, 2) }} <span class="text-xs text-amber-400/50">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Worker Deductions') }}</span>
-                    <span class="font-bold text-emerald-600 dark:text-emerald-400">- {{ number_format($workerDeductions, 2) }} <span class="text-xs text-emerald-400/50">{{ $currencyCode }}</span></span>
+                    <span class="font-bold text-emerald-600 dark:text-emerald-400">- {{ number_format($workerDeductions, 2) }} <span class="text-xs text-emerald-400/50">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Operational Expenses') }}</span>
-                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($operationalExpenses, 2) }} <span class="text-xs text-slate-400">{{ $currencyCode }}</span></span>
+                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($operationalExpenses, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-3 bg-red-500/5 rounded-xl px-3 -mx-1 mt-2">
                     <span class="text-sm font-bold text-red-600 dark:text-red-400">{{ __('Total Expenses') }}</span>
-                    <span class="font-bold text-red-600 dark:text-red-400 text-lg">{{ number_format($totalExpenses, 2) }} {{ $currencyCode }}</span>
+                    <span class="font-bold text-red-600 dark:text-red-400 text-lg">{{ number_format($totalExpenses, 2) }} {{ __($currencyCode) }}</span>
                 </div>
             </div>
         </div>
@@ -242,7 +242,7 @@
                 <div class="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-xs text-slate-500 font-bold uppercase tracking-widest">{{ __('Net Balance') }}</span>
-                        <span class="text-lg font-bold {{ $netDayBalance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">{{ number_format($netDayBalance, 2) }} {{ $currencyCode }}</span>
+                        <span class="text-lg font-bold {{ $netDayBalance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">{{ number_format($netDayBalance, 2) }} {{ __($currencyCode) }}</span>
                     </div>
                     <div class="flex justify-between items-center text-xs text-slate-400">
                         <span>{{ __('Bundles Sold') }}: {{ $bundlesDistributed - $bundlesReturnedByDistributors }}</span>
@@ -271,7 +271,7 @@
                             class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-amber-500/30 rounded-xl text-lg text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-bold"
                             placeholder="0.00">
                         <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'left-0 pl-4' : 'right-0 pr-4' }} flex items-center pointer-events-none">
-                            <span class="text-slate-500 text-sm font-bold">{{ $currencyCode }}</span>
+                            <span class="text-slate-500 text-sm font-bold">{{ __($currencyCode) }}</span>
                         </div>
                     </div>
                     <p class="mt-1 text-[10px] text-slate-500">{{ __('Physical cash left in the drawer for the next work day.') }}</p>
@@ -293,7 +293,7 @@
                 </div>
                 <div class="p-4 rounded-xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0f1115]">
                     <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">{{ __('Carried Over Cash Balance') }}</p>
-                    <p class="text-slate-900 dark:text-white font-bold text-xl">{{ number_format($workDay->carried_over_money, 2) }} {{ $currencyCode }}</p>
+                    <p class="text-slate-900 dark:text-white font-bold text-xl">{{ number_format($workDay->carried_over_money, 2) }} {{ __($currencyCode) }}</p>
                 </div>
                 <p class="text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-widest text-xs py-2">{{ __('Work day is already closed.') }}</p>
             </div>
