@@ -18,7 +18,7 @@ class DistributorController extends Controller
 
     public function create()
     {
-        $currencies = Currency::where('is_active', true)->get();
+        $currencies = Currency::all();
         return view('Admin.Distributors.create', compact('currencies'));
     }
 
@@ -53,7 +53,7 @@ class DistributorController extends Controller
     public function edit(Distributor $distributor)
     {
         $distributor->load('mobiles', 'currency');
-        $currencies = Currency::where('is_active', true)->get();
+        $currencies = Currency::all();
         return view('Admin.Distributors.edit', compact('distributor', 'currencies'));
     }
 
