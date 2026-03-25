@@ -80,13 +80,13 @@
             </h2>
             
             <form action="{{ route('admin.workers.show', $worker->id) }}" method="GET" class="flex flex-wrap items-center gap-3">
-                <div class="flex items-center gap-2 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-1.5 focus-within:ring-1 focus-within:ring-sky-500/50 transition-all">
-                    <label class="text-[10px] uppercase font-black text-slate-400 leading-none">{{ __('From') }}</label>
-                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="bg-transparent border-none text-xs text-slate-700 dark:text-slate-200 focus:ring-0 p-0 w-28">
+                <div class="flex items-center gap-2 glass-input rounded-xl px-3 py-1.5 focus-within:ring-1 focus-within:ring-sky-500/50 transition-all">
+                    <label class="text-[10px] uppercase font-black text-slate-400 dark:text-slate-500 leading-none">{{ __('From') }}</label>
+                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="bg-transparent border-none text-xs text-slate-700 dark:text-slate-200 focus:ring-0 p-0 w-28 [color-scheme:light] dark:[color-scheme:dark]">
                 </div>
-                <div class="flex items-center gap-2 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-1.5 focus-within:ring-1 focus-within:ring-sky-500/50 transition-all">
-                    <label class="text-[10px] uppercase font-black text-slate-400 leading-none">{{ __('To') }}</label>
-                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="bg-transparent border-none text-xs text-slate-700 dark:text-slate-200 focus:ring-0 p-0 w-28">
+                <div class="flex items-center gap-2 glass-input rounded-xl px-3 py-1.5 focus-within:ring-1 focus-within:ring-sky-500/50 transition-all">
+                    <label class="text-[10px] uppercase font-black text-slate-400 dark:text-slate-500 leading-none">{{ __('To') }}</label>
+                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="bg-transparent border-none text-xs text-slate-700 dark:text-slate-200 focus:ring-0 p-0 w-28 [color-scheme:light] dark:[color-scheme:dark]">
                 </div>
                 <button type="submit" class="p-2 bg-[#0ea5e9] text-white rounded-xl hover:bg-[#38bdf8] shadow-sm transition-colors">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
