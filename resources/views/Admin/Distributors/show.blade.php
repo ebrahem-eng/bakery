@@ -111,18 +111,46 @@
             </div>
         </div>
 
-        <!-- Recent Activity Table -->
-        <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
-            <div class="p-6 border-b border-slate-200 dark:border-white/5 flex justify-between items-center bg-slate-50 dark:bg-black/20">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span class="w-1.5 h-5 bg-amber-500 rounded-full"></span>
-                    {{ __('Full Transaction History') }}
-                </h3>
+        <!-- Full Transaction History with Filters -->
+        <div x-data="{ filterType: '', searchRef: '' }" class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
+            <div class="p-6 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="w-1.5 h-5 bg-amber-500 rounded-full"></span>
+                        {{ __('Full Transaction History') }}
+                    </h3>
+                    <button @click="filterType = ''; searchRef = ''" class="text-[10px] uppercase tracking-widest font-bold text-slate-500 hover:text-amber-500 transition-colors">{{ __('Reset All') }}</button>
+                </div>
+                
+                <!-- Filter Controls -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <!-- Search Reference -->
+                    <div class="sm:col-span-2">
+                        <div class="relative">
+                            <svg class="w-4 h-4 text-slate-400 absolute top-1/2 -translate-y-1/2 {{ app()->getLocale() == 'ar' ? 'right-3' : 'left-3' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input type="text" x-model="searchRef" placeholder="{{ __('Search by reference or note...') }}" class="block w-full {{ app()->getLocale() == 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4' }} py-2.5 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm placeholder-slate-400 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all">
+                        </div>
+                    </div>
+                    
+                    <!-- Type Filter -->
+                    <div>
+                        <select x-model="filterType" class="block w-full px-4 py-2.5 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all appearance-none">
+                            <option value="">{{ __('All Transactions') }}</option>
+                            <option value="Sale">{{ __('Sales Only') }}</option>
+                            <option value="Payment">{{ __('Payments Only') }}</option>
+                            <option value="Return">{{ __('Returns Only') }}</option>
+                            <option value="Discount">{{ __('Discounts Only') }}</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-50/50 dark:bg-black/10 border-b border-slate-200 dark:border-white/5 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
+                            <th class="p-4">#</th>
                             <th class="p-4">{{ __('Date') }}</th>
                             <th class="p-4">{{ __('Type') }}</th>
                             <th class="p-4">{{ __('Reference') }}</th>
@@ -149,7 +177,7 @@
                                 // The initial payment (if any)
                                 if($d->amount_paid > 0) {
                                     $activities->push([
-                                        'date' => $d->created_at->addSecond(), // Shift slightly to maintain order
+                                        'date' => $d->created_at->addSecond(),
                                         'type' => 'Payment',
                                         'ref' => __('Down Payment for') . ' #' . $d->id,
                                         'debit' => 0,
@@ -186,9 +214,12 @@
                             // Sort by date to calculate running balance
                             $sortedActivities = $activities->sortBy('date');
                             $runningBalance = 0;
+                            $counter = 0;
                             foreach($sortedActivities as &$activity) {
+                                $counter++;
                                 $runningBalance += ($activity['debit'] - $activity['credit']);
                                 $activity['running_balance'] = $runningBalance;
+                                $activity['index'] = $counter;
                             }
                             
                             // Reverse for display (Newest first)
@@ -196,7 +227,10 @@
                         @endphp
 
                         @forelse($displayActivities as $activity)
-                        <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                        <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                            x-show="(filterType === '' || '{{ $activity['type'] }}' === filterType) && (searchRef === '' || '{{ addslashes(strtolower($activity['ref'])) }}'.includes(searchRef.toLowerCase()))"
+                            x-transition>
+                            <td class="p-4 text-xs text-slate-400 font-mono">{{ $activity['index'] }}</td>
                             <td class="p-4 text-xs text-slate-500 whitespace-nowrap">{{ $activity['date']->format('Y-m-d H:i') }}</td>
                             <td class="p-4">
                                 <span class="px-2 py-0.5 bg-{{ $activity['color'] }}-500/10 text-{{ $activity['color'] }}-500 border border-{{ $activity['color'] }}-500/20 rounded-md text-[10px] font-bold uppercase whitespace-nowrap">
@@ -216,7 +250,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="p-8 text-center text-slate-500 italic text-sm">
+                            <td colspan="7" class="p-8 text-center text-slate-500 italic text-sm">
                                 {{ __('No transactions found for this distributor.') }}
                             </td>
                         </tr>
