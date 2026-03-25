@@ -23,7 +23,9 @@ class WorkDayController extends Controller
         
         $totalExpenses = 0;
         $totalExpenses += $workDay->supplies->sum('total_cost');
-        $totalExpenses += $workDay->supplies->where('unloading_fee_payer', 'bakery')->sum('unloading_fee');
+        $totalExpenses += $workDay->supplies->where('unloading_fee_payer', 'bakery')->sum(function($supply) {
+            return $supply->unloading_fee * ($supply->unloading_fee_exchange_rate ?? 1);
+        });
         $totalExpenses += $workDay->workerShifts->sum('snapshot_daily_wage');
         $totalExpenses += $workDay->workerTransactions->where('type', 'allowance')->sum('amount');
         $totalExpenses -= $workDay->workerTransactions->where('type', 'deduction')->sum('amount');

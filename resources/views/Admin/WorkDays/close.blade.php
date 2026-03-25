@@ -60,11 +60,11 @@
             <div class="p-6">
                 <div class="flex justify-between items-center py-3 border-b border-white/5">
                     <span class="text-slate-400">{{ __('Supplies Purchased (Flour, Yeast, Diesel...)') }}</span>
-                    <span class="text-white font-bold">{{ number_format($workDay->supplies->sum('total_price'), 2) }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->supplies->sum('total_cost'), 2) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 border-b border-white/5">
                     <span class="text-slate-400">{{ __('Supplier Freight & Unloading Fees') }}</span>
-                    <span class="text-white font-bold">{{ number_format($workDay->supplies->where('unloading_fee_payer', 'bakery')->sum('unloading_fee'), 2) }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->supplies->where('unloading_fee_payer', 'bakery')->sum(function($s) { return $s->unloading_fee * ($s->unloading_fee_exchange_rate ?? 1); }), 2) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 border-b border-white/5">
                     <span class="text-slate-400">{{ __('Total Shift Base Wages Issued') }}</span>

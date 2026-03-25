@@ -33,6 +33,12 @@ class SupplyController extends Controller
         return view('Admin.Supplies.create', compact('activeWorkDay', 'suppliers', 'categories', 'currencies'));
     }
 
+    public function show($id)
+    {
+        $supply = Supply::with(['supplier', 'category', 'currency', 'unloadingFeeCurrency', 'admin', 'workDay'])->findOrFail($id);
+        return view('Admin.Supplies.show', compact('supply'));
+    }
+
     public function store(Request $request)
     {
         $activeWorkDay = WorkDay::where('status', 'active')->first();
@@ -52,6 +58,7 @@ class SupplyController extends Controller
             'supplies.*.unloading_fee' => 'required|numeric|min:0',
             'supplies.*.unloading_fee_payer' => 'required|in:bakery,supplier',
             'supplies.*.unloading_fee_currency_id' => 'nullable|exists:currencies,id',
+            'supplies.*.unloading_fee_exchange_rate' => 'nullable|numeric|min:0.01',
             'supplies.*.material_type_name' => 'nullable|string',
             'supplies.*.boxes_count' => 'nullable|numeric|min:1',
             'supplies.*.box_weight' => 'nullable|numeric|min:0.01',
@@ -78,6 +85,7 @@ class SupplyController extends Controller
                 'unloading_fee' => $item['unloading_fee'],
                 'unloading_fee_payer' => $item['unloading_fee_payer'] ?? 'bakery',
                 'unloading_fee_currency_id' => $fee_currency,
+                'unloading_fee_exchange_rate' => $item['unloading_fee_exchange_rate'] ?? 1,
                 'material_type_name' => $item['material_type_name'] ?? null,
                 'boxes_count' => $item['boxes_count'] ?? null,
                 'box_weight' => $item['box_weight'] ?? null,

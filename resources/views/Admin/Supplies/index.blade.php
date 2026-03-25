@@ -28,6 +28,7 @@
                     <th class="py-4 px-4 font-medium">{{ __('Category Info') }}</th>
                     <th class="py-4 px-4 font-medium">{{ __('Metrics') }}</th>
                     <th class="py-4 px-4 font-medium text-right">{{ __('Finances') }}</th>
+                    <th class="py-4 px-4 font-medium text-center">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-200 dark:divide-white/5 text-sm text-slate-600 dark:text-slate-300">
@@ -67,10 +68,15 @@
                             <div class="text-[10px] text-amber-600 dark:text-amber-500 mt-1">{{ __('+ Unloading:') }} {{ number_format($supply->unloading_fee, 2) }}</div>
                         @endif
                     </td>
+                    <td class="py-3 px-4 text-center">
+                        <a href="{{ route('admin.supplies.show', $supply->id) }}" class="inline-flex items-center justify-center p-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-[#0ea5e9] dark:text-[#38bdf8] rounded-lg transition-colors border border-slate-200 dark:border-white/5" title="{{ __('View Details') }}">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        </a>
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="py-8 text-center text-slate-500 italic">{{ __('No raw materials recorded in the system yet.') }}</td>
+                    <td colspan="6" class="py-8 text-center text-slate-500 italic">{{ __('No raw materials recorded in the system yet.') }}</td>
                 </tr>
                 @endforelse
             </tbody>

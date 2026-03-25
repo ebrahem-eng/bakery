@@ -25,7 +25,7 @@
         <template x-for="(item, index) in items" :key="item.id">
             <div class="glass-panel p-6 rounded-2xl border border-white/10 relative overflow-hidden transition-all hover:border-white/20">
                 <!-- Delete Button -->
-                <button type="button" @click="removeItem(index)" class="absolute top-4 right-4 text-red-400 hover:text-red-300" title="{{ __('Remove Item') }}">
+                <button type="button" @click="removeItem(index)" class="absolute top-4 {{ app()->getLocale() == 'ar' ? 'left-4' : 'right-4' }} text-red-400 hover:text-red-300" title="{{ __('Remove Item') }}">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                 </button>
                 
@@ -64,7 +64,7 @@
                 <!-- Dynamic Polymorphic Fields -->
                 <div class="p-4 bg-black/20 rounded-xl mb-4 border border-white/5">
                     <!-- FLOUR LOGIC -->
-                    <template x-if="item.category_name === 'Flour'">
+                    <template x-if="item.category_name === 'طحين'">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs text-slate-300 mb-1">{{ __('Weight in Tons (1000kg)') }}</label>
@@ -78,7 +78,7 @@
                     </template>
 
                     <!-- YEAST LOGIC -->
-                    <template x-if="item.category_name === 'Yeast'">
+                    <template x-if="item.category_name === 'خميرة'">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-xs text-slate-300 mb-1">{{ __('Boxes Count') }}</label>
@@ -97,9 +97,10 @@
                     </template>
 
                     <!-- DIESEL / SALT LOGIC -->
-                    <template x-if="item.category_name === 'Diesel' || item.category_name === 'Salt'">
+                    <!-- DIESEL / SALT LOGIC -->
+                    <template x-if="item.category_name === 'مازوت' || item.category_name === 'ملح'">
                         <div>
-                            <label class="block text-xs text-slate-300 mb-1" x-text="item.category_name === 'Diesel' ? '{{ __('Total Liters') }}' : '{{ __('Total Kilos') }}'"></label>
+                            <label class="block text-xs text-slate-300 mb-1" x-text="item.category_name === 'مازوت' ? '{{ __('Total Liters') }}' : '{{ __('Total Kilos') }}'"></label>
                             <input type="number" step="0.01" x-bind:name="`supplies[${index}][quantity]`" x-model="item.quantity" class="glass-input w-full md:w-1/2 px-3 py-2 rounded-lg text-sm">
                         </div>
                     </template>
@@ -118,7 +119,7 @@
 
                     <div class="lg:col-span-5 bg-white/5 p-3 rounded-xl border border-white/10">
                         <div class="text-xs font-bold text-slate-300 mb-2">{{ __('Unloading Specifications') }}</div>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">{{ __('Fee Paid By') }}</label>
                                 <select x-bind:name="`supplies[${index}][unloading_fee_payer]`" x-model="item.unloading_fee_payer" class="glass-input w-full px-2 py-1.5 rounded text-xs bg-black/40 text-slate-200 border-none outline-none">
@@ -130,12 +131,16 @@
                                 <label class="block text-[10px] text-slate-400 mb-1">{{ __('Fee Amount') }}</label>
                                 <div class="flex gap-1">
                                     <input type="number" step="0.01" x-bind:name="`supplies[${index}][unloading_fee]`" x-model="item.unloading_fee" class="glass-input w-2/3 px-2 py-1.5 rounded text-xs bg-black/40 text-slate-200 border-none outline-none">
-                                    <select x-bind:name="`supplies[${index}][unloading_fee_currency_id]`" x-model="item.unloading_fee_currency_id" class="glass-input w-1/3 px-1 py-1.5 rounded text-[10px] bg-black/40 text-slate-200 border-none outline-none">
+                                    <select x-bind:name="`supplies[${index}][unloading_fee_currency_id]`" x-model="item.unloading_fee_currency_id" @change="updateFeeExchangeRate(item)" class="glass-input w-1/3 px-1 py-1.5 rounded text-[10px] bg-black/40 text-slate-200 border-none outline-none">
                                         <template x-for="c in currencies" :key="c.id">
-                                            <option :value="c.id" x-text="c.symbol"></option>
+                                            <option :value="c.id" x-text="c.name"></option>
                                         </template>
                                     </select>
                                 </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">{{ __('Fee Ex-Rate') }}</label>
+                                <input type="number" step="0.01" x-bind:name="`supplies[${index}][unloading_fee_exchange_rate]`" x-model="item.unloading_fee_exchange_rate" class="glass-input w-full px-2 py-1.5 rounded text-xs bg-black/40 text-slate-200 border-none outline-none" title="Exchange rate for unloading fee">
                             </div>
                         </div>
                     </div>
@@ -196,9 +201,10 @@ document.addEventListener('alpine:init', () => {
                 unloading_fee: 0,
                 unloading_fee_payer: 'bakery',
                 unloading_fee_currency_id: this.currencies.length > 0 ? this.currencies[0].id : '',
+                unloading_fee_exchange_rate: this.currencies.length > 0 ? this.currencies[0].default_exchange_rate : 1,
                 notes: '',
                 get total_cost() {
-                    const q = this.category_name === 'Yeast' ? (this.boxes_count * this.box_weight) : this.quantity;
+                    const q = this.category_name === 'خميرة' ? (this.boxes_count * this.box_weight) : this.quantity;
                     return (q || 0) * (this.unit_price || 0);
                 }
             });
@@ -216,6 +222,10 @@ document.addEventListener('alpine:init', () => {
         updateExchangeRate(item) {
             let cur = this.currencies.find(c => c.id == item.currency_id);
             if(cur) item.exchange_rate = cur.default_exchange_rate;
+        },
+        updateFeeExchangeRate(item) {
+            let cur = this.currencies.find(c => c.id == item.unloading_fee_currency_id);
+            if(cur) item.unloading_fee_exchange_rate = cur.default_exchange_rate;
         }
     }))
 })

@@ -26,9 +26,11 @@ class Supply extends Model
         'box_weight',
         'unloading_fee_payer',
         'unloading_fee_currency_id',
+        'unloading_fee_exchange_rate',
         'notes',
     ];
 
+    public function unloadingFeeCurrency() { return $this->belongsTo(Currency::class, 'unloading_fee_currency_id'); }
     public function admin() { return $this->belongsTo(Admin::class); }
     public function workDay() { return $this->belongsTo(WorkDay::class); }
     public function supplier() { return $this->belongsTo(Supplier::class); }
