@@ -116,7 +116,7 @@
             <div class="p-6 border-b border-slate-200 dark:border-white/5 flex justify-between items-center bg-slate-50 dark:bg-black/20">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <span class="w-1.5 h-5 bg-amber-500 rounded-full"></span>
-                    {{ __('Recent Ledger Activity') }}
+                    {{ __('Full Transaction History') }}
                 </h3>
             </div>
             <div class="overflow-x-auto">
@@ -126,58 +126,97 @@
                             <th class="p-4">{{ __('Date') }}</th>
                             <th class="p-4">{{ __('Type') }}</th>
                             <th class="p-4">{{ __('Reference') }}</th>
-                            <th class="p-4 text-right">{{ __('Amount') }}</th>
+                            <th class="p-4 text-right">{{ __('Debit') }} (+)</th>
+                            <th class="p-4 text-right">{{ __('Credit') }} (-)</th>
+                            <th class="p-4 text-right bg-slate-100/50 dark:bg-white/5">{{ __('Balance') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-white/5">
                         @php
                             $activities = collect();
+                            // 1. Sales (Charges)
                             foreach($distributor->distributions as $d) {
+                                // The Sale itself (Full Price)
                                 $activities->push([
                                     'date' => $d->created_at,
                                     'type' => 'Sale',
                                     'ref' => '#'.$d->id . ' - ' . $d->bundle_count . ' ' . __('Bundles'),
-                                    'amount' => $d->total_price,
+                                    'debit' => $d->total_price,
+                                    'credit' => 0,
                                     'color' => 'blue'
                                 ]);
+                                
+                                // The initial payment (if any)
+                                if($d->amount_paid > 0) {
+                                    $activities->push([
+                                        'date' => $d->created_at->addSecond(), // Shift slightly to maintain order
+                                        'type' => 'Payment',
+                                        'ref' => __('Down Payment for') . ' #' . $d->id,
+                                        'debit' => 0,
+                                        'credit' => $d->amount_paid,
+                                        'color' => 'emerald'
+                                    ]);
+                                }
                             }
+                            
+                            // 2. Returns
                             foreach($distributor->returns as $r) {
                                 $activities->push([
                                     'date' => $r->created_at,
                                     'type' => 'Return',
                                     'ref' => '#'.$r->id . ' - ' . $r->bundle_count . ' ' . __('Bundles'),
-                                    'amount' => -$r->total_refund,
+                                    'debit' => 0,
+                                    'credit' => $r->total_refund,
                                     'color' => 'amber'
                                 ]);
                             }
+                            
+                            // 3. Independent Ledger Transactions
                             foreach($distributor->transactions as $t) {
                                 $activities->push([
                                     'date' => $t->created_at,
                                     'type' => ucfirst($t->type),
                                     'ref' => $t->notes ?? __('Direct Transaction'),
-                                    'amount' => -$t->amount,
-                                    'color' => $t->type == 'payment' ? 'emerald' : 'rose'
+                                    'debit' => 0,
+                                    'credit' => $t->amount,
+                                    'color' => $t->type == 'payment' ? 'emerald' : ($t->type == 'discount' ? 'rose' : 'slate')
                                 ]);
                             }
-                            $activities = $activities->sortByDesc('date')->take(10);
+                            
+                            // Sort by date to calculate running balance
+                            $sortedActivities = $activities->sortBy('date');
+                            $runningBalance = 0;
+                            foreach($sortedActivities as &$activity) {
+                                $runningBalance += ($activity['debit'] - $activity['credit']);
+                                $activity['running_balance'] = $runningBalance;
+                            }
+                            
+                            // Reverse for display (Newest first)
+                            $displayActivities = $sortedActivities->reverse();
                         @endphp
 
-                        @forelse($activities as $activity)
+                        @forelse($displayActivities as $activity)
                         <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                            <td class="p-4 text-sm text-slate-500">{{ $activity['date']->format('Y-m-d H:i') }}</td>
+                            <td class="p-4 text-xs text-slate-500 whitespace-nowrap">{{ $activity['date']->format('Y-m-d H:i') }}</td>
                             <td class="p-4">
-                                <span class="px-2 py-0.5 bg-{{ $activity['color'] }}-500/10 text-{{ $activity['color'] }}-500 border border-{{ $activity['color'] }}-500/20 rounded-md text-[10px] font-bold uppercase">
+                                <span class="px-2 py-0.5 bg-{{ $activity['color'] }}-500/10 text-{{ $activity['color'] }}-500 border border-{{ $activity['color'] }}-500/20 rounded-md text-[10px] font-bold uppercase whitespace-nowrap">
                                     {{ __($activity['type']) }}
                                 </span>
                             </td>
-                            <td class="p-4 text-sm text-slate-700 dark:text-slate-300">{{ $activity['ref'] }}</td>
-                            <td class="p-4 text-right font-bold {{ $activity['amount'] > 0 ? 'text-slate-900 dark:text-white' : 'text-emerald-500' }}">
-                                {{ number_format(abs($activity['amount']), 2) }}
+                            <td class="p-4 text-xs text-slate-700 dark:text-slate-300">{{ $activity['ref'] }}</td>
+                            <td class="p-4 text-right font-medium text-slate-900 dark:text-white">
+                                {{ $activity['debit'] > 0 ? number_format($activity['debit'], 2) : '-' }}
+                            </td>
+                            <td class="p-4 text-right font-medium text-emerald-500">
+                                {{ $activity['credit'] > 0 ? number_format($activity['credit'], 2) : '-' }}
+                            </td>
+                            <td class="p-4 text-right font-black bg-slate-50/50 dark:bg-white/5 {{ $activity['running_balance'] > 0 ? 'text-red-500' : 'text-slate-900 dark:text-white' }}">
+                                {{ number_format($activity['running_balance'], 2) }}
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="p-8 text-center text-slate-500 italic text-sm">
+                            <td colspan="6" class="p-8 text-center text-slate-500 italic text-sm">
                                 {{ __('No transactions found for this distributor.') }}
                             </td>
                         </tr>
@@ -185,11 +224,6 @@
                     </tbody>
                 </table>
             </div>
-            @if($activities->count() >= 10)
-            <div class="p-4 bg-slate-50/50 dark:bg-black/10 text-center border-t border-slate-200 dark:border-white/5">
-                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">{{ __('Showing last 10 activities') }}</p>
-            </div>
-            @endif
         </div>
     </div>
 </div>
