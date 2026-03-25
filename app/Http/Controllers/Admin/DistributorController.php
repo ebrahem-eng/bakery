@@ -50,6 +50,12 @@ class DistributorController extends Controller
         return redirect()->route('admin.distributors.index')->with('success_message', __('Distributor profile established successfully.'));
     }
 
+    public function show(Distributor $distributor)
+    {
+        $distributor->load(['mobiles', 'currency', 'distributions', 'returns', 'transactions']);
+        return view('Admin.Distributors.show', compact('distributor'));
+    }
+
     public function edit(Distributor $distributor)
     {
         $distributor->load('mobiles', 'currency');
