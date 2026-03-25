@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-2xl font-bold text-white tracking-tight">{{ __('Edit Role') }}: {{ $role->name }}</h1>
+    <h1 class="text-2xl font-bold text-white tracking-tight">{{ __('Edit Role') }}: {{ __($role->name) }}</h1>
 </div>
 
 <form action="{{ route('admin.roles.update', $role->id) }}" method="POST" class="glass-panel p-6 rounded-2xl border border-white/5 max-w-4xl">

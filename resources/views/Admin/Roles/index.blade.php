@@ -60,11 +60,11 @@
                 <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors table-row-item"
                     data-search="{{ mb_strtolower($role->name) }}"
                     x-show="isVisible($el, {{ $i }})" x-transition>
-                    <td class="py-3 px-4 font-medium text-slate-900 dark:text-white">{{ $role->name }}</td>
+                    <td class="py-3 px-4 font-medium text-slate-900 dark:text-white">{{ __($role->name) }}</td>
                     <td class="py-3 px-4">
                         <div class="flex flex-wrap gap-2">
                             @foreach($role->permissions->take(5) as $perm)
-                                <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] rounded border border-slate-200 dark:border-white/10">{{ $perm->name }}</span>
+                                <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] rounded border border-slate-200 dark:border-white/10">{{ __($perm->name) }}</span>
                             @endforeach
                             @if($role->permissions->count() > 5)
                                 <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] rounded border border-slate-200 dark:border-white/5">+{{ $role->permissions->count() - 5 }} {{ __('more') }}</span>
