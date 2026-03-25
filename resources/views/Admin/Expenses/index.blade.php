@@ -4,9 +4,9 @@
 <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
     <div>
         <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Daily') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-500">{{ __('Expenses') }}</span></h1>
-        <p class="text-sm text-slate-400">
+        <p class="text-sm text-slate-500 dark:text-slate-400">
             {{ __('Track operational outgoings for Active Work Day:') }} 
-            <span class="font-bold text-amber-500">{{ $activeWorkDay->start_time->format('Y-m-d h:i A') }}</span>
+            <span class="font-bold text-amber-600 dark:text-amber-500">{{ $activeWorkDay->start_time->format('Y-m-d h:i A') }}</span>
         </p>
     </div>
     <button @click="$dispatch('open-expense-modal')" class="bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-400 hover:to-rose-400 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-[0_0_15px_rgba(244,63,94,0.3)] transition-all">
@@ -68,19 +68,19 @@
     @endphp
 
     @foreach($stats as $key => $total)
-    <div class="glass-panel p-4 rounded-2xl border border-{{ $colors[$key] }}-500/10 bg-{{ $colors[$key] }}-500/5">
-        <p class="text-xs text-{{ $colors[$key] }}-400 uppercase tracking-wider mb-1 font-semibold">{{ $labels[$key] }}</p>
-        <p class="text-xl font-bold text-white">{{ number_format($total, 2) }} <span class="text-sm text-{{ $colors[$key] }}-400">{{ $defaultCurrency->code ?? '' }}</span></p>
+    <div class="glass-panel p-4 rounded-2xl border border-{{ $colors[$key] }}-500/20 dark:border-{{ $colors[$key] }}-500/10 bg-{{ $colors[$key] }}-500/5 transition-colors">
+        <p class="text-xs text-{{ $colors[$key] }}-600 dark:text-{{ $colors[$key] }}-400 uppercase tracking-wider mb-1 font-semibold">{{ $labels[$key] }}</p>
+        <p class="text-xl font-bold text-slate-900 dark:text-white">{{ number_format($total, 2) }} <span class="text-sm text-{{ $colors[$key] }}-600 dark:text-{{ $colors[$key] }}-400">{{ $defaultCurrency->code ?? '' }}</span></p>
     </div>
     @endforeach
 </div>
 
 <!-- Table -->
-<div class="glass-panel rounded-2xl border border-white/5 overflow-hidden">
+<div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
-                <tr class="bg-black/20 border-b border-white/5 text-xs uppercase tracking-wider text-slate-400">
+                <tr class="bg-slate-50 dark:bg-black/20 border-b border-slate-200 dark:border-white/5 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     <th class="p-4 font-semibold w-16">#</th>
                     <th class="p-4 font-semibold">{{ __('Title') }}</th>
                     <th class="p-4 font-semibold">{{ __('Category') }}</th>
@@ -89,16 +89,16 @@
                     <th class="p-4 font-semibold text-center">{{ __('Actions') }}</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-white/5">
+            <tbody class="divide-y divide-slate-200 dark:divide-white/5">
                 @forelse($expenses as $expense)
-                <tr class="hover:bg-white/5 transition-colors">
+                <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                     <td class="p-4 text-sm text-slate-500 font-medium">{{ $expense->id }}</td>
                     <td class="p-4">
-                        <span class="font-bold text-white">{{ $expense->title }}</span>
+                        <span class="font-bold text-slate-900 dark:text-white">{{ $expense->title }}</span>
                         <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">{{ $expense->created_at->format('h:i A') }}</p>
                     </td>
                     <td class="p-4">
-                        <span class="px-2.5 py-1 bg-white/5 text-slate-300 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-bold">
+                        <span class="px-2.5 py-1 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-md text-[10px] uppercase tracking-wider font-bold">
                             {{ $labels[$expense->category] ?? __('Other') }}
                         </span>
                     </td>
@@ -112,15 +112,23 @@
                         <span class="text-xs text-slate-400 line-clamp-2 w-48">{{ $expense->notes ?? '-' }}</span>
                     </td>
                     <td class="p-4 text-center">
-                        <form action="{{ route('admin.expenses.destroy', $expense) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Are you sure you want to delete this expense?') }}');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+                        <div class="flex items-center justify-center gap-2">
+                            <a href="{{ route('admin.expenses.show', $expense) }}" class="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
-                            </button>
-                        </form>
+                            </a>
+                            <form action="{{ route('admin.expenses.destroy', $expense) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Are you sure you want to delete this expense?') }}');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty
@@ -136,7 +144,7 @@
 </div>
 
 <!-- Add Expense Modal -->
-<div x-data="{ open: false }"
+<div x-data="{ open: false, selectedCurrencyId: '{{ $defaultCurrency->id ?? '' }}' }"
      @open-expense-modal.window="open = true" 
      x-show="open" 
      class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
@@ -145,11 +153,11 @@
         <div x-show="open" x-transition.opacity class="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" @click="open = false"></div>
 
         <div x-show="open" x-transition 
-             class="relative inline-block w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform glass-panel rounded-2xl shadow-xl border border-white/10"
+             class="relative inline-block w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform glass-panel rounded-2xl shadow-xl border border-slate-200 dark:border-white/10"
              {{ app()->getLocale() == 'ar' ? 'dir="rtl"' : 'dir="ltr"' }}>
             
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-white">{{ __('Log Day Expense') }}</h3>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ __('Log Day Expense') }}</h3>
                 <button @click="open = false" class="text-slate-400 hover:text-white transition-colors">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
@@ -159,8 +167,8 @@
                 @csrf
                 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Category') }}</label>
-                    <select name="category" required class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium appearance-none">
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Category') }}</label>
+                    <select name="category" required class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium appearance-none">
                         <option value="operating">{{ __('Operating Costs (تشغيلية)') }}</option>
                         <option value="logistics">{{ __('Logistics & Patrols (تموين / دوريات)') }}</option>
                         <option value="personal">{{ __('Personal Drawings (سحب شخصي)') }}</option>
@@ -169,22 +177,22 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Title / Description') }}</label>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Title / Description') }}</label>
                     <input type="text" name="title" required 
-                        class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm placeholder-slate-600 text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium" 
+                        class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm placeholder-slate-400 dark:placeholder-slate-600 text-slate-900 dark:text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium" 
                         placeholder="{{ __('e.g. Fixing Generator') }}">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Amount') }}</label>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Amount') }}</label>
                         <input type="number" step="0.01" name="amount" required 
-                            class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm placeholder-slate-600 text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium" 
+                            class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm placeholder-slate-400 dark:placeholder-slate-600 text-slate-900 dark:text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium" 
                             placeholder="0.00">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Currency') }}</label>
-                        <select name="currency_id" required class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium appearance-none">
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Currency') }}</label>
+                        <select name="currency_id" x-model="selectedCurrencyId" required class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium appearance-none">
                             @foreach($currencies as $currency)
                                 <option value="{{ $currency->id }}">{{ $currency->code }}</option>
                             @endforeach
@@ -192,13 +200,22 @@
                     </div>
                 </div>
 
+                <!-- Exchange Rate (Shown if selected currency is not default) -->
+                <div x-show="selectedCurrencyId != '{{ $defaultCurrency->id ?? '' }}'" x-transition class="p-4 bg-amber-500/5 border border-amber-500/10 rounded-xl">
+                    <label class="block text-[10px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-widest mb-2">{{ __('Exchange Rate (Relative to ') }}{{ $defaultCurrency->code ?? 'Local' }})</label>
+                    <input type="number" step="0.000001" name="exchange_rate" 
+                        class="block w-full px-4 py-2 bg-white dark:bg-[#0f1115] border border-amber-500/20 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 transition-all font-mono" 
+                        placeholder="0.00">
+                    <p class="text-[10px] text-slate-500 mt-2">{{ __('How many local units per 1 unit of this currency?') }}</p>
+                </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Notes (Optional)') }}</label>
-                    <input type="text" name="notes" class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium" placeholder="" >
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Notes (Optional)') }}</label>
+                    <input type="text" name="notes" class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium" placeholder="" >
                 </div>
 
                 <div class="pt-4 flex gap-3">
-                    <button type="button" @click="open = false" class="flex-1 bg-transparent hover:bg-white/5 text-white border border-white/10 px-4 py-3 rounded-xl text-sm font-bold transition-colors">
+                    <button type="button" @click="open = false" class="flex-1 bg-transparent hover:bg-slate-100 dark:hover:bg-white/5 text-slate-600 dark:text-white border border-slate-200 dark:border-white/10 px-4 py-3 rounded-xl text-sm font-bold transition-colors">
                         {{ __('Cancel') }}
                     </button>
                     <button type="submit" class="flex-1 bg-red-500 hover:bg-red-400 text-white px-4 py-3 rounded-xl text-sm font-bold transition-colors shadow-[0_0_15px_rgba(239,68,68,0.3)]">

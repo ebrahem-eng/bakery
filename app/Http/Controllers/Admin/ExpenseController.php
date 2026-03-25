@@ -18,7 +18,7 @@ class ExpenseController extends Controller
         }
 
         $expenses = Expense::with('currency')->where('work_day_id', '=', $activeWorkDay->id)->orderBy('id', 'desc')->get();
-        $currencies = Currency::where('is_active', true)->get();
+        $currencies = Currency::all();
         $defaultCurrency = \App\Models\Currency::where('is_default', true)->first();
 
         return view('Admin.Expenses.index', compact('expenses', 'currencies', 'activeWorkDay', 'defaultCurrency'));
@@ -31,6 +31,7 @@ class ExpenseController extends Controller
             'title' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0.01',
             'currency_id' => 'required|exists:currencies,id',
+            'exchange_rate' => 'nullable|numeric|min:0.000001',
             'notes' => 'nullable|string'
         ]);
 
@@ -38,10 +39,13 @@ class ExpenseController extends Controller
         if (!$activeWorkDay) return back()->with('error_message', 'No active work day.');
 
         $currency = Currency::findOrFail($request->currency_id);
-        $rate = $currency->is_local ? 1 : $currency->exchange_rate;
+        
+        // Use provided rate, or currency default, or 1.0 for the default system currency
+        $rate = $request->exchange_rate ?? ($currency->is_default ? 1.0 : $currency->exchange_rate);
 
         Expense::create([
             'work_day_id' => $activeWorkDay->id,
+            'admin_id' => auth()->id(),
             'category' => $request->category,
             'title' => $request->title,
             'amount' => $request->amount,
@@ -51,6 +55,12 @@ class ExpenseController extends Controller
         ]);
 
         return back()->with('success_message', __('Expense registered successfully.'));
+    }
+
+    public function show(Expense $expense)
+    {
+        $expense->load(['currency', 'workDay', 'admin']);
+        return view('Admin.Expenses.show', compact('expense'));
     }
 
     public function destroy(Expense $expense)

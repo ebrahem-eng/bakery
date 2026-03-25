@@ -92,6 +92,11 @@ A comprehensive management and accounting system built for a 24/7 bakery operati
 - **Status**: Migrated generic dashboard structure into an operational analytics suite.
 - **Action**: Resolved layout responsiveness matching LTR and RTL constraints with opaque obsidian sidebars exclusively.
 
-### Log: [2026-03-25] - Phase 9 Complete (Polymorphic Batch Invoices & Multi-Currency Engine)
-- **Status**: Implemented a dynamic highly-fluid Alpine.js multi-material invoice form mapping supplier logic tightly to database seeds.
-- **Action**: Converted monolithic form into deeply dimensional array components tracking distinct categories natively. Added `unloading_fee_exchange_rate` tracking variable natively mapping back cross-currency transport fees logically against the precise Work Day settlement sum block without inflating internal currencies mathematically. Furthermore, developed isolated 'View Supply' controller pages strictly capturing granular constraints gracefully.
+### Log: [2026-03-25] - Phase 10: Global Theme Refinement & Expenses Audit
+- **Status**: Achieved full system-wide consistency for Light/Dark modes and resolved critical Expenses infrastructure gaps.
+- **Action**: 
+    - Resolved "White Flash" on load by injecting a blocking theme-check script in the HTML head.
+    - Fixed a critical SQL crash in `ExpenseController` (removed invalid `is_active` filter).
+    - Implemented a dynamic "Exchange Rate" field in the Expenses modal, controlled via Alpine.js.
+    - Built a dedicated "View Details" module for Expenses, including an `admin_id` tracking column (added via migration) to record the logging entity for audit purposes.
+    - Systematically replaced hardcoded white text and dark backgrounds across all view files with theme-aware utility classes.

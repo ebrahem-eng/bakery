@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('Bakery Accounting System') }}</title>
+    
+    <!-- Prevent Theme Flash -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
     @include('layouts.Admin.Links')
 </head>
 <body class="antialiased font-sans text-slate-900 dark:text-slate-300 transition-colors duration-500" x-data="{ sidebarOpen: false, profileOpen: false, notificationsOpen: false }">

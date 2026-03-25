@@ -76,6 +76,7 @@ Route::group(['middleware' => ['admin.auth']], function () {
     // ── Expenses ───────────────────────────────────────────────────────
     Route::get('expenses', [\App\Http\Controllers\Admin\ExpenseController::class, 'index'])->name('expenses.index');
     Route::post('expenses/store', [\App\Http\Controllers\Admin\ExpenseController::class, 'store'])->name('expenses.store');
+    Route::get('expenses/{expense}', [\App\Http\Controllers\Admin\ExpenseController::class, 'show'])->name('expenses.show');
     Route::delete('expenses/{expense}', [\App\Http\Controllers\Admin\ExpenseController::class, 'destroy'])->name('expenses.destroy');
 
     // ── Workers (HR & Attendance) ────────────────────────────────────────
