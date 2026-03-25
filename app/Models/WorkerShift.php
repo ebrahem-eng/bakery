@@ -19,6 +19,8 @@ class WorkerShift extends Model
         'snapshot_daily_wage',
         'snapshot_currency_id',
         'snapshot_exchange_rate',
+        'bundles_received',
+        'bundles_returned',
         'admin_id',
         'notes'
     ];

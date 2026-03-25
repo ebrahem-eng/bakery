@@ -61,26 +61,70 @@ class WorkDayController extends Controller
         
         $workDay->load([
             'supplies.currency',
+            'workerShifts.worker',
             'workerShifts.currency',
             'workerTransactions.currency',
+            'distributions.distributor',
             'distributions.currency',
+            'distributorReturns.distributor',
             'distributorReturns.currency',
             'distributorTransactions.currency',
             'expenses.currency'
         ]);
 
-        // Aggregate computations
-        $totalSales = $workDay->distributions->sum('total_price');
-        
-        $totalExpenses = 0;
-        $totalExpenses += $workDay->supplies->sum('total_cost');
-        $totalExpenses += $workDay->supplies->sum('unloading_fee');
-        $totalExpenses += $workDay->workerShifts->sum('snapshot_daily_wage');
-        $totalExpenses += $workDay->workerTransactions->where('type', 'allowance')->sum('amount');
-        $totalExpenses -= $workDay->workerTransactions->where('type', 'deduction')->sum('amount');
-        $totalExpenses += $workDay->expenses->sum('amount');
+        $defaultCurrency = \App\Models\Currency::where('is_default', true)->first();
+        $currencyCode = $defaultCurrency->code ?? '';
 
-        return view('Admin.WorkDays.close', compact('workDay', 'totalSales', 'totalExpenses'));
+        // ── Sales Statistics ──────────────────────────────────────────
+        $totalSales = $workDay->distributions->sum('total_price');
+        $totalRefunds = $workDay->distributorReturns->sum('total_refund');
+        $totalPaymentsReceived = $workDay->distributorTransactions->sum('amount');
+        $netSales = $totalSales - $totalRefunds;
+
+        // ── Expense Breakdown ─────────────────────────────────────────
+        $suppliesCost = $workDay->supplies->sum('total_cost');
+        $unloadingFees = $workDay->supplies->where('unloading_fee_payer', 'bakery')->sum(function($s) {
+            return $s->unloading_fee * ($s->unloading_fee_exchange_rate ?? 1);
+        });
+        $shiftWages = $workDay->workerShifts->sum('snapshot_daily_wage');
+        $workerAllowances = $workDay->workerTransactions->where('type', 'allowance')->sum('amount');
+        $workerAdvances = $workDay->workerTransactions->where('type', 'advance')->sum('amount');
+        $workerDeductions = $workDay->workerTransactions->where('type', 'deduction')->sum('amount');
+        $operationalExpenses = $workDay->expenses->sum('amount');
+        
+        $totalExpenses = $suppliesCost + $unloadingFees + $shiftWages + $workerAllowances - $workerDeductions + $operationalExpenses;
+        $netDayBalance = $netSales - $totalExpenses;
+
+        // ── Bundle Flow ───────────────────────────────────────────────
+        $bundlesDistributed = $workDay->distributions->sum('bundle_count');
+        $bundlesReturnedByDistributors = $workDay->distributorReturns->sum('bundle_count');
+        $bundlesReceivedByShifts = $workDay->workerShifts->sum('bundles_received');
+        $bundlesReturnedByShifts = $workDay->workerShifts->sum('bundles_returned');
+        
+        // Previous day carry-over
+        $previousDay = WorkDay::where('status', 'closed')
+            ->where('id', '<', $workDay->id)
+            ->orderBy('id', 'desc')
+            ->first();
+        $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
+
+        // Calculated remaining = previous carry-over + returned by shifts - distributed + returned by distributors
+        $calculatedRemainingBundles = $previousCarryOverBundles + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors;
+        if ($calculatedRemainingBundles < 0) $calculatedRemainingBundles = 0;
+
+        return view('Admin.WorkDays.close', compact(
+            'workDay', 'defaultCurrency', 'currencyCode',
+            // Sales
+            'totalSales', 'totalRefunds', 'totalPaymentsReceived', 'netSales',
+            // Expenses
+            'suppliesCost', 'unloadingFees', 'shiftWages', 'workerAllowances',
+            'workerAdvances', 'workerDeductions', 'operationalExpenses', 'totalExpenses',
+            'netDayBalance',
+            // Bundles
+            'bundlesDistributed', 'bundlesReturnedByDistributors',
+            'bundlesReceivedByShifts', 'bundlesReturnedByShifts',
+            'previousCarryOverBundles', 'calculatedRemainingBundles'
+        ));
     }
 
     public function close(Request $request, WorkDay $workDay)

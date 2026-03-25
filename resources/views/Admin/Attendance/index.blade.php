@@ -121,10 +121,17 @@
                         <div class="relative group/time">
                             <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Arrival Time') }}</label>
                             <input type="datetime-local" name="check_in" value="{{ now()->format('Y-m-d\TH:i') }}" 
-                                class="w-full px-3 py-2 bg-black/20 border border-white/5 rounded-lg text-xs text-slate-300 focus:outline-none focus:border-emerald-500/50 transition-all font-medium">
+                                class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-emerald-500/50 transition-all font-medium">
                         </div>
 
-                        <button type="submit" class="w-full py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors focus:ring-2 focus:ring-emerald-500">
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Bundles Received') }}</label>
+                            <input type="number" name="bundles_received" value="0" min="0" 
+                                class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-emerald-500/50 transition-all font-medium"
+                                placeholder="0">
+                        </div>
+
+                        <button type="submit" class="w-full py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors focus:ring-2 focus:ring-emerald-500">
                             {{ $completedShifts->count() > 0 ? __('Start New Shift') : __('Clock In') }}
                         </button>
                     </form>
@@ -134,9 +141,15 @@
                         {{ __('Add Transaction') }}
                     </button>
                     
-                    <form action="{{ route('admin.attendance.clock_out', $activeShift->id) }}" method="POST" class="flex-1">
+                    <form action="{{ route('admin.attendance.clock_out', $activeShift->id) }}" method="POST" class="flex-1 space-y-2">
                         @csrf
-                        <button type="submit" class="w-full py-2.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 border border-amber-500/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors focus:ring-2 focus:ring-amber-500">
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Bundles Returned') }}</label>
+                            <input type="number" name="bundles_returned" value="0" min="0" 
+                                class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium"
+                                placeholder="0">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-600 dark:text-amber-500 border border-amber-500/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors focus:ring-2 focus:ring-amber-500">
                             {{ __('Clock Out') }}
                         </button>
                     </form>

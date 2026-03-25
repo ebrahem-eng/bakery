@@ -36,6 +36,7 @@ class WorkerAttendanceController extends Controller
         $request->validate([
             'worker_id' => 'required|exists:workers,id',
             'check_in' => 'nullable|date',
+            'bundles_received' => 'nullable|integer|min:0',
         ]);
 
         $activeWorkDay = WorkDay::where('status', 'active')->first();
@@ -64,20 +65,22 @@ class WorkerAttendanceController extends Controller
             'snapshot_daily_wage' => $worker->daily_wage,
             'snapshot_currency_id' => $worker->currency_id,
             'snapshot_exchange_rate' => $rate,
+            'bundles_received' => $request->bundles_received ?? 0,
             'admin_id' => auth()->id(),
         ]);
 
         return back()->with('success_message', __('Worker clocked in successfully.'));
     }
 
-    public function clockOut(WorkerShift $shift)
+    public function clockOut(Request $request, WorkerShift $shift)
     {
         if ($shift->check_out) {
             return back()->with('error_message', __('Worker is already clocked out.'));
         }
 
         $shift->update([
-            'check_out' => now()
+            'check_out' => now(),
+            'bundles_returned' => $request->bundles_returned ?? 0,
         ]);
 
         return back()->with('success_message', __('Worker clocked out successfully.'));
