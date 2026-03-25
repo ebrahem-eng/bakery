@@ -42,13 +42,14 @@
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
     @foreach($workers as $worker)
         @php
-            $currentShift = $worker->shifts->first(); // We only fetch for active workday so there's max 1 shift usually
+            $activeShift = $worker->shifts->whereNull('check_out')->first();
+            $completedShifts = $worker->shifts->whereNotNull('check_out');
             
             $advances = $worker->transactions->where('type', 'advance')->sum('amount');
             $allowances = $worker->transactions->where('type', 'allowance')->sum('amount');
             $deductions = $worker->transactions->where('type', 'deduction')->sum('amount');
             
-            $earnedWage = $currentShift && $currentShift->check_out ? $currentShift->snapshot_daily_wage : 0;
+            $earnedWage = $completedShifts->sum('snapshot_daily_wage');
             $netAccrued = $earnedWage + $allowances - $deductions - $advances;
         @endphp
 
@@ -64,16 +65,22 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">{{ $worker->first_name }} {{ $worker->last_name }}</h3>
-                        <p class="text-xs text-slate-400 uppercase tracking-widest mt-0.5">{{ $worker->title }}</p>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <p class="text-xs text-slate-400 uppercase tracking-widest">{{ $worker->title }}</p>
+                            @if($completedShifts->count() > 0)
+                                <span class="w-1 h-1 rounded-full bg-slate-600"></span>
+                                <span class="text-[10px] text-emerald-500 font-bold uppercase tracking-tighter bg-emerald-500/10 px-1.5 py-0.5 rounded-md border border-emerald-500/10">{{ $completedShifts->count() }} {{ __('Shifts Done') }}</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
                 <!-- Status Badge -->
-                @if(!$currentShift)
-                    <span class="px-3 py-1 bg-slate-500/20 text-slate-400 text-[10px] uppercase font-bold tracking-wider rounded-md border border-slate-500/20">{{ __('Ausent / Pending') }}</span>
-                @elseif($currentShift && !$currentShift->check_out)
+                @if($activeShift)
                     <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] uppercase font-bold tracking-wider rounded-md border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.2)] animate-pulse">{{ __('On Shift') }}</span>
+                @elseif($completedShifts->count() > 0)
+                    <span class="px-3 py-1 bg-amber-500/20 text-amber-500 text-[10px] uppercase font-bold tracking-wider rounded-md border border-amber-500/20">{{ __('Between Shifts') }}</span>
                 @else
-                    <span class="px-3 py-1 bg-amber-500/20 text-amber-500 text-[10px] uppercase font-bold tracking-wider rounded-md border border-amber-500/20">{{ __('Shift Finished') }}</span>
+                    <span class="px-3 py-1 bg-slate-500/20 text-slate-400 text-[10px] uppercase font-bold tracking-wider rounded-md border border-slate-500/20">{{ __('Absent / Pending') }}</span>
                 @endif
             </div>
 
@@ -105,32 +112,27 @@
 
             <!-- Actions Footer -->
             <div class="p-4 border-t border-white/5 bg-black/20 flex gap-2">
-                @if(!$currentShift)
+                @if(!$activeShift)
                     <!-- Clock IN -->
                     <form action="{{ route('admin.attendance.clock_in') }}" method="POST" class="flex-1">
                         @csrf
                         <input type="hidden" name="worker_id" value="{{ $worker->id }}">
-                        <button type="submit" class="w-full py-2.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors focus:ring-2 focus:ring-emerald-500">
-                            {{ __('Clock In') }}
+                        <button type="submit" class="w-full py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors focus:ring-2 focus:ring-emerald-500">
+                            {{ $completedShifts->count() > 0 ? __('Start New Shift') : __('Clock In') }}
                         </button>
                     </form>
-                @elseif($currentShift && !$currentShift->check_out)
+                @else
                     <!-- Clock OUT & Transact -->
                     <button type="button" x-data="" @click="$dispatch('open-transaction-modal', { id: {{ $worker->id }}, name: '{{ $worker->first_name }} {{ $worker->last_name }}', currency: '{{ $worker->currency->code }}' })" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors">
                         {{ __('Add Transaction') }}
                     </button>
                     
-                    <form action="{{ route('admin.attendance.clock_out', $currentShift->id) }}" method="POST" class="flex-1">
+                    <form action="{{ route('admin.attendance.clock_out', $activeShift->id) }}" method="POST" class="flex-1">
                         @csrf
                         <button type="submit" class="w-full py-2.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 border border-amber-500/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors focus:ring-2 focus:ring-amber-500">
                             {{ __('Clock Out') }}
                         </button>
                     </form>
-                @else
-                    <!-- Finished Status -->
-                    <div class="w-full py-2.5 text-center text-slate-500 text-xs font-bold uppercase tracking-wider">
-                        {{ __('End of Daily Shift') }}
-                    </div>
                 @endif
             </div>
 

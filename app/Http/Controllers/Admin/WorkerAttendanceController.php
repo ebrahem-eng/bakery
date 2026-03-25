@@ -20,7 +20,7 @@ class WorkerAttendanceController extends Controller
 
         $workers = Worker::with([
             'shifts' => function ($query) use ($activeWorkDay) {
-                $query->where('work_day_id', $activeWorkDay->id);
+                $query->where('work_day_id', $activeWorkDay->id)->orderBy('id', 'asc');
             },
             'transactions' => function ($query) use ($activeWorkDay) {
                 $query->where('work_day_id', $activeWorkDay->id);
