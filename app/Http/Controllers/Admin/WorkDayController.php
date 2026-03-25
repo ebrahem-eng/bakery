@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\WorkDay;
+use App\Models\Consumption;
 
 class WorkDayController extends Controller
 {
@@ -121,7 +122,7 @@ class WorkDayController extends Controller
         });
 
         return view('Admin.WorkDays.close', compact(
-            'workDay', 'defaultCurrency', 'currencyCode', 'currencies',
+            'workDay', 'defaultCurrency', 'currencyCode', 'currencies', 'materialCategories',
             // Sales
             'totalSales', 'totalRefunds', 'totalPaymentsReceived', 'netSales',
             // Expenses
@@ -145,6 +146,8 @@ class WorkDayController extends Controller
             'carried_over_exchange_rate' => 'nullable|numeric|min:0',
             'total_expenses_at_close' => 'required|numeric',
             'total_sales_at_close' => 'required|numeric',
+            'consumptions' => 'nullable|array',
+            'consumptions.*' => 'nullable|numeric|min:0',
         ]);
 
         // Auto-calculate bundles from shift data
@@ -183,6 +186,19 @@ class WorkDayController extends Controller
             'carried_over_currency_id' => $request->carried_over_currency_id,
             'carried_over_exchange_rate' => $exchangeRate,
         ]);
+
+        // Store Consumption Records
+        if ($request->consumptions) {
+            foreach ($request->consumptions as $categoryId => $quantity) {
+                if ($quantity > 0) {
+                    \App\Models\Consumption::create([
+                        'work_day_id' => $workDay->id,
+                        'category_id' => $categoryId,
+                        'quantity' => $quantity,
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('admin.work_days.index')->with('success_message', __('Work Day closed successfully. All operations frozen.'));
     }

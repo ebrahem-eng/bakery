@@ -81,4 +81,9 @@ class WorkDay extends Model
     {
         return $this->belongsTo(Currency::class, 'carried_over_currency_id');
     }
+
+    public function consumptions()
+    {
+        return $this->hasMany(Consumption::class);
+    }
 }

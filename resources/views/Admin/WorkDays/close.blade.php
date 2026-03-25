@@ -283,6 +283,29 @@
                 </div>
                 @endif
 
+                {{-- Raw Material Consumption Section --}}
+                <div class="space-y-3 p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
+                    <h3 class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2">
+                        {{ __('Raw Material Consumption') }}
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        @foreach($materialCategories as $cat)
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">{{ $cat->name }}</label>
+                            <div class="relative">
+                                <input type="number" step="0.01" name="consumptions[{{ $cat->id }}]" 
+                                    class="w-full px-3 py-2 bg-white dark:bg-black/20 border border-amber-500/20 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500 transition-all font-medium"
+                                    placeholder="0.00">
+                                <div class="absolute right-0 top-0 h-full flex items-center pr-2 pointer-events-none opacity-40">
+                                    <span class="text-[8px] font-bold">{{ number_format($cat->available, 1) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    <p class="text-[10px] text-slate-400 italic">{{ __('Available stock shown in top right of each field.') }}</p>
+                </div>
+
                 {{-- Carried Over Cash --}}
                 <div>
                     <label class="block text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2">

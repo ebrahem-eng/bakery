@@ -65,6 +65,7 @@ Route::group(['middleware' => ['admin.auth']], function () {
 
     // ── Supplies (Purchases) ───────────────────────────────────────────
     Route::resource('supplies', \App\Http\Controllers\Admin\SupplyController::class)->except(['edit', 'update', 'destroy']);
+    Route::get('warehouse', [\App\Http\Controllers\Admin\WarehouseController::class, 'index'])->name('warehouse.index');
 
     // ── Distributions (Sales) ──────────────────────────────────────────
     Route::resource('distributors', \App\Http\Controllers\Admin\DistributorController::class);

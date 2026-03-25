@@ -459,7 +459,6 @@
     "Type": "النوع",
     "Unit": "وحدة",
     "Unit Price": "سعر الوحدة",
-    "Units": "وحدة مقاسة",
     "Unknown": "غير معروف",
     "Unloading / Porterage Fee": "أجور تنزيل / عتالة",
     "Unloading Deductions": "حسومات أجور التنزيل",
@@ -661,5 +660,17 @@
     "Cash Currency": "عملة النقد",
     "Carried Over Currency": "عملة الترحيل",
     "Auto-calculated from shift returns.": "محسوب تلقائياً من مرتجعات الورديات.",
-    "Cash Collected from Shifts": "النقد المُحصّل من الورديات"
+    "Cash Collected from Shifts": "النقد المُحصّل من الورديات",
+    "Warehouse": "المستودع",
+    "Warehouse Management": "إدارة المستودع",
+    "Monitor raw material inventory and stock levels.": "مراقبة مخزون المواد الخام ومستويات التوفر.",
+    "Current Stock": "المخزون الحالي",
+    "Units": "وحدة",
+    "In": "وارد",
+    "Out": "صادر",
+    "Recent Supplies": "أحدث التوريدات",
+    "Recent Consumptions": "أحدث السحبيات (الاستهلاك)",
+    "Item": "المادة",
+    "Raw Material Consumption": "استهلاك المواد الخام",
+    "Available stock shown in top right of each field.": "المخزون المتوفر يظهر في أعلى يمين كل حقل."
 }
