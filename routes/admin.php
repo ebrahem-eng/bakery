@@ -93,4 +93,14 @@ Route::group(['middleware' => ['admin.auth']], function () {
         Route::delete('activity-log/{activity}', [\App\Http\Controllers\Admin\ActivityLogController::class, 'destroy'])->name('activity-log.destroy');
         Route::delete('activity-log-clear/all', [\App\Http\Controllers\Admin\ActivityLogController::class, 'clear'])->name('activity-log.clear');
     });
+
+    // ── Settings ──────────────────────────────────────────────────────
+    Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+    Route::post('settings/bakery-info', [\App\Http\Controllers\Admin\SettingsController::class, 'updateBakeryInfo'])->name('settings.bakeryInfo');
+    Route::post('settings/currencies', [\App\Http\Controllers\Admin\SettingsController::class, 'storeCurrency'])->name('settings.currencies.store');
+    Route::put('settings/currencies/{currency}', [\App\Http\Controllers\Admin\SettingsController::class, 'updateCurrency'])->name('settings.currencies.update');
+    Route::delete('settings/currencies/{currency}', [\App\Http\Controllers\Admin\SettingsController::class, 'destroyCurrency'])->name('settings.currencies.destroy');
+    Route::post('settings/categories', [\App\Http\Controllers\Admin\SettingsController::class, 'storeCategory'])->name('settings.categories.store');
+    Route::put('settings/categories/{category}', [\App\Http\Controllers\Admin\SettingsController::class, 'updateCategory'])->name('settings.categories.update');
+    Route::delete('settings/categories/{category}', [\App\Http\Controllers\Admin\SettingsController::class, 'destroyCategory'])->name('settings.categories.destroy');
 });
