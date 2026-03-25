@@ -1,6 +1,6 @@
 <!-- Sell Bundles Modal -->
-<div x-data="{ open: false, distId: '', distName: '', currency: '' }"
-     @open-sale-modal.window="open = true; distId = $event.detail.id; distName = $event.detail.name; currency = $event.detail.currency" 
+<div x-data="{ open: false, distId: '', distName: '', currency: '', count: 0, price: 0 }"
+     @open-sale-modal.window="open = true; distId = $event.detail.id; distName = $event.detail.name; currency = $event.detail.currency; count = 0; price = 0" 
      x-show="open" 
      class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
     
@@ -26,17 +26,23 @@
                     {{ __('Registering sale for:') }} <span class="font-bold" x-text="distName"></span>
                 </div>
 
+                <!-- Real-time Multiplier Display -->
+                <div class="px-4 py-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex justify-between items-center mb-2">
+                    <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">{{ __('Total Amount to Pay') }}</span>
+                    <span class="text-xl font-black text-white" x-text="Number(count * price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ' + currency"></span>
+                </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Bundle Count') }}</label>
-                        <input type="number" name="bundle_count" required 
+                        <input type="number" name="bundle_count" required x-model="count"
                             class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm placeholder-slate-600 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-medium" 
                             placeholder="e.g. 100">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Unit Price') }}</label>
                         <div class="relative">
-                            <input type="number" step="0.01" name="price_per_bundle" required 
+                            <input type="number" step="0.01" name="price_per_bundle" required x-model="price"
                                 class="block w-full {{ app()->getLocale() == 'ar' ? 'pl-16 pr-4' : 'pr-16 pl-4' }} py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm placeholder-slate-600 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-medium" 
                                 placeholder="0.00">
                             <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'left-0 pl-4' : 'right-0 pr-4' }} flex items-center pointer-events-none">
