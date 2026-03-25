@@ -76,7 +76,8 @@
                         @endforeach
                     </td>
                     <td class="py-3 px-4 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">
-                        <a href="{{ route('admin.workers.edit', $worker->id) }}" class="text-[#0ea5e9] hover:text-[#38bdf8] transition-colors font-medium {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('Edit') }}</a>
+                        <a href="{{ route('admin.workers.show', $worker->id) }}" class="text-sky-500 hover:text-sky-400 transition-colors font-medium {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('View Details') }}</a>
+                        <a href="{{ route('admin.workers.edit', $worker->id) }}" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white transition-colors font-medium {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('Edit') }}</a>
                         <form action="{{ route('admin.workers.destroy', $worker->id) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Are you sure you want to terminate this worker profile?') }}');">
                             @csrf @method('DELETE')
                             <button type="submit" class="text-red-500 hover:text-red-400 transition-colors font-medium">{{ __('Remove') }}</button>

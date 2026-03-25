@@ -508,5 +508,21 @@
     "edit_supplier": "تعديل مورد",
     "more": "المزيد",
     "system": "النظام",
-    "view_suppliers": "عرض الموردين"
+    "view_suppliers": "عرض الموردين",
+    "Daily Wage:": "الأجر اليومي:",
+    "SYPN": "ل.س.ن",
+    "From all registered shifts": "من كافة الدوريات المسجلة",
+    "Total Earned": "إجمالي المستحقات",
+    "Advances & Payments": "السلف والدفعات",
+    "Cash already received": "النقد المستلم مسبقاً",
+    "Total Discounts": "إجمالي الحسومات",
+    "Deductions from total": "الاقتطاعات من الإجمالي",
+    "Net Balance": "الرصيد الصافي",
+    "Amount remaining to pay": "المبلغ المتبقي للدفع",
+    "Full Financial History": "السجل المالي الكامل",
+    "Type / Description": "النوع / الوصف",
+    "Amount Recorded": "المبلغ المسجل",
+    "Exchange": "الصرف",
+    "Total Local (SYPN)": "الإجمالي المحلي (ل.س.ن)",
+    "No transactions or shifts found for the selected period.": "لم يتم العثور على حركات أو دوريات للفترة المحددة."
 }
