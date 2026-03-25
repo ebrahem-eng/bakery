@@ -28,48 +28,40 @@
 {{-- ════════════════════════════════════════════════════════════════ --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     {{-- Total Sales --}}
-    <div class="glass-panel rounded-2xl border border-emerald-500/10 p-5 relative overflow-hidden">
-        <div class="absolute top-3 {{ app()->getLocale() == 'ar' ? 'left-3' : 'right-3' }}">
-            <div class="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-            </div>
+    <div class="glass-panel p-6 rounded-2xl border border-emerald-500/10 relative overflow-hidden group">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform">
+            <svg class="w-12 h-12 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
         </div>
-        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Net Sales') }}</p>
-        <p class="text-xl font-bold text-emerald-600 dark:text-emerald-400">{{ number_format($netSales, 2) }}</p>
-        <p class="text-[10px] text-slate-400 font-bold mt-1">{{ $currencyCode }}</p>
+        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Net Sales') }}</p>
+        <div class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($netSales, 2) }}</div>
+        <div class="mt-1 text-[10px] text-emerald-500 font-bold uppercase tracking-wider">{{ $currencyCode }}</div>
     </div>
     {{-- Total Expenses --}}
-    <div class="glass-panel rounded-2xl border border-red-500/10 p-5 relative overflow-hidden">
-        <div class="absolute top-3 {{ app()->getLocale() == 'ar' ? 'left-3' : 'right-3' }}">
-            <div class="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
-            </div>
+    <div class="glass-panel p-6 rounded-2xl border border-red-500/10 relative overflow-hidden group">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform">
+            <svg class="w-12 h-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
         </div>
-        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Total Expenses') }}</p>
-        <p class="text-xl font-bold text-red-600 dark:text-red-400">{{ number_format($totalExpenses, 2) }}</p>
-        <p class="text-[10px] text-slate-400 font-bold mt-1">{{ $currencyCode }}</p>
+        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Total Expenses') }}</p>
+        <div class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($totalExpenses, 2) }}</div>
+        <div class="mt-1 text-[10px] text-red-500 font-bold uppercase tracking-wider">{{ $currencyCode }}</div>
     </div>
     {{-- Net Balance --}}
-    <div class="glass-panel rounded-2xl border border-amber-500/10 p-5 relative overflow-hidden">
-        <div class="absolute top-3 {{ app()->getLocale() == 'ar' ? 'left-3' : 'right-3' }}">
-            <div class="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
+    <div class="glass-panel p-6 rounded-2xl border border-amber-500/10 relative overflow-hidden group">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform">
+            <svg class="w-12 h-12 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
-        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Net Balance') }}</p>
-        <p class="text-xl font-bold {{ $netDayBalance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">{{ number_format($netDayBalance, 2) }}</p>
-        <p class="text-[10px] text-slate-400 font-bold mt-1">{{ $currencyCode }}</p>
+        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Net Balance') }}</p>
+        <div class="text-2xl font-black {{ $netDayBalance >= 0 ? 'text-emerald-500' : 'text-red-500' }}">{{ number_format($netDayBalance, 2) }}</div>
+        <div class="mt-1 text-[10px] text-slate-400 font-bold uppercase tracking-wider">{{ $currencyCode }}</div>
     </div>
     {{-- Bundles Status --}}
-    <div class="glass-panel rounded-2xl border border-blue-500/10 p-5 relative overflow-hidden">
-        <div class="absolute top-3 {{ app()->getLocale() == 'ar' ? 'left-3' : 'right-3' }}">
-            <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-            </div>
+    <div class="glass-panel p-6 rounded-2xl border border-blue-500/10 relative overflow-hidden group">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform">
+            <svg class="w-12 h-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
         </div>
-        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Remaining Bundles') }}</p>
-        <p class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ $calculatedRemainingBundles }}</p>
-        <p class="text-[10px] text-slate-400 font-bold mt-1">{{ __('Auto-calculated') }}</p>
+        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Remaining Bundles') }}</p>
+        <div class="text-2xl font-black text-slate-900 dark:text-white">{{ $calculatedRemainingBundles }}</div>
+        <div class="mt-1 text-[10px] text-blue-500 font-bold uppercase tracking-wider">{{ __('bundles') }}</div>
     </div>
 </div>
 
