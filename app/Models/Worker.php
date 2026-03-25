@@ -11,7 +11,7 @@ class Worker extends Model
 {
     use HasFactory, LogsActivity;
 
-    protected $fillable = ['first_name', 'last_name', 'title', 'daily_wage', 'currency_id'];
+    protected $fillable = ['first_name', 'last_name', 'title', 'daily_wage', 'currency_id', 'exchange_rate'];
 
     public function getActivitylogOptions(): LogOptions
     {

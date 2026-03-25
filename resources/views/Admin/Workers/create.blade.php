@@ -6,7 +6,20 @@
     <p class="text-sm text-slate-500 mt-1">{{ __('Add a new staff member and establish their default compensation.') }}</p>
 </div>
 
-<form action="{{ route('admin.workers.store') }}" method="POST" class="glass-panel p-6 rounded-2xl max-w-4xl" x-data="{ mobiles: [''] }">
+<form action="{{ route('admin.workers.store') }}" method="POST" class="glass-panel p-6 rounded-2xl max-w-4xl" 
+      x-data="{ 
+          mobiles: [''], 
+          currencyId: '', 
+          currencies: {{ $currencies->map(fn($c) => ['id' => $c->id, 'is_default' => $c->is_default, 'rate' => $c->exchange_rate])->toJson() }},
+          showExchangeRate() {
+              const c = this.currencies.find(i => i.id == this.currencyId);
+              return c && !c.is_default;
+          },
+          getDefaultRate() {
+              const c = this.currencies.find(i => i.id == this.currencyId);
+              return c ? c.rate : 1;
+          }
+      }">
     @csrf
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -35,13 +48,24 @@
         </div>
         <div>
             <label class="block text-sm font-medium text-emerald-600 dark:text-emerald-400 mb-2">{{ __('Payment Currency') }}</label>
-            <select name="currency_id" required class="glass-input block w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 border border-emerald-200 dark:border-emerald-500/30">
+            <select name="currency_id" x-model="currencyId" required class="glass-input block w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 border border-emerald-200 dark:border-emerald-500/30">
                 <option value="">{{ __('Select Currency...') }}</option>
                 @foreach($currencies as $currency)
-                    <option value="{{ $currency->id }}">{{ $currency->name }} ({{ $currency->symbol }})</option>
+                    <option value="{{ $currency->id }}">{{ $currency->name }} ({{ $currency->code }})</option>
                 @endforeach
             </select>
             @error('currency_id') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+        </div>
+
+        <!-- Exchange Rate Step (Conditional) -->
+        <div x-show="showExchangeRate()" x-transition class="md:col-span-2 p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
+            <label class="block text-sm font-bold text-amber-600 dark:text-amber-400 mb-2">{{ __('Custom Exchange Rate') }} (1 <span x-text="currencies.find(c => c.id == currencyId)?.code || ''"></span> = ?? SYP)</label>
+            <div class="flex items-center gap-4">
+                <input type="number" step="0.01" name="exchange_rate" :value="getDefaultRate()" class="glass-input flex-1 px-4 py-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-amber-500 border border-amber-500/30" placeholder="0.00">
+                <p class="text-xs text-slate-500 max-w-[200px] leading-relaxed">
+                    {{ __('Adjust the exchange rate if it differs from the system default for this specific wage agreement.') }}
+                </p>
+            </div>
         </div>
     </div>
 

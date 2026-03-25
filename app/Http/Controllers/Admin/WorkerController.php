@@ -29,6 +29,7 @@ class WorkerController extends Controller
             'last_name' => 'required|string|max:255',
             'daily_wage' => 'required|numeric|min:0',
             'currency_id' => 'required|exists:currencies,id',
+            'exchange_rate' => 'nullable|numeric|min:0',
             'mobiles' => 'array'
         ]);
 
@@ -38,6 +39,7 @@ class WorkerController extends Controller
             'title' => $request->title,
             'daily_wage' => $request->daily_wage,
             'currency_id' => $request->currency_id,
+            'exchange_rate' => $request->exchange_rate ?? 1.0,
         ]);
 
         if ($request->has('mobiles')) {
@@ -65,6 +67,7 @@ class WorkerController extends Controller
             'last_name' => 'required|string|max:255',
             'daily_wage' => 'required|numeric|min:0',
             'currency_id' => 'required|exists:currencies,id',
+            'exchange_rate' => 'nullable|numeric|min:0',
             'mobiles' => 'array'
         ]);
 
@@ -74,6 +77,7 @@ class WorkerController extends Controller
             'title' => $request->title,
             'daily_wage' => $request->daily_wage,
             'currency_id' => $request->currency_id,
+            'exchange_rate' => $request->exchange_rate ?? 1.0,
         ]);
 
         if ($request->has('mobiles')) {
