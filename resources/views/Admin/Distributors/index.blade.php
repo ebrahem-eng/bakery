@@ -4,7 +4,7 @@
 <div class="mb-8 flex justify-between items-end">
     <div>
         <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Manage') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">{{ __('Distributors') }}</span></h1>
-        <p class="text-sm text-slate-400">{{ __('Register and monitor all external sales distribution contacts.') }}</p>
+        <p class="text-sm text-slate-500 dark:text-slate-400">{{ __('Register and monitor all external sales distribution contacts.') }}</p>
     </div>
     <a href="{{ route('admin.distributors.create') }}" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-[#0f1115] px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all">
         <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,11 +23,11 @@
     </div>
 @endif
 
-<div class="glass-panel rounded-2xl border border-white/5 overflow-hidden">
+<div class="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
-                <tr class="bg-black/20 border-b border-white/5 text-xs uppercase tracking-wider text-slate-400">
+                <tr class="bg-slate-50 dark:bg-black/20 border-b border-slate-200 dark:border-white/5 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     <th class="p-4 font-semibold">{{ __('Name') }}</th>
                     <th class="p-4 font-semibold">{{ __('Title') }}</th>
                     <th class="p-4 font-semibold">{{ __('Contact Numbers') }}</th>
@@ -35,19 +35,19 @@
                     <th class="p-4 font-semibold text-center">{{ __('Actions') }}</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-white/5">
+            <tbody class="divide-y divide-slate-200 dark:divide-white/5">
                 @forelse($distributors as $distributor)
-                <tr class="hover:bg-white/5 transition-colors">
+                <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                     <td class="p-4">
-                        <div class="font-bold text-white">{{ $distributor->first_name }} {{ $distributor->last_name }}</div>
+                        <div class="font-bold text-slate-900 dark:text-white">{{ $distributor->first_name }} {{ $distributor->last_name }}</div>
                     </td>
                     <td class="p-4">
-                        <span class="text-sm text-slate-300">{{ $distributor->title ?? '-' }}</span>
+                        <span class="text-sm text-slate-600 dark:text-slate-300">{{ $distributor->title ?? '-' }}</span>
                     </td>
                     <td class="p-4">
                         <div class="flex flex-wrap gap-1">
                             @forelse($distributor->mobiles as $mobile)
-                                <span class="px-2 py-1 bg-slate-800 border border-white/10 rounded-md text-xs text-slate-300">
+                                <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-md text-xs text-slate-600 dark:text-slate-300">
                                     {{ $mobile->number }}
                                 </span>
                             @empty

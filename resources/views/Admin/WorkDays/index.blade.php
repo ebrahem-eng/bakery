@@ -3,8 +3,8 @@
 @section('content')
 <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
     <div>
-        <h1 class="text-2xl font-bold text-white tracking-tight">{{ __('Work Days Management') }}</h1>
-        <p class="text-sm text-slate-400 mt-1">{{ __('Manage and track chronological accounting periods.') }}</p>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ __('Work Days Management') }}</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ __('Manage and track chronological accounting periods.') }}</p>
     </div>
     @if(!$activeWorkDay)
     <form action="{{ route('admin.work_days.store') }}" method="POST" class="inline-block">
@@ -38,11 +38,11 @@
 </div>
 @endif
 
-<div class="glass-panel p-6 rounded-2xl border border-white/5">
+<div class="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-white/5">
     <div class="overflow-x-auto custom-scrollbar">
         <table class="w-full text-left border-collapse" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
             <thead>
-                <tr class="text-slate-400 text-xs uppercase tracking-wider border-b border-white/5">
+                <tr class="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-white/5">
                     <th class="py-4 px-4 font-medium">#</th>
                     <th class="py-4 px-4 font-medium">{{ __('Start Time') }}</th>
                     <th class="py-4 px-4 font-medium">{{ __('End Time') }}</th>
@@ -52,10 +52,10 @@
                     <th class="py-4 px-4 font-medium {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">{{ __('Actions') }}</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-white/5 text-sm text-slate-300">
+            <tbody class="divide-y divide-slate-200 dark:divide-white/5 text-sm text-slate-600 dark:text-slate-300">
                 @forelse($workDays as $day)
-                <tr class="hover:bg-white/5 transition-colors">
-                    <td class="py-3 px-4 font-medium text-white">{{ $day->id }}</td>
+                <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                    <td class="py-3 px-4 font-medium text-slate-900 dark:text-white">{{ $day->id }}</td>
                     <td class="py-3 px-4">{{ $day->start_time->format('Y-m-d H:i') }}</td>
                     <td class="py-3 px-4">{{ $day->end_time ? $day->end_time->format('Y-m-d H:i') : '--' }}</td>
                     <td class="py-3 px-4">
@@ -68,7 +68,7 @@
                     <td class="py-3 px-4">{{ $day->openedBy->first_name ?? '--' }}</td>
                     <td class="py-3 px-4">{{ $day->closedBy->first_name ?? '--' }}</td>
                     <td class="py-3 px-4 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">
-                        <a href="{{ route('admin.work_days.show', $day->id) }}" class="text-[#38bdf8] hover:text-white transition-colors">{{ __('View Log') }}</a>
+                        <a href="{{ route('admin.work_days.show', $day->id) }}" class="text-[#0ea5e9] dark:text-[#38bdf8] hover:text-amber-600 dark:hover:text-white transition-colors font-medium">{{ __('View Log') }}</a>
                     </td>
                 </tr>
                 @empty
