@@ -64,7 +64,7 @@
                 </div>
                 <div class="flex justify-between items-center py-3 border-b border-white/5">
                     <span class="text-slate-400">{{ __('Supplier Freight & Unloading Fees') }}</span>
-                    <span class="text-white font-bold">{{ number_format($workDay->supplies->sum('unloading_fee'), 2) }}</span>
+                    <span class="text-white font-bold">{{ number_format($workDay->supplies->where('unloading_fee_payer', 'bakery')->sum('unloading_fee'), 2) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 border-b border-white/5">
                     <span class="text-slate-400">{{ __('Total Shift Base Wages Issued') }}</span>

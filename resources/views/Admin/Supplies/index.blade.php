@@ -43,9 +43,15 @@
                     </td>
                     <td class="py-3 px-4">
                         <span class="px-2 py-1 bg-[#38bdf8]/10 text-[#0ea5e9] dark:text-[#38bdf8] text-xs rounded-md border border-[#0ea5e9]/20 font-bold shadow-sm whitespace-nowrap">{{ __($supply->category->name) }}</span>
+                        @if($supply->material_type_name)
+                            <div class="text-[10px] text-amber-500 mt-1 font-bold">{{ $supply->material_type_name }}</div>
+                        @endif
                     </td>
                     <td class="py-3 px-4">
-                        <div class="text-sm font-mono text-slate-900 dark:text-white font-bold">{{ number_format($supply->quantity, 2) }} Units</div>
+                        <div class="text-sm font-mono text-slate-900 dark:text-white font-bold">{{ number_format($supply->quantity, 2) }} {{ __('Units') }}</div>
+                        @if($supply->boxes_count)
+                            <div class="text-[10px] text-slate-500 mt-1 font-mono">{{ $supply->boxes_count }} {{ __('Boxes') }} × {{ $supply->box_weight }} {{ __('KG') }}</div>
+                        @endif
                         <div class="text-[11px] text-slate-500 mt-1">{{ __('At') }} {{ number_format($supply->unit_price, 2) }} {{ $supply->currency->symbol }} / {{ __('Unit') }}</div>
                     </td>
                     <td class="py-3 px-4 text-right">

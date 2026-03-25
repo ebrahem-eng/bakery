@@ -21,6 +21,11 @@ class Supply extends Model
         'total_cost',
         'paid_amount',
         'unloading_fee',
+        'material_type_name',
+        'boxes_count',
+        'box_weight',
+        'unloading_fee_payer',
+        'unloading_fee_currency_id',
         'notes',
     ];
 

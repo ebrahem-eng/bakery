@@ -80,7 +80,13 @@
                                 {{ __($supply->category->name ?? '--') }}
                             </td>
                             <td class="py-3 px-4">
-                                <span class="font-mono">{{ $supply->quantity }}</span>
+                                <div class="text-sm font-mono text-slate-900 dark:text-white font-bold">{{ number_format($supply->quantity, 2) }} {{ __('Units') }}</div>
+                                @if($supply->boxes_count)
+                                    <div class="text-[10px] text-slate-500 mt-1 font-mono">{{ $supply->boxes_count }} {{ __('Boxes') }} × {{ $supply->box_weight }} {{ __('KG') }}</div>
+                                @endif
+                                @if($supply->material_type_name)
+                                    <div class="text-[10px] text-amber-500 mt-1 font-bold">{{ $supply->material_type_name }}</div>
+                                @endif
                             </td>
                             <td class="py-3 px-4 font-bold">
                                 {{ number_format($supply->total_cost, 2) }}
