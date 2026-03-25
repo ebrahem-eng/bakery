@@ -94,7 +94,7 @@
                 <!-- Transactions Summary -->
                 <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/5 text-xs">
                     <div class="glass-panel p-3 rounded-xl border border-white/5">
-                        <p class="text-slate-500 mb-1">{{ __('Advances (سلف)') }}</p>
+                        <p class="text-slate-500 mb-1">{{ __('Advances') }}</p>
                         <p class="text-red-400 font-bold">{{ number_format($advances, 2) }} <span class="text-[10px] text-red-400/70">{{ $worker->currency->code }}</span></p>
                     </div>
                     <div class="glass-panel p-3 rounded-xl border border-white/5">
@@ -171,9 +171,9 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Transaction Type') }}</label>
                     <select name="type" required class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium appearance-none">
-                        <option value="advance">{{ __('Advance (سلفة)') }}</option>
-                        <option value="allowance">{{ __('Allowance (مكافأة)') }}</option>
-                        <option value="deduction">{{ __('Deduction (خصم)') }}</option>
+                        <option value="advance">{{ __('Advance') }}</option>
+                        <option value="allowance">{{ __('Allowance') }}</option>
+                        <option value="deduction">{{ __('Deduction') }}</option>
                     </select>
                 </div>
 

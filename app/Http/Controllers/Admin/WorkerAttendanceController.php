@@ -15,7 +15,7 @@ class WorkerAttendanceController extends Controller
     {
         $activeWorkDay = WorkDay::where('status', 'active')->first();
         if (!$activeWorkDay) {
-            return redirect()->route('admin.dashboard')->with('error_message', 'No active work day found. Please start a day first.');
+            return redirect()->route('admin.dashboard')->with('error_message', __('No active work day found. Please start a day first.'));
         }
 
         $workers = Worker::with([
@@ -39,7 +39,7 @@ class WorkerAttendanceController extends Controller
 
         $activeWorkDay = WorkDay::where('status', 'active')->first();
         if (!$activeWorkDay) {
-            return back()->with('error_message', 'No active work day found.');
+            return back()->with('error_message', __('No active work day found.'));
         }
 
         $worker = Worker::findOrFail($request->worker_id);
@@ -51,7 +51,7 @@ class WorkerAttendanceController extends Controller
             ->first();
 
         if ($existingShift) {
-            return back()->with('error_message', 'Worker is already clocked in.');
+            return back()->with('error_message', __('Worker is already clocked in.'));
         }
 
         $rate = $worker->currency->is_local ? 1 : $worker->currency->exchange_rate;
@@ -65,20 +65,20 @@ class WorkerAttendanceController extends Controller
             'snapshot_exchange_rate' => $rate,
         ]);
 
-        return back()->with('success_message', 'Worker clocked in successfully.');
+        return back()->with('success_message', __('Worker clocked in successfully.'));
     }
 
     public function clockOut(WorkerShift $shift)
     {
         if ($shift->check_out) {
-            return back()->with('error_message', 'Worker is already clocked out.');
+            return back()->with('error_message', __('Worker is already clocked out.'));
         }
 
         $shift->update([
             'check_out' => now()
         ]);
 
-        return back()->with('success_message', 'Worker clocked out successfully.');
+        return back()->with('success_message', __('Worker clocked out successfully.'));
     }
 
     public function storeTransaction(Request $request)
@@ -91,7 +91,7 @@ class WorkerAttendanceController extends Controller
         ]);
 
         $activeWorkDay = WorkDay::where('status', 'active')->first();
-        if (!$activeWorkDay) return back()->with('error_message', 'No active work day.');
+        if (!$activeWorkDay) return back()->with('error_message', __('No active work day.'));
 
         $worker = Worker::findOrFail($request->worker_id);
         $rate = $worker->currency->is_local ? 1 : $worker->currency->exchange_rate;
@@ -106,6 +106,6 @@ class WorkerAttendanceController extends Controller
             'notes' => $request->notes,
         ]);
 
-        return back()->with('success_message', ucfirst($request->type) . ' recorded successfully.');
+        return back()->with('success_message', __(':type recorded successfully.', ['type' => __(ucfirst($request->type))]));
     }
 }
