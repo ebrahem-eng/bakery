@@ -61,6 +61,13 @@ class ManageAdminsController extends Controller
         return redirect()->route('admin.manage_admins.index')->with('success', __('Admin created successfully.'));
     }
 
+    public function show(Admin $manage_admin)
+    {
+        $admin = $manage_admin;
+        $admin->load('mobiles', 'roles');
+        return view('Admin.Admins.show', compact('admin'));
+    }
+
     public function edit(Admin $manage_admin)
     {
         $admin = $manage_admin;

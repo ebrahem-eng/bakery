@@ -538,5 +538,16 @@
     "Recorded By": "سُجل بواسطة",
     "Date / Time": "التاريخ / الوقت",
     "Allowances": "المكافآت / البدلات",
-    "Extra bonuses/Allowances": "مكافآت أو بدلات إضافية"
+    "Extra bonuses/Allowances": "مكافآت أو بدلات إضافية",
+    "Account Details": "تفاصيل الحساب",
+    "Active Roles": "الأدوار النشطة",
+    "No roles assigned": "لا توجد أدوار محددة",
+    "Gender / Age": "الجنس / السن",
+    "Years": "سنوات",
+    "Secondary Information": "معلومات ثانوية",
+    "No address registered": "لا يوجد عنوان مسجل",
+    "Account History": "سجل الحساب",
+    "Last Updated": "آخر تحديث",
+    "No mobile numbers registered": "لا توجد أرقام مسجلة",
+    "Administrator": "مسؤول"
 }
