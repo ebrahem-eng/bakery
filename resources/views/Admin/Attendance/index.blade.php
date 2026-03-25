@@ -114,9 +114,16 @@
             <div class="p-4 border-t border-white/5 bg-black/20 flex gap-2">
                 @if(!$activeShift)
                     <!-- Clock IN -->
-                    <form action="{{ route('admin.attendance.clock_in') }}" method="POST" class="flex-1">
+                    <form action="{{ route('admin.attendance.clock_in') }}" method="POST" class="flex-1 space-y-3">
                         @csrf
                         <input type="hidden" name="worker_id" value="{{ $worker->id }}">
+                        
+                        <div class="relative group/time">
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Arrival Time') }}</label>
+                            <input type="datetime-local" name="check_in" value="{{ now()->format('Y-m-d\TH:i') }}" 
+                                class="w-full px-3 py-2 bg-black/20 border border-white/5 rounded-lg text-xs text-slate-300 focus:outline-none focus:border-emerald-500/50 transition-all font-medium">
+                        </div>
+
                         <button type="submit" class="w-full py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors focus:ring-2 focus:ring-emerald-500">
                             {{ $completedShifts->count() > 0 ? __('Start New Shift') : __('Clock In') }}
                         </button>

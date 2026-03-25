@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\Worker;
 use App\Models\WorkerMobile;
 use App\Models\Currency;
@@ -100,6 +101,10 @@ class WorkerController extends Controller
         $queryTransactions = $worker->transactions()->with(['workDay', 'currency'])->orderBy('id', 'desc');
 
         // Apply Date Filters
+        $startDate = $request->date_from;
+        $endDate = $request->date_to;
+        $type = $request->type;
+
         if ($request->filled('date_from')) {
             $queryShifts->whereHas('workDay', fn($q) => $q->where('start_time', '>=', $request->date_from));
             $queryTransactions->whereHas('workDay', fn($q) => $q->where('start_time', '>=', $request->date_from));
@@ -109,8 +114,8 @@ class WorkerController extends Controller
             $queryTransactions->whereHas('workDay', fn($q) => $q->where('start_time', '<=', $request->date_to . ' 23:59:59'));
         }
 
-        $shifts = $queryShifts->get();
-        $transactions = $queryTransactions->get();
+        $shifts = $queryShifts->with('admin', 'currency', 'workDay')->get();
+        $transactions = $queryTransactions->with('admin', 'currency')->get();
 
         // Calculate Stats
         $totalEarnedSYPN = $shifts->sum(function($s) {
@@ -121,47 +126,74 @@ class WorkerController extends Controller
             return $t->amount * ($t->exchange_rate ?: 1);
         });
 
-        $totalDiscountsSYPN = $transactions->where('type', 'discount')->sum(function($t) {
+        $totalDiscountsSYPN = $transactions->where('type', 'deduction')->sum(function($t) {
             return $t->amount * ($t->exchange_rate ?: 1);
         });
 
-        $balanceSYPN = $totalEarnedSYPN - $totalAdvancesSYPN - $totalDiscountsSYPN;
+        $totalAllowancesSYPN = $transactions->where('type', 'allowance')->sum(function($t) {
+            return $t->amount * ($t->exchange_rate ?: 1);
+        });
+
+        $balanceSYPN = $totalEarnedSYPN + $totalAllowancesSYPN - $totalAdvancesSYPN - $totalDiscountsSYPN;
 
         // Unified History for Display
-        $history = collect();
+        $historyList = collect();
         foreach($shifts as $s) {
-            $history->push([
-                'date' => $s->workDay?->start_time,
+            $historyList->push([
+                'id' => 'shift_' . $s->id,
+                'date' => $s->check_in,
                 'type' => 'wage',
                 'description' => __('Daily Wage'),
                 'amount' => $s->snapshot_daily_wage,
                 'currency' => $s->currency?->code ?? 'SYPN',
                 'rate' => $s->snapshot_exchange_rate,
                 'total_sypn' => $s->snapshot_daily_wage * ($s->snapshot_exchange_rate ?: 1),
+                'admin' => $s->admin?->name ?? __('System'),
                 'icon' => '<svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
             ]);
         }
         foreach($transactions as $t) {
-            $history->push([
-                'date' => $t->workDay?->start_time ?? $t->created_at,
+            $historyList->push([
+                'id' => 'trans_' . $t->id,
+                'date' => $t->created_at,
                 'type' => $t->type,
-                'description' => $t->notes ?: __($t->type),
+                'description' => $t->notes ?: __(ucfirst($t->type)),
                 'amount' => $t->amount,
                 'currency' => $t->currency?->code ?? 'SYPN',
                 'rate' => $t->exchange_rate,
                 'total_sypn' => $t->amount * ($t->exchange_rate ?: 1),
-                'icon' => $t->type == 'discount' 
+                'admin' => $t->admin?->name ?? __('System'),
+                'icon' => $t->type == 'deduction' 
                     ? '<svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
                     : '<svg class="w-4 h-4 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>'
             ]);
         }
 
-        $history = $history->sortByDesc('date');
+        $sortedHistory = $historyList->sortByDesc('date');
 
-        return view('Admin.Workers.show', compact(
-            'worker', 'history', 'totalEarnedSYPN', 
-            'totalAdvancesSYPN', 'totalDiscountsSYPN', 'balanceSYPN'
-        ));
+        // Manual Pagination
+        $page = request()->get('page', 1);
+        $perPage = 15;
+        $paginatedHistory = new LengthAwarePaginator(
+            $sortedHistory->forPage($page, $perPage),
+            $sortedHistory->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('Admin.Workers.show', [
+            'worker' => $worker,
+            'history' => $paginatedHistory,
+            'totalEarnedSYPN' => $totalEarnedSYPN,
+            'totalAdvancesSYPN' => $totalAdvancesSYPN,
+            'totalDiscountsSYPN' => $totalDiscountsSYPN,
+            'totalAllowancesSYPN' => $totalAllowancesSYPN,
+            'balanceSYPN' => $balanceSYPN,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'type' => $type
+        ]);
     }
 
     public function destroy(Worker $worker)

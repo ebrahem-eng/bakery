@@ -18,6 +18,7 @@ class WorkerTransaction extends Model
         'amount',
         'currency_id',
         'exchange_rate',
+        'admin_id',
         'notes'
     ];
 
@@ -43,5 +44,10 @@ class WorkerTransaction extends Model
     public function currency()
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class);
     }
 }

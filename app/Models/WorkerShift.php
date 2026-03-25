@@ -19,6 +19,7 @@ class WorkerShift extends Model
         'snapshot_daily_wage',
         'snapshot_currency_id',
         'snapshot_exchange_rate',
+        'admin_id',
         'notes'
     ];
 
@@ -49,5 +50,10 @@ class WorkerShift extends Model
     public function currency()
     {
         return $this->belongsTo(Currency::class, 'snapshot_currency_id');
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class);
     }
 }

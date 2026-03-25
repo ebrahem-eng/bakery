@@ -74,6 +74,7 @@
     "Bakery (Added to Daily Expenses)": "المخبز (تضاف للمصاريف التشغيلية)",
     "Bakery Accounting System": "نظام محاسبة المخبز",
     "Bakery Portal": "بوابة المخبز",
+    "Arrival Time": "وقت الوصول",
     "Bakery management dashboard is operating smoothly.": "لوحة إدارة المخبز تعمل بسلاسة.",
     "Balance": "الرصيد",
     "Balance Status": "حالة الرصيد",
@@ -533,5 +534,9 @@
     "Exchange": "الصرف",
     "Total Local (SYPN)": "الإجمالي المحلي (ل.س.ن)",
     "No transactions or shifts found for the selected period.": "لم يتم العثور على حركات أو دوريات للفترة المحددة.",
-    ":type recorded successfully.": "تم تسجيل :type بنجاح."
+    ":type recorded successfully.": "تم تسجيل :type بنجاح.",
+    "Recorded By": "سُجل بواسطة",
+    "Date / Time": "التاريخ / الوقت",
+    "Allowances": "المكافآت / البدلات",
+    "Extra bonuses/Allowances": "مكافآت أو بدلات إضافية"
 }

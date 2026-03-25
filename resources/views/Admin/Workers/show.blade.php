@@ -57,6 +57,18 @@
         </div>
     </div>
 
+    <!-- Total Allowances -->
+    <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group border-sky-400/20">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform text-sky-400">
+            <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+        </div>
+        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Allowances') }}</h3>
+        <div class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($totalAllowancesSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ml-1">{{ __('SYPN') }}</span></div>
+        <div class="mt-2 text-[10px] text-sky-400 font-bold flex items-center gap-1 uppercase">
+            {{ __('Extra bonuses/Allowances') }}
+        </div>
+    </div>
+
     <!-- Net Balance -->
     <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group border-[#0ea5e9]/30 bg-gradient-to-br from-[#0ea5e9]/5 to-transparent">
         <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-20 group-hover:scale-110 transition-transform text-[#0ea5e9]">
@@ -104,8 +116,9 @@
         <table class="w-full text-left border-collapse" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
             <thead>
                 <tr class="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-white/5 opacity-70">
-                    <th class="py-4 px-6 font-bold">{{ __('Date') }}</th>
+                    <th class="py-4 px-6 font-bold">{{ __('Date / Time') }}</th>
                     <th class="py-4 px-6 font-bold">{{ __('Type / Description') }}</th>
+                    <th class="py-4 px-6 font-bold">{{ __('Recorded By') }}</th>
                     <th class="py-4 px-6 font-bold">{{ __('Amount Recorded') }}</th>
                     <th class="py-4 px-6 font-bold">{{ __('Exchange') }}</th>
                     <th class="py-4 px-6 font-bold {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">{{ __('Total Local (SYPN)') }}</th>
@@ -115,15 +128,15 @@
                 @forelse($history as $item)
                 <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
                     <td class="py-4 px-6">
-                        <div class="text-slate-900 dark:text-white font-bold opacity-80 flex items-center gap-2">
-                             <span class="w-1.5 h-1.5 rounded-full {{ $item['type'] == 'wage' ? 'bg-emerald-500' : ($item['type'] == 'discount' ? 'bg-amber-500' : 'bg-sky-500') }}"></span>
-                             {{ $item['date'] ? $item['date']->format('Y-m-d') : '-' }}
+                        <div class="text-slate-900 dark:text-white font-bold opacity-80 flex items-center gap-2 whitespace-nowrap">
+                             <span class="w-1.5 h-1.5 rounded-full {{ $item['type'] == 'wage' ? 'bg-emerald-500' : ($item['type'] == 'deduction' ? 'bg-amber-500' : 'bg-sky-500') }}"></span>
+                             {{ $item['date'] ? $item['date']->format('Y-m-d H:i') : '-' }}
                         </div>
-                        <div class="text-[10px] text-slate-400 uppercase mt-0.5">{{ $item['date'] ? $item['date']->format('l') : '' }}</div>
+                        <div class="text-[10px] text-slate-400 uppercase mt-0.5">{{ $item['date'] ? $item['date']->translatedFormat('l') : '' }}</div>
                     </td>
                     <td class="py-4 px-6">
                         <div class="flex items-center gap-3">
-                            <div class="p-2 rounded-lg {{ $item['type'] == 'wage' ? 'bg-emerald-500/10' : ($item['type'] == 'discount' ? 'bg-amber-500/10' : 'bg-sky-500/10') }}">
+                            <div class="p-2 rounded-lg {{ $item['type'] == 'wage' ? 'bg-emerald-500/10' : ($item['type'] == 'deduction' ? 'bg-amber-500/10' : 'bg-sky-500/10') }}">
                                 {!! $item['icon'] !!}
                             </div>
                             <div>
@@ -131,6 +144,9 @@
                                 <div class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">{{ __(ucfirst($item['type'])) }}</div>
                             </div>
                         </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="text-slate-500 dark:text-slate-400 text-xs font-medium">{{ $item['admin'] }}</div>
                     </td>
                     <td class="py-4 px-6">
                         <div class="text-slate-900 dark:text-white font-black">{{ number_format($item['amount'], 2) }} <span class="text-[10px] text-slate-400 font-normal ml-1">{{ $item['currency'] }}</span></div>
@@ -141,8 +157,8 @@
                         </div>
                     </td>
                     <td class="py-4 px-6 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">
-                        <span class="px-2 py-1 rounded-md text-[11px] font-black tracking-tight {{ $item['type'] == 'wage' ? 'bg-emerald-500/10 text-emerald-500' : ($item['type'] == 'discount' ? 'bg-amber-500/10 text-amber-500' : 'bg-sky-500/10 text-sky-500') }}">
-                            {{ $item['type'] == 'wage' ? '+' : '-' }} {{ number_format($item['total_sypn'], 0) }}
+                        <span class="px-2 py-1 rounded-md text-[11px] font-black tracking-tight {{ $item['type'] == 'wage' ? 'bg-emerald-500/10 text-emerald-500' : ($item['type'] == 'deduction' ? 'bg-amber-500/10 text-amber-500' : 'bg-sky-500/10 text-sky-500') }}">
+                            {{ in_array($item['type'], ['wage', 'allowance']) ? '+' : '-' }} {{ number_format($history->total() > 0 ? $item['total_sypn'] : 0, 0) }}
                         </span>
                     </td>
                 </tr>
@@ -158,6 +174,9 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+    <div class="p-4 bg-slate-50 dark:bg-black/20 border-t border-slate-200 dark:border-white/5">
+        {{ $history->links() }}
     </div>
 </div>
 @endsection

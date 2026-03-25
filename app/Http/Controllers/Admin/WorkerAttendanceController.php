@@ -35,6 +35,7 @@ class WorkerAttendanceController extends Controller
     {
         $request->validate([
             'worker_id' => 'required|exists:workers,id',
+            'check_in' => 'nullable|date',
         ]);
 
         $activeWorkDay = WorkDay::where('status', 'active')->first();
@@ -59,10 +60,11 @@ class WorkerAttendanceController extends Controller
         WorkerShift::create([
             'worker_id' => $worker->id,
             'work_day_id' => $activeWorkDay->id,
-            'check_in' => now(),
+            'check_in' => $request->check_in ?? now(),
             'snapshot_daily_wage' => $worker->daily_wage,
             'snapshot_currency_id' => $worker->currency_id,
             'snapshot_exchange_rate' => $rate,
+            'admin_id' => auth()->id(),
         ]);
 
         return back()->with('success_message', __('Worker clocked in successfully.'));
@@ -104,6 +106,7 @@ class WorkerAttendanceController extends Controller
             'currency_id' => $worker->currency_id,
             'exchange_rate' => $rate,
             'notes' => $request->notes,
+            'admin_id' => auth()->id(),
         ]);
 
         return back()->with('success_message', __(':type recorded successfully.', ['type' => __(ucfirst($request->type))]));
