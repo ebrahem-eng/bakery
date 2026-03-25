@@ -59,11 +59,11 @@
 
         <!-- Exchange Rate Step (Conditional) -->
         <div x-show="showExchangeRate()" x-transition class="md:col-span-2 p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
-            <label class="block text-sm font-bold text-amber-600 dark:text-amber-400 mb-2">{{ __('Custom Exchange Rate') }} (1 <span x-text="currencies.find(c => c.id == currencyId)?.code || ''"></span> = ?? SYP)</label>
+            <label class="block text-sm font-bold text-amber-600 dark:text-amber-400 mb-2">{{ __('Custom Exchange Rate') }} (1 <span x-text="currencies.find(c => c.id == currencyId)?.code || ''"></span> = ?? {{ __('SYPN') }})</label>
             <div class="flex items-center gap-4">
-                <input type="number" step="0.01" name="exchange_rate" :value="getDefaultRate()" class="glass-input flex-1 px-4 py-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-amber-500 border border-amber-500/30" placeholder="0.00">
+                <input type="number" step="0.01" name="exchange_rate" :value="getDefaultRate()" class="glass-input flex-1 px-4 py-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-amber-500 border border-amber-500/30" placeholder="{{ __('Enter value in SYPN') }}">
                 <p class="text-xs text-slate-500 max-w-[200px] leading-relaxed">
-                    {{ __('Adjust the exchange rate if it differs from the system default for this specific wage agreement.') }}
+                    {{ __('Please enter the converted value in SYPN for this wage agreement.') }}
                 </p>
             </div>
         </div>
