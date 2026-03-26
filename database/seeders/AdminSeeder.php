@@ -10,16 +10,20 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        Admin::firstOrCreate(
+        $admin = Admin::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
-                'name' => 'Default Admin',
-                'email' => 'admin@example.com',
+                'first_name' => 'Default',
+                'last_name' => 'Admin',
                 'password' => Hash::make('Password@123'),
                 'gender' => 'male',
                 'status' => 'active',
-                'phone' => '0000000000',
             ]
         );
+
+        // Assign Super Admin role to the default administrator
+        if (!$admin->hasRole('Super Admin')) {
+            $admin->assignRole('Super Admin');
+        }
     }
 }

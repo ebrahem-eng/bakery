@@ -21,6 +21,8 @@ class AdminAuthMiddleware
             return redirect()->route('admin.login.page')->with('error_message', 'Your account is inactive.');
         }
 
+        Auth::shouldUse('admin');
+
         return $next($request);
     }
 }

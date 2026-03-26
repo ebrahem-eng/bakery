@@ -15,13 +15,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // 1. Core Config
+        $this->call(CurrencySeeder::class);
+        $this->call(CategorySeeder::class);
+        
+        // 2. Roles & Admin
+        $this->call(RolesAndPermissionsSeeder::class);
         $this->call(AdminSeeder::class);
 
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // 3. Realistic Application Data for Testing
+        $this->call(SystemTestingSeeder::class);
     }
 }
