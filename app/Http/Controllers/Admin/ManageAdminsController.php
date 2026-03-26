@@ -34,6 +34,7 @@ class ManageAdminsController extends Controller
             'password' => 'required|string|min:6',
             'mobiles' => 'array',
             'roles' => 'array',
+            'img' => 'nullable|image|max:2048',
         ]);
 
         $admin = Admin::create([
@@ -45,6 +46,7 @@ class ManageAdminsController extends Controller
             'age' => $request->age,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'img' => $request->hasFile('img') ? $request->file('img')->store('admins', 'public') : null,
         ]);
 
         if ($request->has('mobiles')) {
@@ -88,6 +90,7 @@ class ManageAdminsController extends Controller
             'email' => 'required|email|unique:admins,email,'.$admin->id,
             'mobiles' => 'array',
             'roles' => 'array',
+            'img' => 'nullable|image|max:2048',
         ]);
 
         $data = [
@@ -102,6 +105,10 @@ class ManageAdminsController extends Controller
 
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
+        }
+
+        if ($request->hasFile('img')) {
+            $data['img'] = $request->file('img')->store('admins', 'public');
         }
 
         $admin->update($data);

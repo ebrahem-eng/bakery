@@ -123,12 +123,11 @@
                                     <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name={{ urlencode(auth()->guard('admin')->user()->name) }}&background=0f172a&color=f59e0b" alt="Admin">
                                 @endif
                             </button>
-                            <div x-show="profileOpen" x-transition class="absolute right-0 mt-2 w-48 glass-dropdown rounded-xl py-1 z-50 origin-top-right shadow-xl border border-slate-200 dark:border-white/10" style="display: none;">
-                                <a href="{{ route('admin.manage_admins.show', auth()->guard('admin')->id()) }}" class="block px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 hover:text-amber-600 dark:hover:text-white transition-colors">System Preferences</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 hover:text-amber-600 dark:hover:text-white transition-colors">Access Tokens</a>
+                            <div x-show="profileOpen" x-transition class="absolute {{ app()->getLocale() == 'ar' ? 'left-0 origin-top-left' : 'right-0 origin-top-right' }} mt-2 w-48 glass-dropdown rounded-xl py-1 z-50 shadow-xl border border-slate-200 dark:border-white/10" style="display: none;">
+                                <a href="{{ route('admin.manage_admins.show', auth()->guard('admin')->id()) }}" class="block px-4 py-2 text-sm {{ app()->getLocale() == 'ar' ? 'text-right' : 'text-left' }} text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/10 hover:text-amber-600 dark:hover:text-white transition-colors">{{ __('System Preferences') }}</a>
                                 <form method="POST" action="{{ route('admin.logout') }}">
                                     @csrf
-                                    <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-white/10 hover:text-red-600 dark:hover:text-red-300 transition-colors border-t border-slate-100 dark:border-white/5 mt-1 pt-2">Terminate Session</button>
+                                    <button type="submit" class="w-full {{ app()->getLocale() == 'ar' ? 'text-right' : 'text-left' }} block px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-white/10 hover:text-red-600 dark:hover:text-red-300 transition-colors border-t border-slate-100 dark:border-white/5 mt-1 pt-2">{{ __('Terminate Session') }}</button>
                                 </form>
                             </div>
                         </div>

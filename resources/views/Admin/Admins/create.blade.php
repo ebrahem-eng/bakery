@@ -5,7 +5,7 @@
     <h1 class="text-2xl font-bold text-white tracking-tight">{{ __('Add Admin Account') }}</h1>
 </div>
 
-<form action="{{ route('admin.manage_admins.store') }}" method="POST" class="glass-panel p-6 rounded-2xl border border-white/5 max-w-5xl" x-data="{ mobiles: [''] }">
+<form action="{{ route('admin.manage_admins.store') }}" method="POST" enctype="multipart/form-data" class="glass-panel p-6 rounded-2xl border border-white/5 max-w-5xl" x-data="{ mobiles: [''] }">
     @csrf
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -47,6 +47,11 @@
         <div>
             <label class="block text-sm font-medium text-slate-300 mb-2">{{ __('Address') }}</label>
             <input type="text" name="address" class="glass-input block w-full px-4 py-3 rounded-xl bg-black/30 text-white focus:outline-none focus:ring-1 focus:ring-[#eab308] transition-all">
+        </div>
+        <div class="md:col-span-2 mt-4">
+            <label class="block text-sm font-medium text-slate-300 mb-2">{{ __('Profile Picture') }}</label>
+            <input type="file" name="img" accept="image/*" class="glass-input block w-full px-4 py-3 rounded-xl bg-black/30 text-white focus:outline-none focus:ring-1 focus:ring-[#eab308] transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#eab308] file:text-black hover:file:bg-[#fde047]">
+            @error('img') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
         </div>
     </div>
 

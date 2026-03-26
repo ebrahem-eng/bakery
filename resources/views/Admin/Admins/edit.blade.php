@@ -6,7 +6,7 @@
     <p class="text-sm text-slate-400 mt-1">{{ $admin->first_name }} {{ $admin->last_name }}</p>
 </div>
 
-<form action="{{ route('admin.manage_admins.update', $admin->id) }}" method="POST" class="glass-panel p-6 rounded-2xl border border-white/5 max-w-5xl" x-data="{ mobiles: {{ $admin->mobiles->count() ? collect($admin->mobiles->pluck('mobile_number'))->toJson() : '[\'\']' }} }">
+<form action="{{ route('admin.manage_admins.update', $admin->id) }}" method="POST" enctype="multipart/form-data" class="glass-panel p-6 rounded-2xl border border-white/5 max-w-5xl" x-data="{ mobiles: {{ $admin->mobiles->count() ? collect($admin->mobiles->pluck('mobile_number'))->toJson() : '[\'\']' }} }">
     @csrf @method('PUT')
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -48,6 +48,16 @@
         <div>
             <label class="block text-sm font-medium text-slate-300 mb-2">{{ __('Address') }}</label>
             <input type="text" name="address" value="{{ old('address', $admin->address) }}" class="glass-input block w-full px-4 py-3 rounded-xl bg-black/30 text-white focus:outline-none focus:ring-1 focus:ring-[#38bdf8] transition-all">
+        </div>
+        <div class="md:col-span-2 mt-4">
+            <label class="block text-sm font-medium text-slate-300 mb-2">{{ __('Profile Picture') }}</label>
+            <div class="flex items-center gap-4">
+                @if($admin->img)
+                <img src="{{ asset('storage/' . $admin->img) }}" alt="Profile" class="w-12 h-12 rounded-full object-cover border border-white/10">
+                @endif
+                <input type="file" name="img" accept="image/*" class="glass-input block w-full px-4 py-3 rounded-xl bg-black/30 text-white focus:outline-none focus:ring-1 focus:ring-[#38bdf8] transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#38bdf8] file:text-black hover:file:bg-[#7dd3fc]">
+            </div>
+            @error('img') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
         </div>
     </div>
 
