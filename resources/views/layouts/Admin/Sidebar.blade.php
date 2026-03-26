@@ -26,6 +26,14 @@
                     {{ __('Dashboard') }}
                 </a>
 
+                <!-- Accounts -->
+                <a href="{{ route('admin.accounts.index') }}" class="{{ request()->routeIs('admin.accounts.*') ? 'sidebar-item-active text-amber-600 dark:text-[#fde047]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.accounts.*') ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    {{ __('Accounts') }}
+                </a>
+
                 <!-- Work Days -->
                 <a href="{{ route('admin.work_days.index') }}" class="{{ request()->routeIs('admin.work_days.*') ? 'sidebar-item-active text-amber-600 dark:text-[#fde047]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
                     <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.work_days.*') ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -21,6 +21,9 @@ Route::group(['middleware' => ['admin.auth']], function () {
     // ── Dashboard ──────────────────────────────────────────────────────
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
+    // ── Accounts ──────────────────────────────────────────────────────
+    Route::get('/accounts', [\App\Http\Controllers\Admin\AccountsController::class, 'index'])->name('accounts.index');
+
     // ── Roles & Permissions ────────────────────────────────────────────
     Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
 
