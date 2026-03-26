@@ -49,5 +49,6 @@
             @include('layouts.Admin.Footer')
         </main>
     </div>
+    @stack('scripts')
 </body>
 </html>
