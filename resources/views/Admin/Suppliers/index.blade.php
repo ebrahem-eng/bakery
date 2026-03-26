@@ -8,10 +8,12 @@
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ __('Suppliers') }}</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ __('Manage vendors mapping to raw material categories.') }}</p>
     </div>
+    @can('create suppliers')
     <a href="{{ route('admin.suppliers.create') }}" class="bg-[#eab308]/10 text-[#eab308] border border-[#eab308]/30 hover:bg-[#eab308] hover:text-[#451a03] transition-all px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-[0_0_15px_rgba(234,179,8,0.15)]">
         <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
         {{ __('Add Supplier') }}
     </a>
+    @endcan
 </div>
 
 @if(session('success'))
@@ -79,11 +81,15 @@
                     </td>
                     <td class="py-3 px-4 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">
                         <a href="{{ route('admin.suppliers.show', $supplier->id) }}" class="text-[#38bdf8] hover:text-white transition-colors {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('View Profile') }}</a>
+                        @can('edit suppliers')
                         <a href="{{ route('admin.suppliers.edit', $supplier->id) }}" class="text-[#eab308] hover:text-white transition-colors {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('Edit') }}</a>
+                        @endcan
+                        @can('delete suppliers')
                         <form action="{{ route('admin.suppliers.destroy', $supplier->id) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Delete Supplier completely?') }}');">
                             @csrf @method('DELETE')
                             <button type="submit" class="text-red-400 hover:text-white transition-colors">{{ __('Delete') }}</button>
                         </form>
+                        @endcan
                     </td>
                 </tr>
                 @empty

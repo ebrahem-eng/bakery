@@ -198,17 +198,23 @@
                 <a href="{{ route('admin.distributors.show', $distributor) }}" class="py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/20 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-colors text-center">
                     {{ __('Profile') }}
                 </a>
+                @can('create distributions')
                 <button type="button" x-data="" @click="$dispatch('open-sale-modal', { id: {{ $distributor->id }}, name: '{{ $distributor->first_name }} {{ $distributor->last_name }}', currency: '{{ $distributor->currency->code }}' })" class="py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/20 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-colors">
                     {{ __('Sell') }}
                 </button>
+                @endcan
 
+                @can('edit returns')
                 <button type="button" x-data="" @click="$dispatch('open-return-modal', { id: {{ $distributor->id }}, name: '{{ $distributor->first_name }} {{ $distributor->last_name }}', currency: '{{ $distributor->currency->code }}' })" class="py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/20 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-colors">
                     {{ __('Return') }}
                 </button>
+                @endcan
 
+                @can('create accounts')
                 <button type="button" x-data="" @click="$dispatch('open-pay-modal', { id: {{ $distributor->id }}, name: '{{ $distributor->first_name }} {{ $distributor->last_name }}', currency: '{{ $distributor->currency->code }}' })" class="py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 border border-amber-500/20 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-colors">
                     {{ __('Pay') }}
                 </button>
+                @endcan
             </div>
         </div>
     @endforeach

@@ -32,7 +32,7 @@ class PermissionSeeder extends Seeder
             'view_admins', 'add_admin', 'edit_admin', 'delete_admin',
             'view_roles', 'add_role', 'edit_role', 'delete_role',
             // Settings & Categories
-            'manage_settings', 'manage_categories'
+            'manage_settings', 'manage_categories',
         ];
 
         foreach ($permissions as $permission) {

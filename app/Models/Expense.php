@@ -12,8 +12,8 @@ class Expense extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'work_day_id', 'admin_id', 'category', 'title', 'amount', 
-        'currency_id', 'exchange_rate', 'notes'
+        'work_day_id', 'admin_id', 'category', 'title', 'amount',
+        'currency_id', 'exchange_rate', 'notes',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -22,7 +22,7 @@ class Expense extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Expense was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Expense was {$eventName}");
     }
 
     public function workDay()

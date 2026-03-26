@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Setting;
-use App\Models\Currency;
 use App\Models\Category;
+use App\Models\Currency;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
@@ -18,10 +18,10 @@ class SettingsController extends Controller
         $currencies = Currency::orderBy('is_default', 'desc')->orderBy('name')->get();
         $categories = Category::orderBy('name')->get();
 
-        $bakeryName    = Setting::get('bakery_name', '');
-        $bakeryPhone   = Setting::get('bakery_phone', '');
+        $bakeryName = Setting::get('bakery_name', '');
+        $bakeryPhone = Setting::get('bakery_phone', '');
         $bakeryAddress = Setting::get('bakery_address', '');
-        $defaultLang   = Setting::get('default_language', 'ar');
+        $defaultLang = Setting::get('default_language', 'ar');
 
         return view('Admin.Settings.index', compact(
             'currencies', 'categories',
@@ -34,8 +34,8 @@ class SettingsController extends Controller
     public function updateBakeryInfo(Request $request)
     {
         $request->validate([
-            'bakery_name'    => 'nullable|string|max:255',
-            'bakery_phone'   => 'nullable|string|max:50',
+            'bakery_name' => 'nullable|string|max:255',
+            'bakery_phone' => 'nullable|string|max:50',
             'bakery_address' => 'nullable|string|max:500',
             'default_language' => 'nullable|in:ar,en',
         ]);
@@ -54,16 +54,16 @@ class SettingsController extends Controller
     public function storeCurrency(Request $request)
     {
         $request->validate([
-            'name'          => 'required|string|max:100|unique:currencies,name',
-            'code'          => 'required|string|max:10|unique:currencies,code',
+            'name' => 'required|string|max:100|unique:currencies,name',
+            'code' => 'required|string|max:10|unique:currencies,code',
             'exchange_rate' => 'required|numeric|min:0',
         ]);
 
         Currency::create([
-            'name'          => $request->name,
-            'code'          => $request->code,
+            'name' => $request->name,
+            'code' => $request->code,
             'exchange_rate' => $request->exchange_rate,
-            'is_default'    => false,
+            'is_default' => false,
         ]);
 
         return redirect()->route('admin.settings.index', ['tab' => 'currencies'])
@@ -73,10 +73,10 @@ class SettingsController extends Controller
     public function updateCurrency(Request $request, Currency $currency)
     {
         $request->validate([
-            'name'          => 'required|string|max:100|unique:currencies,name,' . $currency->id,
-            'code'          => 'required|string|max:10|unique:currencies,code,' . $currency->id,
+            'name' => 'required|string|max:100|unique:currencies,name,'.$currency->id,
+            'code' => 'required|string|max:10|unique:currencies,code,'.$currency->id,
             'exchange_rate' => 'required|numeric|min:0',
-            'is_default'    => 'nullable|boolean',
+            'is_default' => 'nullable|boolean',
         ]);
 
         if ($request->is_default) {
@@ -85,10 +85,10 @@ class SettingsController extends Controller
         }
 
         $currency->update([
-            'name'          => $request->name,
-            'code'          => $request->code,
+            'name' => $request->name,
+            'code' => $request->code,
             'exchange_rate' => $request->exchange_rate,
-            'is_default'    => $currency->is_default,
+            'is_default' => $currency->is_default,
         ]);
 
         return redirect()->route('admin.settings.index', ['tab' => 'currencies'])
@@ -117,7 +117,7 @@ class SettingsController extends Controller
         ]);
 
         Category::create([
-            'name'      => $request->name,
+            'name' => $request->name,
             'is_active' => true,
         ]);
 
@@ -128,12 +128,12 @@ class SettingsController extends Controller
     public function updateCategory(Request $request, Category $category)
     {
         $request->validate([
-            'name'      => 'required|string|max:100|unique:categories,name,' . $category->id,
+            'name' => 'required|string|max:100|unique:categories,name,'.$category->id,
             'is_active' => 'nullable|boolean',
         ]);
 
         $category->update([
-            'name'      => $request->name,
+            'name' => $request->name,
             'is_active' => $request->boolean('is_active'),
         ]);
 

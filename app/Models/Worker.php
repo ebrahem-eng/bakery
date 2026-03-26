@@ -19,11 +19,26 @@ class Worker extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Worker was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Worker was {$eventName}");
     }
 
-    public function mobiles() { return $this->hasMany(WorkerMobile::class); }
-    public function currency() { return $this->belongsTo(Currency::class); }
-    public function shifts() { return $this->hasMany(WorkerShift::class); }
-    public function transactions() { return $this->hasMany(WorkerTransaction::class); }
+    public function mobiles()
+    {
+        return $this->hasMany(WorkerMobile::class);
+    }
+
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    public function shifts()
+    {
+        return $this->hasMany(WorkerShift::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(WorkerTransaction::class);
+    }
 }

@@ -3,28 +3,31 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Category;
 use App\Models\Supplier;
 use App\Models\SupplierMobile;
-use App\Models\Category;
+use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
     public function index()
     {
         $suppliers = Supplier::with('mobiles', 'categories')->orderBy('id', 'desc')->get();
+
         return view('Admin.Suppliers.index', compact('suppliers'));
     }
 
     public function show(Supplier $supplier)
     {
         $supplier->load(['mobiles', 'categories', 'supplies.category', 'supplies.currency', 'supplies.workDay.openedBy']);
+
         return view('Admin.Suppliers.show', compact('supplier'));
     }
 
     public function create()
     {
         $categories = Category::where('is_active', true)->get();
+
         return view('Admin.Suppliers.create', compact('categories'));
     }
 
@@ -34,7 +37,7 @@ class SupplierController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'categories' => 'required|array',
-            'mobiles' => 'array'
+            'mobiles' => 'array',
         ]);
 
         $supplier = Supplier::create([
@@ -45,7 +48,7 @@ class SupplierController extends Controller
 
         if ($request->has('mobiles')) {
             foreach ($request->mobiles as $number) {
-                if(!empty($number)){
+                if (! empty($number)) {
                     SupplierMobile::create(['supplier_id' => $supplier->id, 'mobile_number' => $number]);
                 }
             }
@@ -60,6 +63,7 @@ class SupplierController extends Controller
     {
         $supplier->load('mobiles', 'categories');
         $categories = Category::where('is_active', true)->get();
+
         return view('Admin.Suppliers.edit', compact('supplier', 'categories'));
     }
 
@@ -69,7 +73,7 @@ class SupplierController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'categories' => 'required|array',
-            'mobiles' => 'array'
+            'mobiles' => 'array',
         ]);
 
         $supplier->update([
@@ -81,7 +85,7 @@ class SupplierController extends Controller
         if ($request->has('mobiles')) {
             $supplier->mobiles()->delete();
             foreach ($request->mobiles as $number) {
-                if(!empty($number)){
+                if (! empty($number)) {
                     SupplierMobile::create(['supplier_id' => $supplier->id, 'mobile_number' => $number]);
                 }
             }
@@ -95,6 +99,7 @@ class SupplierController extends Controller
     public function destroy(Supplier $supplier)
     {
         $supplier->delete();
+
         return redirect()->route('admin.suppliers.index')->with('success', __('Supplier permanently removed.'));
     }
 }

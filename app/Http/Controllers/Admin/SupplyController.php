@@ -3,25 +3,26 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Supply;
-use App\Models\Supplier;
 use App\Models\Category;
 use App\Models\Currency;
+use App\Models\Supplier;
+use App\Models\Supply;
 use App\Models\WorkDay;
+use Illuminate\Http\Request;
 
 class SupplyController extends Controller
 {
     public function index()
     {
         $supplies = Supply::with('supplier', 'category', 'currency', 'admin', 'workDay')->orderBy('id', 'desc')->get();
+
         return view('Admin.Supplies.index', compact('supplies'));
     }
 
     public function create()
     {
         $activeWorkDay = WorkDay::where('status', 'active')->first();
-        if (!$activeWorkDay) {
+        if (! $activeWorkDay) {
             return redirect()->route('admin.dashboard')->with('error_message', __('You must start a new Work Day before adding supplies.'));
         }
 
@@ -36,13 +37,14 @@ class SupplyController extends Controller
     public function show($id)
     {
         $supply = Supply::with(['supplier', 'category', 'currency', 'unloadingFeeCurrency', 'admin', 'workDay'])->findOrFail($id);
+
         return view('Admin.Supplies.show', compact('supply'));
     }
 
     public function store(Request $request)
     {
         $activeWorkDay = WorkDay::where('status', 'active')->first();
-        if (!$activeWorkDay) {
+        if (! $activeWorkDay) {
             return redirect()->route('admin.dashboard')->with('error_message', __('No active work day found.'));
         }
 
@@ -68,8 +70,8 @@ class SupplyController extends Controller
         foreach ($request->supplies as $item) {
             $total_cost = $item['quantity'] * $item['unit_price'];
             $paid = min($item['paid_amount'], $total_cost);
-            
-            $fee_currency = !empty($item['unloading_fee_currency_id']) ? $item['unloading_fee_currency_id'] : $item['currency_id'];
+
+            $fee_currency = ! empty($item['unloading_fee_currency_id']) ? $item['unloading_fee_currency_id'] : $item['currency_id'];
 
             Supply::create([
                 'admin_id' => auth()->guard('admin')->id(),

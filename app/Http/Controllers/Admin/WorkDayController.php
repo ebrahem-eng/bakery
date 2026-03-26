@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\WorkDay;
+use App\Models\Category;
 use App\Models\Consumption;
+use App\Models\Currency;
+use App\Models\WorkDay;
+use Illuminate\Http\Request;
 
 class WorkDayController extends Controller
 {
@@ -13,18 +15,19 @@ class WorkDayController extends Controller
     {
         $workDays = WorkDay::with('openedBy', 'closedBy')->orderBy('id', 'desc')->get();
         $activeWorkDay = WorkDay::where('status', 'active')->first();
+
         return view('Admin.WorkDays.index', compact('workDays', 'activeWorkDay'));
     }
 
     public function show($id)
     {
         $workDay = WorkDay::with(['distributions', 'supplies', 'expenses', 'workerShifts', 'workerTransactions', 'distributorReturns'])->findOrFail($id);
-        
+
         $totalSales = $workDay->distributions->sum('total_price') - $workDay->distributorReturns->sum('total_refund');
-        
+
         $totalExpenses = 0;
         $totalExpenses += $workDay->supplies->sum('total_cost');
-        $totalExpenses += $workDay->supplies->where('unloading_fee_payer', 'bakery')->sum(function($supply) {
+        $totalExpenses += $workDay->supplies->where('unloading_fee_payer', 'bakery')->sum(function ($supply) {
             return $supply->unloading_fee * ($supply->unloading_fee_exchange_rate ?? 1);
         });
         $totalExpenses += $workDay->workerShifts->sum('snapshot_daily_wage');
@@ -32,7 +35,8 @@ class WorkDayController extends Controller
         $totalExpenses -= $workDay->workerTransactions->where('type', 'deduction')->sum('amount');
         $totalExpenses += $workDay->expenses->sum('amount');
 
-        $defaultCurrency = \App\Models\Currency::where('is_default', true)->first();
+        $defaultCurrency = Currency::where('is_default', true)->first();
+
         return view('Admin.WorkDays.close', compact('workDay', 'totalSales', 'totalExpenses', 'defaultCurrency'));
     }
 
@@ -48,7 +52,7 @@ class WorkDayController extends Controller
             'status' => 'active',
             'is_holiday' => $request->has('is_holiday'),
             'holiday_reason' => $request->holiday_reason,
-            'start_time' => now()
+            'start_time' => now(),
         ]);
 
         return redirect()->route('admin.work_days.index')->with('success', __('New Work Day started successfully.'));
@@ -59,7 +63,7 @@ class WorkDayController extends Controller
         if ($workDay->status === 'closed') {
             return redirect()->route('admin.work_days.index')->with('error_message', __('Work day is already closed.'));
         }
-        
+
         $workDay->load([
             'supplies.currency',
             'workerShifts.worker',
@@ -70,10 +74,10 @@ class WorkDayController extends Controller
             'distributorReturns.distributor',
             'distributorReturns.currency',
             'distributorTransactions.currency',
-            'expenses.currency'
+            'expenses.currency',
         ]);
 
-        $defaultCurrency = \App\Models\Currency::where('is_default', true)->first();
+        $defaultCurrency = Currency::where('is_default', true)->first();
         $currencyCode = $defaultCurrency->code ?? '';
 
         // ── Sales Statistics ──────────────────────────────────────────
@@ -84,7 +88,7 @@ class WorkDayController extends Controller
 
         // ── Expense Breakdown ─────────────────────────────────────────
         $suppliesCost = $workDay->supplies->sum('total_cost');
-        $unloadingFees = $workDay->supplies->where('unloading_fee_payer', 'bakery')->sum(function($s) {
+        $unloadingFees = $workDay->supplies->where('unloading_fee_payer', 'bakery')->sum(function ($s) {
             return $s->unloading_fee * ($s->unloading_fee_exchange_rate ?? 1);
         });
         $shiftWages = $workDay->workerShifts->sum('snapshot_daily_wage');
@@ -92,7 +96,7 @@ class WorkDayController extends Controller
         $workerAdvances = $workDay->workerTransactions->where('type', 'advance')->sum('amount');
         $workerDeductions = $workDay->workerTransactions->where('type', 'deduction')->sum('amount');
         $operationalExpenses = $workDay->expenses->sum('amount');
-        
+
         $totalExpenses = $suppliesCost + $unloadingFees + $shiftWages + $workerAllowances - $workerDeductions + $operationalExpenses;
         $netDayBalance = $netSales - $totalExpenses;
 
@@ -101,7 +105,7 @@ class WorkDayController extends Controller
         $bundlesReturnedByDistributors = $workDay->distributorReturns->sum('bundle_count');
         $bundlesReceivedByShifts = $workDay->workerShifts->sum('bundles_received');
         $bundlesReturnedByShifts = $workDay->workerShifts->sum('bundles_returned');
-        
+
         // Previous day carry-over
         $previousDay = WorkDay::where('status', 'closed')
             ->where('id', '<', $workDay->id)
@@ -111,24 +115,27 @@ class WorkDayController extends Controller
 
         // Calculated remaining = previous carry-over + returned by shifts - distributed + returned by distributors
         $calculatedRemainingBundles = $previousCarryOverBundles + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors;
-        if ($calculatedRemainingBundles < 0) $calculatedRemainingBundles = 0;
+        if ($calculatedRemainingBundles < 0) {
+            $calculatedRemainingBundles = 0;
+        }
 
         // ── Currencies for settlement form ────────────────────────────
-        $currencies = \App\Models\Currency::all();
+        $currencies = Currency::all();
 
         // ── Cash collected from shifts ────────────────────────────────
-        $totalCashFromShifts = $workDay->workerShifts->sum(function($s) {
+        $totalCashFromShifts = $workDay->workerShifts->sum(function ($s) {
             return $s->cash_collected * $s->cash_exchange_rate;
         });
 
         // ── Raw Material Categories for Consumption ──────────────────
         $materialNames = ['طحين', 'مازوت', 'خميرة', 'ملح'];
-        $materialCategories = \App\Models\Category::whereIn('name', $materialNames)
+        $materialCategories = Category::whereIn('name', $materialNames)
             ->withSum('supplies as total_in', 'quantity')
             ->withSum('consumptions as total_out', 'quantity')
             ->get()
-            ->map(function($cat) {
+            ->map(function ($cat) {
                 $cat->available = ($cat->total_in ?? 0) - ($cat->total_out ?? 0);
+
                 return $cat;
             });
 
@@ -163,25 +170,27 @@ class WorkDayController extends Controller
 
         // Auto-calculate bundles from shift data
         $workDay->load(['workerShifts', 'distributions', 'distributorReturns']);
-        
+
         $bundlesReturnedByShifts = $workDay->workerShifts->sum('bundles_returned');
         $bundlesDistributed = $workDay->distributions->sum('bundle_count');
         $bundlesReturnedByDistributors = $workDay->distributorReturns->sum('bundle_count');
-        
+
         $previousDay = WorkDay::where('status', 'closed')
             ->where('id', '<', $workDay->id)
             ->orderBy('id', 'desc')
             ->first();
         $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
-        
+
         $calculatedBundles = $previousCarryOverBundles + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors;
-        if ($calculatedBundles < 0) $calculatedBundles = 0;
+        if ($calculatedBundles < 0) {
+            $calculatedBundles = 0;
+        }
 
         // Resolve exchange rate
         $exchangeRate = 1;
         if ($request->carried_over_currency_id) {
-            $currency = \App\Models\Currency::find($request->carried_over_currency_id);
-            if ($currency && !$currency->is_default) {
+            $currency = Currency::find($request->carried_over_currency_id);
+            if ($currency && ! $currency->is_default) {
                 $exchangeRate = $request->carried_over_exchange_rate ?? $currency->exchange_rate;
             }
         }
@@ -202,7 +211,7 @@ class WorkDayController extends Controller
         if ($request->consumptions) {
             foreach ($request->consumptions as $categoryId => $quantity) {
                 if ($quantity > 0) {
-                    \App\Models\Consumption::create([
+                    Consumption::create([
                         'work_day_id' => $workDay->id,
                         'category_id' => $categoryId,
                         'quantity' => $quantity,

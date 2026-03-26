@@ -8,10 +8,12 @@
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ __('Supply Records') }}</h1>
         <p class="text-sm text-slate-500 mt-1">{{ __('Chronological ledger of raw material purchases.') }}</p>
     </div>
+    @can('create supplies')
     <a href="{{ route('admin.supplies.create') }}" class="bg-[#0ea5e9]/10 text-[#0ea5e9] border border-[#0ea5e9]/30 hover:bg-[#0ea5e9] hover:text-white transition-all px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-[0_0_15px_rgba(14,165,233,0.15)]">
         <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
         {{ __('Register New Supply') }}
     </a>
+    @endcan
 </div>
 
 @if(session('success'))

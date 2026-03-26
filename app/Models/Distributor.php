@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -19,7 +19,7 @@ class Distributor extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Distributor was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Distributor was {$eventName}");
     }
 
     public function mobiles()

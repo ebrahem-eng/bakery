@@ -15,7 +15,7 @@ return new class extends Migration
             $table->foreignId('supplier_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->foreignId('currency_id')->constrained()->onDelete('cascade');
-            
+
             // Financial Data
             $table->decimal('exchange_rate', 15, 2)->default(1);
             $table->decimal('quantity', 10, 2);
@@ -23,9 +23,9 @@ return new class extends Migration
             $table->decimal('total_cost', 15, 2);
             $table->decimal('paid_amount', 15, 2)->default(0);
             $table->decimal('unloading_fee', 15, 2)->default(0);
-            
+
             $table->text('notes')->nullable();
-            
+
             $table->timestamps();
         });
     }

@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Category;
+use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
@@ -13,7 +13,7 @@ class CategorySeeder extends Seeder
             'طحين',   // Flour
             'مازوت', // Diesel
             'خميرة', // Yeast
-            'ملح'    // Salt
+            'ملح',    // Salt
         ];
 
         foreach ($categories as $category) {

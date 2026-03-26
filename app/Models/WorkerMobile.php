@@ -11,5 +11,8 @@ class WorkerMobile extends Model
 
     protected $fillable = ['worker_id', 'mobile_number'];
 
-    public function worker() { return $this->belongsTo(Worker::class); }
+    public function worker()
+    {
+        return $this->belongsTo(Worker::class);
+    }
 }

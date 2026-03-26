@@ -9,6 +9,7 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ __('Manage and track chronological accounting periods.') }}</p>
     </div>
     @if(!$activeWorkDay)
+    @can('create work days')
     <form action="{{ route('admin.work_days.store') }}" method="POST" class="inline-block">
         @csrf
         <button type="submit" class="bg-[#eab308]/10 text-[#eab308] border border-[#eab308]/30 hover:bg-[#eab308] hover:text-[#451a03] transition-all px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-[0_0_15px_rgba(234,179,8,0.15)]">
@@ -16,7 +17,9 @@
             {{ __('Start New Work Day') }}
         </button>
     </form>
+    @endcan
     @else
+    @can('edit work days')
     <a href="{{ route('admin.work_days.showCloseForm', $activeWorkDay->id) }}" class="bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all px-4 py-2 rounded-xl text-sm font-medium flex items-center shadow-[0_0_15px_rgba(239,68,68,0.15)]">
         <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -24,6 +27,7 @@
         </svg>
         {{ __('Close Active Work Day') }}
     </a>
+    @endcan
     @endif
 </div>
 

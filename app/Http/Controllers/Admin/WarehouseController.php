@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Supply;
 use App\Models\Consumption;
+use App\Models\Supply;
 use Illuminate\Http\Request;
 
 class WarehouseController extends Controller
@@ -19,6 +19,7 @@ class WarehouseController extends Controller
             ->get()
             ->map(function ($category) {
                 $category->current_stock = ($category->total_in ?? 0) - ($category->total_out ?? 0);
+
                 return $category;
             });
 

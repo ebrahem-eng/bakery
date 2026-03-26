@@ -8,10 +8,12 @@
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ __('Personnel & Workers') }}</h1>
         <p class="text-sm text-slate-500 mt-1">{{ __('Manage bakery staff, titles, and daily wages.') }}</p>
     </div>
+    @can('create workers')
     <a href="{{ route('admin.workers.create') }}" class="bg-[#0ea5e9]/10 text-[#0ea5e9] border border-[#0ea5e9]/30 hover:bg-[#0ea5e9] hover:text-white transition-all px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-[0_0_15px_rgba(14,165,233,0.15)]">
         <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
         {{ __('Register Worker') }}
     </a>
+    @endcan
 </div>
 
 @if(session('success'))
@@ -77,11 +79,15 @@
                     </td>
                     <td class="py-3 px-4 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">
                         <a href="{{ route('admin.workers.show', $worker->id) }}" class="text-sky-500 hover:text-sky-400 transition-colors font-medium {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('View Details') }}</a>
+                        @can('edit workers')
                         <a href="{{ route('admin.workers.edit', $worker->id) }}" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white transition-colors font-medium {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('Edit') }}</a>
+                        @endcan
+                        @can('delete workers')
                         <form action="{{ route('admin.workers.destroy', $worker->id) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Are you sure you want to terminate this worker profile?') }}');">
                             @csrf @method('DELETE')
                             <button type="submit" class="text-red-500 hover:text-red-400 transition-colors font-medium">{{ __('Remove') }}</button>
                         </form>
+                        @endcan
                     </td>
                 </tr>
                 @empty

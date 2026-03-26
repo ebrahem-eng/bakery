@@ -16,7 +16,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => 'required|email',
+            'email' => 'required|email',
             'password' => [
                 'required',
                 'min:8',
@@ -28,6 +28,7 @@ class AuthController extends Controller
 
         if (auth()->guard('admin')->attempt($credentials)) {
             $request->session()->regenerate();
+
             return redirect()->route('admin.dashboard');
         }
 
@@ -39,6 +40,7 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::guard('admin')->logout();
+
         return redirect()->route('admin.login.page');
     }
 }

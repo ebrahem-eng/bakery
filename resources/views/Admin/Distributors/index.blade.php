@@ -6,12 +6,14 @@
         <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Manage') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">{{ __('Distributors') }}</span></h1>
         <p class="text-sm text-slate-500 dark:text-slate-400">{{ __('Register and monitor all external sales distribution contacts.') }}</p>
     </div>
+    @can('create distributors')
     <a href="{{ route('admin.distributors.create') }}" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-[#0f1115] px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all">
         <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         {{ __('Add Distributor') }}
     </a>
+    @endcan
 </div>
 
 @if(session('success_message'))
@@ -67,11 +69,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
                         </a>
+                        @can('edit distributors')
                         <a href="{{ route('admin.distributors.edit', $distributor) }}" class="p-2 text-slate-400 hover:text-amber-400 hover:bg-amber-400/10 rounded-lg transition-colors">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                         </a>
+                        @endcan
+                        @can('delete distributors')
                         <form action="{{ route('admin.distributors.destroy', $distributor) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Are you sure you want to delete this distributor entirely?') }}');">
                             @csrf
                             @method('DELETE')
@@ -81,6 +86,7 @@
                                 </svg>
                             </button>
                         </form>
+                        @endcan
                     </td>
                 </tr>
                 @empty

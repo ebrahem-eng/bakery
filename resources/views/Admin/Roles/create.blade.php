@@ -19,14 +19,21 @@
     <div class="mb-8">
         <h3 class="text-lg font-semibold text-white mb-4">{{ __('Assign Capabilities') }}</h3>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            @forelse($permissions as $permission)
-            <label class="flex items-center space-x-3 {{ app()->getLocale() == 'ar' ? 'space-x-reverse' : '' }} group cursor-pointer p-3 rounded-xl border border-white/5 hover:bg-white/5 transition-colors">
-                <input type="checkbox" name="permissions[]" value="{{ $permission->name }}" class="form-checkbox h-5 w-5 text-[#eab308] rounded border-white/10 bg-black/30 focus:ring-[#eab308] focus:ring-offset-slate-900 transition-colors">
-                <span class="text-sm text-slate-300 group-hover:text-white transition-colors">{{ __($permission->name) }}</span>
-            </label>
+        <div class="space-y-6">
+            @forelse($permissionGroups as $group => $permissions)
+            <div class="p-4 rounded-xl border border-white/5 bg-black/10">
+                <h4 class="text-md font-bold text-amber-500 mb-3 capitalize border-b border-white/5 pb-2">{{ __($group) }} {{ __('Permissions') }}</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    @foreach($permissions as $permission)
+                    <label class="flex items-center space-x-3 {{ app()->getLocale() == 'ar' ? 'space-x-reverse' : '' }} group cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-colors">
+                        <input type="checkbox" name="permissions[]" value="{{ $permission->name }}" class="form-checkbox h-4 w-4 text-[#eab308] rounded border-white/10 bg-black/30 focus:ring-[#eab308] focus:ring-offset-slate-900 transition-colors">
+                        <span class="text-xs text-slate-300 group-hover:text-white transition-colors">{{ __($permission->name) }}</span>
+                    </label>
+                    @endforeach
+                </div>
+            </div>
             @empty
-            <div class="col-span-full text-slate-500 italic text-sm">{{ __('No permissions registered in the system yet. Please run the Permissions Seeder.') }}</div>
+            <div class="text-slate-500 italic text-sm">{{ __('No permissions registered in the system yet. Please run the Permissions Seeder.') }}</div>
             @endforelse
         </div>
         @error('permissions') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror

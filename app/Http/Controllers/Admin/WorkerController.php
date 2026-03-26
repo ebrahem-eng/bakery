@@ -3,23 +3,25 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\Currency;
 use App\Models\Worker;
 use App\Models\WorkerMobile;
-use App\Models\Currency;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class WorkerController extends Controller
 {
     public function index()
     {
         $workers = Worker::with('mobiles', 'currency')->orderBy('id', 'desc')->get();
+
         return view('Admin.Workers.index', compact('workers'));
     }
 
     public function create()
     {
         $currencies = Currency::all();
+
         return view('Admin.Workers.create', compact('currencies'));
     }
 
@@ -31,7 +33,7 @@ class WorkerController extends Controller
             'daily_wage' => 'required|numeric|min:0',
             'currency_id' => 'required|exists:currencies,id',
             'exchange_rate' => 'nullable|numeric|min:0',
-            'mobiles' => 'array'
+            'mobiles' => 'array',
         ]);
 
         $worker = Worker::create([
@@ -45,7 +47,7 @@ class WorkerController extends Controller
 
         if ($request->has('mobiles')) {
             foreach ($request->mobiles as $number) {
-                if(!empty($number)){
+                if (! empty($number)) {
                     WorkerMobile::create(['worker_id' => $worker->id, 'mobile_number' => $number]);
                 }
             }
@@ -58,6 +60,7 @@ class WorkerController extends Controller
     {
         $worker->load('mobiles', 'currency');
         $currencies = Currency::all();
+
         return view('Admin.Workers.edit', compact('worker', 'currencies'));
     }
 
@@ -69,7 +72,7 @@ class WorkerController extends Controller
             'daily_wage' => 'required|numeric|min:0',
             'currency_id' => 'required|exists:currencies,id',
             'exchange_rate' => 'nullable|numeric|min:0',
-            'mobiles' => 'array'
+            'mobiles' => 'array',
         ]);
 
         $worker->update([
@@ -84,7 +87,7 @@ class WorkerController extends Controller
         if ($request->has('mobiles')) {
             $worker->mobiles()->delete();
             foreach ($request->mobiles as $number) {
-                if(!empty($number)){
+                if (! empty($number)) {
                     WorkerMobile::create(['worker_id' => $worker->id, 'mobile_number' => $number]);
                 }
             }
@@ -96,7 +99,7 @@ class WorkerController extends Controller
     public function show(Worker $worker, Request $request)
     {
         $worker->load('mobiles', 'currency');
-        
+
         $queryShifts = $worker->shifts()->with('workDay')->orderBy('id', 'desc');
         $queryTransactions = $worker->transactions()->with(['workDay', 'currency'])->orderBy('id', 'desc');
 
@@ -106,31 +109,31 @@ class WorkerController extends Controller
         $type = $request->type;
 
         if ($request->filled('date_from')) {
-            $queryShifts->whereHas('workDay', fn($q) => $q->where('start_time', '>=', $request->date_from));
-            $queryTransactions->whereHas('workDay', fn($q) => $q->where('start_time', '>=', $request->date_from));
+            $queryShifts->whereHas('workDay', fn ($q) => $q->where('start_time', '>=', $request->date_from));
+            $queryTransactions->whereHas('workDay', fn ($q) => $q->where('start_time', '>=', $request->date_from));
         }
         if ($request->filled('date_to')) {
-            $queryShifts->whereHas('workDay', fn($q) => $q->where('start_time', '<=', $request->date_to . ' 23:59:59'));
-            $queryTransactions->whereHas('workDay', fn($q) => $q->where('start_time', '<=', $request->date_to . ' 23:59:59'));
+            $queryShifts->whereHas('workDay', fn ($q) => $q->where('start_time', '<=', $request->date_to.' 23:59:59'));
+            $queryTransactions->whereHas('workDay', fn ($q) => $q->where('start_time', '<=', $request->date_to.' 23:59:59'));
         }
 
         $shifts = $queryShifts->with('admin', 'currency', 'workDay')->get();
         $transactions = $queryTransactions->with('admin', 'currency')->get();
 
         // Calculate Stats
-        $totalEarnedSYPN = $shifts->sum(function($s) {
+        $totalEarnedSYPN = $shifts->sum(function ($s) {
             return $s->snapshot_daily_wage * ($s->snapshot_exchange_rate ?: 1);
         });
 
-        $totalAdvancesSYPN = $transactions->whereIn('type', ['advance', 'payment'])->sum(function($t) {
+        $totalAdvancesSYPN = $transactions->whereIn('type', ['advance', 'payment'])->sum(function ($t) {
             return $t->amount * ($t->exchange_rate ?: 1);
         });
 
-        $totalDiscountsSYPN = $transactions->where('type', 'deduction')->sum(function($t) {
+        $totalDiscountsSYPN = $transactions->where('type', 'deduction')->sum(function ($t) {
             return $t->amount * ($t->exchange_rate ?: 1);
         });
 
-        $totalAllowancesSYPN = $transactions->where('type', 'allowance')->sum(function($t) {
+        $totalAllowancesSYPN = $transactions->where('type', 'allowance')->sum(function ($t) {
             return $t->amount * ($t->exchange_rate ?: 1);
         });
 
@@ -138,9 +141,9 @@ class WorkerController extends Controller
 
         // Unified History for Display
         $historyList = collect();
-        foreach($shifts as $s) {
+        foreach ($shifts as $s) {
             $historyList->push([
-                'id' => 'shift_' . $s->id,
+                'id' => 'shift_'.$s->id,
                 'date' => $s->check_in,
                 'type' => 'wage',
                 'description' => __('Daily Wage'),
@@ -149,12 +152,12 @@ class WorkerController extends Controller
                 'rate' => $s->snapshot_exchange_rate,
                 'total_sypn' => $s->snapshot_daily_wage * ($s->snapshot_exchange_rate ?: 1),
                 'admin' => $s->admin?->name ?? __('System'),
-                'icon' => '<svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+                'icon' => '<svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
             ]);
         }
-        foreach($transactions as $t) {
+        foreach ($transactions as $t) {
             $historyList->push([
-                'id' => 'trans_' . $t->id,
+                'id' => 'trans_'.$t->id,
                 'date' => $t->created_at,
                 'type' => $t->type,
                 'description' => $t->notes ?: __(ucfirst($t->type)),
@@ -163,9 +166,9 @@ class WorkerController extends Controller
                 'rate' => $t->exchange_rate,
                 'total_sypn' => $t->amount * ($t->exchange_rate ?: 1),
                 'admin' => $t->admin?->name ?? __('System'),
-                'icon' => $t->type == 'deduction' 
+                'icon' => $t->type == 'deduction'
                     ? '<svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
-                    : '<svg class="w-4 h-4 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>'
+                    : '<svg class="w-4 h-4 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>',
             ]);
         }
 
@@ -192,13 +195,14 @@ class WorkerController extends Controller
             'balanceSYPN' => $balanceSYPN,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'type' => $type
+            'type' => $type,
         ]);
     }
 
     public function destroy(Worker $worker)
     {
         $worker->delete();
+
         return redirect()->route('admin.workers.index')->with('success', __('Worker record completely deleted.'));
     }
 }

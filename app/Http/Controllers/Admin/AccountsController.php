@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Currency;
 use App\Models\Distribution;
+use App\Models\Distributor;
 use App\Models\DistributorReturn;
 use App\Models\DistributorTransaction;
-use App\Models\Supply;
 use App\Models\Expense;
+use App\Models\Supplier;
+use App\Models\Supply;
+use App\Models\WorkDay;
+use App\Models\Worker;
 use App\Models\WorkerShift;
 use App\Models\WorkerTransaction;
-use App\Models\WorkDay;
-use App\Models\Distributor;
-use App\Models\Supplier;
-use App\Models\Worker;
-use App\Models\Currency;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -33,8 +33,8 @@ class AccountsController extends Controller
 
         // ── Period-filtered work day IDs ──────────────────────────────
         $workDayIds = WorkDay::query()
-            ->when($start, fn($q) => $q->where('start_time', '>=', $start))
-            ->when($end, fn($q) => $q->where('start_time', '<=', $end))
+            ->when($start, fn ($q) => $q->where('start_time', '>=', $start))
+            ->when($end, fn ($q) => $q->where('start_time', '<=', $end))
             ->pluck('id');
 
         // ═══════════════════════════════════════════════════════════════
@@ -103,11 +103,11 @@ class AccountsController extends Controller
         $distributions = Distribution::whereIn('work_day_id', $workDayIds)
             ->with(['distributor', 'workDay'])
             ->get()
-            ->map(fn($d) => [
+            ->map(fn ($d) => [
                 'date' => $d->created_at,
                 'type' => 'income',
                 'category' => __('Distribution Sales'),
-                'description' => ($d->distributor->first_name ?? '') . ' ' . ($d->distributor->last_name ?? '') . ' — ' . $d->bundle_count . ' ' . __('bundles'),
+                'description' => ($d->distributor->first_name ?? '').' '.($d->distributor->last_name ?? '').' — '.$d->bundle_count.' '.__('bundles'),
                 'amount' => $d->total_price,
                 'work_day_id' => $d->work_day_id,
             ]);
@@ -116,11 +116,11 @@ class AccountsController extends Controller
         $supplyEntries = Supply::whereIn('work_day_id', $workDayIds)
             ->with(['supplier', 'category', 'workDay'])
             ->get()
-            ->map(fn($s) => [
+            ->map(fn ($s) => [
                 'date' => $s->created_at,
                 'type' => 'expense',
-                'category' => __('Raw Materials') . ' (' . ($s->category->name ?? '') . ')',
-                'description' => ($s->supplier->first_name ?? '') . ' ' . ($s->supplier->last_name ?? ''),
+                'category' => __('Raw Materials').' ('.($s->category->name ?? '').')',
+                'description' => ($s->supplier->first_name ?? '').' '.($s->supplier->last_name ?? ''),
                 'amount' => $s->total_cost,
                 'work_day_id' => $s->work_day_id,
             ]);
@@ -129,11 +129,11 @@ class AccountsController extends Controller
         $wageEntries = WorkerShift::whereIn('work_day_id', $workDayIds)
             ->with(['worker', 'workDay'])
             ->get()
-            ->map(fn($ws) => [
+            ->map(fn ($ws) => [
                 'date' => $ws->created_at,
                 'type' => 'expense',
                 'category' => __('Worker Wages'),
-                'description' => ($ws->worker->first_name ?? '') . ' ' . ($ws->worker->last_name ?? ''),
+                'description' => ($ws->worker->first_name ?? '').' '.($ws->worker->last_name ?? ''),
                 'amount' => $ws->snapshot_daily_wage,
                 'work_day_id' => $ws->work_day_id,
             ]);
@@ -142,10 +142,10 @@ class AccountsController extends Controller
         $expenseEntries = Expense::whereIn('work_day_id', $workDayIds)
             ->with('workDay')
             ->get()
-            ->map(fn($e) => [
+            ->map(fn ($e) => [
                 'date' => $e->created_at,
                 'type' => 'expense',
-                'category' => __('Operations') . ' (' . ($e->category ?? $e->title) . ')',
+                'category' => __('Operations').' ('.($e->category ?? $e->title).')',
                 'description' => $e->title,
                 'amount' => $e->amount,
                 'work_day_id' => $e->work_day_id,
@@ -155,11 +155,11 @@ class AccountsController extends Controller
         $refundEntries = DistributorReturn::whereIn('work_day_id', $workDayIds)
             ->with(['distributor', 'workDay'])
             ->get()
-            ->map(fn($r) => [
+            ->map(fn ($r) => [
                 'date' => $r->created_at,
                 'type' => 'expense',
                 'category' => __('Sales Returns'),
-                'description' => ($r->distributor->first_name ?? '') . ' ' . ($r->distributor->last_name ?? '') . ' — ' . $r->bundle_count . ' ' . __('bundles'),
+                'description' => ($r->distributor->first_name ?? '').' '.($r->distributor->last_name ?? '').' — '.$r->bundle_count.' '.__('bundles'),
                 'amount' => $r->total_refund,
                 'work_day_id' => $r->work_day_id,
             ]);
@@ -168,11 +168,11 @@ class AccountsController extends Controller
         $paymentEntries = DistributorTransaction::whereIn('work_day_id', $workDayIds)
             ->with(['distributor', 'workDay'])
             ->get()
-            ->map(fn($t) => [
+            ->map(fn ($t) => [
                 'date' => $t->created_at,
                 'type' => 'cash_in',
                 'category' => __('Distributor Payment'),
-                'description' => ($t->distributor->first_name ?? '') . ' ' . ($t->distributor->last_name ?? ''),
+                'description' => ($t->distributor->first_name ?? '').' '.($t->distributor->last_name ?? ''),
                 'amount' => $t->amount,
                 'work_day_id' => $t->work_day_id,
             ]);
@@ -186,7 +186,7 @@ class AccountsController extends Controller
 
         // Apply type filter
         if ($typeFilter !== 'all') {
-            $transactions = $transactions->filter(fn($t) => $t['type'] === $typeFilter);
+            $transactions = $transactions->filter(fn ($t) => $t['type'] === $typeFilter);
         }
 
         // Sort by date descending
@@ -209,18 +209,19 @@ class AccountsController extends Controller
 
         // Distributor Payouts
         $distributorPayouts = Distributor::select('distributors.*')
-            ->withSum(['distributions as total_billed' => function($q) use ($workDayIds) {
+            ->withSum(['distributions as total_billed' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds);
             }], 'total_price')
-            ->withSum(['transactions as total_received' => function($q) use ($workDayIds) {
+            ->withSum(['transactions as total_received' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds);
             }], 'amount')
-            ->withSum(['returns as total_refunded' => function($q) use ($workDayIds) {
+            ->withSum(['returns as total_refunded' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds);
             }], 'total_refund')
             ->get()
-            ->map(function($d) {
+            ->map(function ($d) {
                 $d->balance = ($d->total_billed ?? 0) - ($d->total_received ?? 0) - ($d->total_refunded ?? 0);
+
                 return $d;
             })
             ->sortByDesc('total_billed')
@@ -228,15 +229,16 @@ class AccountsController extends Controller
 
         // Supplier Payouts
         $supplierPayouts = Supplier::select('suppliers.*')
-            ->withSum(['supplies as total_owed' => function($q) use ($workDayIds) {
+            ->withSum(['supplies as total_owed' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds);
             }], 'total_cost')
-            ->withSum(['supplies as total_paid_to' => function($q) use ($workDayIds) {
+            ->withSum(['supplies as total_paid_to' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds);
             }], 'paid_amount')
             ->get()
-            ->map(function($s) {
+            ->map(function ($s) {
                 $s->balance = ($s->total_owed ?? 0) - ($s->total_paid_to ?? 0);
+
                 return $s;
             })
             ->sortByDesc('total_owed')
@@ -244,23 +246,24 @@ class AccountsController extends Controller
 
         // Worker Payouts
         $workerPayouts = Worker::select('workers.*')
-            ->withSum(['shifts as total_wages' => function($q) use ($workDayIds) {
+            ->withSum(['shifts as total_wages' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds);
             }], 'snapshot_daily_wage')
-            ->withSum(['transactions as total_advances' => function($q) use ($workDayIds) {
+            ->withSum(['transactions as total_advances' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds)->where('type', 'advance');
             }], 'amount')
-            ->withSum(['transactions as total_allowances' => function($q) use ($workDayIds) {
+            ->withSum(['transactions as total_allowances' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds)->where('type', 'allowance');
             }], 'amount')
-            ->withSum(['transactions as total_deductions' => function($q) use ($workDayIds) {
+            ->withSum(['transactions as total_deductions' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds)->where('type', 'deduction');
             }], 'amount')
             ->get()
-            ->map(function($w) {
+            ->map(function ($w) {
                 $w->net_pay = ($w->total_wages ?? 0) + ($w->total_allowances ?? 0) - ($w->total_deductions ?? 0);
                 $w->total_paid_out = ($w->total_advances ?? 0);
                 $w->balance = $w->net_pay - $w->total_paid_out;
+
                 return $w;
             })
             ->sortByDesc('net_pay')

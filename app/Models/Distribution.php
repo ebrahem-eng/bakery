@@ -14,7 +14,7 @@ class Distribution extends Model
     protected $fillable = [
         'distributor_id', 'work_day_id', 'bundle_count',
         'price_per_bundle', 'total_price', 'currency_id',
-        'exchange_rate', 'amount_paid', 'notes', 'created_by'
+        'exchange_rate', 'amount_paid', 'notes', 'created_by',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -23,7 +23,7 @@ class Distribution extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Distribution was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Distribution was {$eventName}");
     }
 
     public function distributor()

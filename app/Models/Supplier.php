@@ -18,7 +18,7 @@ class Supplier extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Supplier was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Supplier was {$eventName}");
     }
 
     public function mobiles()

@@ -19,7 +19,7 @@ class WorkerTransaction extends Model
         'currency_id',
         'exchange_rate',
         'admin_id',
-        'notes'
+        'notes',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -28,7 +28,7 @@ class WorkerTransaction extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Worker transaction was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Worker transaction was {$eventName}");
     }
 
     public function worker()

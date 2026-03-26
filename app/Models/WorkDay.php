@@ -14,7 +14,7 @@ class WorkDay extends Model
         'start_time', 'end_time', 'status', 'is_holiday', 'holiday_reason',
         'opened_by', 'closed_by', 'total_expenses_at_close', 'total_sales_at_close',
         'carried_over_bundles', 'carried_over_money',
-        'carried_over_currency_id', 'carried_over_exchange_rate'
+        'carried_over_currency_id', 'carried_over_exchange_rate',
     ];
 
     protected $casts = [
@@ -29,7 +29,7 @@ class WorkDay extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Work day was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Work day was {$eventName}");
     }
 
     public function openedBy()

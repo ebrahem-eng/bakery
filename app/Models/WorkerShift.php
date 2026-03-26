@@ -25,7 +25,7 @@ class WorkerShift extends Model
         'cash_currency_id',
         'cash_exchange_rate',
         'admin_id',
-        'notes'
+        'notes',
     ];
 
     protected $casts = [
@@ -39,7 +39,7 @@ class WorkerShift extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Worker shift was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Worker shift was {$eventName}");
     }
 
     public function worker()

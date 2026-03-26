@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\WorkDay;
+use App\Models\Currency;
 use App\Models\Distribution;
+use App\Models\Distributor;
 use App\Models\DistributorReturn;
 use App\Models\DistributorTransaction;
-use App\Models\Supply;
 use App\Models\Expense;
+use App\Models\Supplier;
+use App\Models\Supply;
+use App\Models\WorkDay;
+use App\Models\Worker;
 use App\Models\WorkerShift;
 use App\Models\WorkerTransaction;
-use App\Models\Distributor;
-use App\Models\Supplier;
-use App\Models\Worker;
-use App\Models\Currency;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -37,8 +37,8 @@ class DashboardController extends Controller
 
         // ── Period-filtered work day IDs ──────────────────────────────
         $periodWorkDayIds = WorkDay::where('status', 'closed')
-            ->when($start, fn($q) => $q->where('start_time', '>=', $start))
-            ->when($end, fn($q) => $q->where('start_time', '<=', $end))
+            ->when($start, fn ($q) => $q->where('start_time', '>=', $start))
+            ->when($end, fn ($q) => $q->where('start_time', '<=', $end))
             ->pluck('id');
 
         // Include active work day in "today" filter
@@ -93,6 +93,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($d) {
                 $d->outstanding = ($d->total_billed ?? 0) - ($d->total_paid ?? 0) - ($d->total_refunded ?? 0);
+
                 return $d;
             })
             ->sortByDesc('outstanding')
@@ -105,6 +106,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($s) {
                 $s->outstanding = ($s->total_owed ?? 0) - ($s->total_paid_amount ?? 0);
+
                 return $s;
             })
             ->sortByDesc('outstanding')
@@ -112,8 +114,8 @@ class DashboardController extends Controller
 
         // ── Revenue Trend (daily aggregates) ──────────────────────────
         $trendData = WorkDay::where('status', 'closed')
-            ->when($start, fn($q) => $q->where('start_time', '>=', $start))
-            ->when($end, fn($q) => $q->where('start_time', '<=', $end))
+            ->when($start, fn ($q) => $q->where('start_time', '>=', $start))
+            ->when($end, fn ($q) => $q->where('start_time', '<=', $end))
             ->orderBy('start_time')
             ->get()
             ->map(function ($wd) {

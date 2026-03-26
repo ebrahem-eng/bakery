@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Spatie\Activitylog\Models\Activity;
+use App\Models\Admin;
 use Illuminate\Http\Request;
+use Spatie\Activitylog\Models\Activity;
 
 class ActivityLogController extends Controller
 {
@@ -14,7 +15,7 @@ class ActivityLogController extends Controller
 
         // Filters
         if ($request->filled('search')) {
-            $query->where('description', 'like', '%' . $request->search . '%');
+            $query->where('description', 'like', '%'.$request->search.'%');
         }
 
         if ($request->filled('log_name')) {
@@ -41,7 +42,7 @@ class ActivityLogController extends Controller
             return class_basename($type);
         })->unique();
         $causers = Activity::with('causer')->distinct('causer_id')->pluck('causer_id')->filter();
-        $admins = \App\Models\Admin::whereIn('id', $causers)->get();
+        $admins = Admin::whereIn('id', $causers)->get();
 
         return view('Admin.ActivityLog.index', compact('activities', 'events', 'subjectTypes', 'admins'));
     }
@@ -49,18 +50,21 @@ class ActivityLogController extends Controller
     public function show(Activity $activity)
     {
         $activity->load('causer', 'subject');
+
         return view('Admin.ActivityLog.show', compact('activity'));
     }
 
     public function destroy(Activity $activity)
     {
         $activity->delete();
+
         return back()->with('success_message', __('Activity log entry deleted.'));
     }
 
     public function clear()
     {
         Activity::truncate();
+
         return back()->with('success_message', __('All activity logs have been cleared.'));
     }
 }

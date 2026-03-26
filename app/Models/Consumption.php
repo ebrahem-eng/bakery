@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Models\Concerns\LogsActivity;
-use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Consumption extends Model
 {
@@ -25,7 +25,7 @@ class Consumption extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Consumption was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Consumption was {$eventName}");
     }
 
     public function workDay()

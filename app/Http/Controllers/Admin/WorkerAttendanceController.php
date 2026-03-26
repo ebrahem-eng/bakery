@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Currency;
+use App\Models\WorkDay;
 use App\Models\Worker;
 use App\Models\WorkerShift;
 use App\Models\WorkerTransaction;
-use App\Models\WorkDay;
-use App\Models\Currency;
 use Illuminate\Http\Request;
 
 class WorkerAttendanceController extends Controller
@@ -15,7 +15,7 @@ class WorkerAttendanceController extends Controller
     public function index()
     {
         $activeWorkDay = WorkDay::where('status', 'active')->first();
-        if (!$activeWorkDay) {
+        if (! $activeWorkDay) {
             return redirect()->route('admin.dashboard')->with('error_message', __('No active work day found. Please start a day first.'));
         }
 
@@ -26,7 +26,7 @@ class WorkerAttendanceController extends Controller
             'transactions' => function ($query) use ($activeWorkDay) {
                 $query->where('work_day_id', $activeWorkDay->id);
             },
-            'currency'
+            'currency',
         ])->get();
 
         $currencies = Currency::all();
@@ -43,7 +43,7 @@ class WorkerAttendanceController extends Controller
         ]);
 
         $activeWorkDay = WorkDay::where('status', 'active')->first();
-        if (!$activeWorkDay) {
+        if (! $activeWorkDay) {
             return back()->with('error_message', __('No active work day found.'));
         }
 
@@ -92,7 +92,7 @@ class WorkerAttendanceController extends Controller
         $cashExchangeRate = 1;
         if ($request->cash_currency_id) {
             $currency = Currency::find($request->cash_currency_id);
-            if ($currency && !$currency->is_default) {
+            if ($currency && ! $currency->is_default) {
                 $cashExchangeRate = $request->cash_exchange_rate ?? $currency->exchange_rate;
             }
         }
@@ -118,7 +118,9 @@ class WorkerAttendanceController extends Controller
         ]);
 
         $activeWorkDay = WorkDay::where('status', 'active')->first();
-        if (!$activeWorkDay) return back()->with('error_message', __('No active work day.'));
+        if (! $activeWorkDay) {
+            return back()->with('error_message', __('No active work day.'));
+        }
 
         $worker = Worker::findOrFail($request->worker_id);
         $rate = $worker->currency->is_local ? 1 : $worker->currency->exchange_rate;

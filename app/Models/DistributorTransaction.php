@@ -13,7 +13,7 @@ class DistributorTransaction extends Model
 
     protected $fillable = [
         'distributor_id', 'work_day_id', 'type',
-        'amount', 'currency_id', 'exchange_rate', 'notes', 'created_by'
+        'amount', 'currency_id', 'exchange_rate', 'notes', 'created_by',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -22,7 +22,7 @@ class DistributorTransaction extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Distributor transaction was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Distributor transaction was {$eventName}");
     }
 
     public function distributor()

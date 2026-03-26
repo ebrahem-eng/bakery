@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Distributor;
 use App\Models\Distribution;
+use App\Models\Distributor;
 use App\Models\DistributorReturn;
 use App\Models\DistributorTransaction;
 use App\Models\WorkDay;
@@ -15,7 +15,7 @@ class DistributionController extends Controller
     public function index()
     {
         $activeWorkDay = WorkDay::where('status', 'active')->first();
-        if (!$activeWorkDay) {
+        if (! $activeWorkDay) {
             return redirect()->route('admin.dashboard')->with('error_message', 'No active work day found. Please start a day first.');
         }
 
@@ -31,11 +31,13 @@ class DistributionController extends Controller
             'bundle_count' => 'required|integer|min:1',
             'price_per_bundle' => 'required|numeric|min:0',
             'amount_paid' => 'required|numeric|min:0',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
         ]);
 
         $activeWorkDay = WorkDay::where('status', 'active')->first();
-        if (!$activeWorkDay) return back()->with('error_message', 'No active work day.');
+        if (! $activeWorkDay) {
+            return back()->with('error_message', 'No active work day.');
+        }
 
         $distributor = Distributor::findOrFail($request->distributor_id);
         $total_price = $request->bundle_count * $request->price_per_bundle;
@@ -63,11 +65,13 @@ class DistributionController extends Controller
             'distributor_id' => 'required|exists:distributors,id',
             'bundle_count' => 'required|integer|min:1',
             'refund_per_bundle' => 'required|numeric|min:0',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
         ]);
 
         $activeWorkDay = WorkDay::where('status', 'active')->first();
-        if (!$activeWorkDay) return back()->with('error_message', 'No active work day.');
+        if (! $activeWorkDay) {
+            return back()->with('error_message', 'No active work day.');
+        }
 
         $distributor = Distributor::findOrFail($request->distributor_id);
         $total_refund = $request->bundle_count * $request->refund_per_bundle;
@@ -94,11 +98,13 @@ class DistributionController extends Controller
             'distributor_id' => 'required|exists:distributors,id',
             'type' => 'required|in:payment,discount,other_credit',
             'amount' => 'required|numeric|min:0.01',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
         ]);
 
         $activeWorkDay = WorkDay::where('status', 'active')->first();
-        if (!$activeWorkDay) return back()->with('error_message', 'No active work day.');
+        if (! $activeWorkDay) {
+            return back()->with('error_message', 'No active work day.');
+        }
 
         $distributor = Distributor::findOrFail($request->distributor_id);
         $rate = $distributor->currency->is_local ? 1 : $distributor->currency->exchange_rate;

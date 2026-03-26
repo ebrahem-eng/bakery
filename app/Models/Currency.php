@@ -11,7 +11,7 @@ class Currency extends Model
     use LogsActivity;
 
     protected $fillable = ['name', 'code', 'exchange_rate', 'is_default'];
-    
+
     protected $casts = [
         'is_default' => 'boolean',
         'exchange_rate' => 'decimal:2',
@@ -23,6 +23,6 @@ class Currency extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Currency was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Currency was {$eventName}");
     }
 }

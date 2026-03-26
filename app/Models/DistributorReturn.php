@@ -14,7 +14,7 @@ class DistributorReturn extends Model
     protected $fillable = [
         'distributor_id', 'work_day_id', 'bundle_count',
         'refund_per_bundle', 'total_refund', 'currency_id',
-        'exchange_rate', 'notes', 'created_by'
+        'exchange_rate', 'notes', 'created_by',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -23,7 +23,7 @@ class DistributorReturn extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent(fn(string $eventName) => "Distributor return was {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Distributor return was {$eventName}");
     }
 
     public function distributor()
