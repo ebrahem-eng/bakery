@@ -77,4 +77,8 @@ Follow these sequential steps to thoroughly test the connected systems:
 - Go to **Roles & Permissions**.
 - Create a new role named "Cashier" and check *only* the `view dashboard` and `create expenses` grid boxes.
 - Go to **Administrators** and create a new Admin login. Assign them the "Cashier" role.
-- Log out, log in as the Cashier, and verify the Sidebar visually trims down to just the Dashboard/Expenses links, explicitly locking them out of core system finances (HTTP 403 Forbidden).
+## 5. Dockerized Client Testing (New)
+For seamless client delivery and testing across different operating systems, the entire Bakery Accounting System has been dockerized.
+
+- If you or your client wish to test the system without installing PHP, Composer, or MySQL locally, refer to the **[docker-tutorial.md](docker-tutorial.md)** file in the project root.
+- It contains exactly three commands to spin up the App, Nginx, and MySQL, automatically seeding the database precisely as described in this flow document.
