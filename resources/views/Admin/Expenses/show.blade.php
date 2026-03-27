@@ -4,7 +4,7 @@
 <div class="mb-8 flex items-center justify-between">
     <div>
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-1">{{ __('Expense Details') }} <span class="text-red-500 dark:text-red-400">#{{ $expense->id }}</span></h1>
-        <p class="text-sm text-slate-500">{{ __('Work Day:') }} {{ $expense->work_day_id }} | {{ $expense->created_at->format('M d, Y h:i A') }}</p>
+        <p class="text-sm text-slate-500">{{ __('Work Day #') }}{{ $expense->work_day_id }} | {{ $expense->created_at->translatedFormat('M d, Y h:i A') }}</p>
     </div>
     <a href="{{ route('admin.expenses.index') }}" class="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors text-sm font-medium flex items-center">
         <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-1 rotate-180' : 'mr-1' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -28,7 +28,15 @@
                 <div>
                     <label class="block text-xs text-slate-500 uppercase tracking-wider mb-1">{{ __('Category') }}</label>
                     <div class="inline-flex px-3 py-1 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider">
-                        {{ __(ucfirst($expense->category)) }}
+                        @php
+                            $catLabels = [
+                                'operating' => __('Operating Costs'),
+                                'logistics' => __('Logistics / Patrols'),
+                                'personal' => __('Personal Drawings'),
+                                'other' => __('Other Expenses'),
+                            ];
+                        @endphp
+                        {{ $catLabels[$expense->category] ?? __('Other') }}
                     </div>
                 </div>
                 <div>

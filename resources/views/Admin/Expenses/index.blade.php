@@ -116,7 +116,7 @@
 
 <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
     <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table class="w-full text-start border-collapse">
             <thead>
                 <tr class="bg-slate-50 dark:bg-black/20 border-b border-slate-200 dark:border-white/5 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     <th class="p-4 font-semibold w-16">#</th>
@@ -136,10 +136,12 @@
                     <td class="p-4 text-sm text-slate-500 font-medium">{{ $expense->id }}</td>
                     <td class="p-4">
                         <span class="font-bold text-slate-900 dark:text-white">{{ $expense->title }}</span>
-                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">{{ $expense->created_at->format('h:i A') }}</p>
+                        <p class="text-[10px] text-slate-500 {{ app()->getLocale() == 'ar' ? '' : 'uppercase tracking-widest' }} mt-1">
+                            {{ $expense->created_at->translatedFormat('h:i A') }}
+                        </p>
                     </td>
                     <td class="p-4">
-                        <span class="px-2.5 py-1 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-md text-[10px] uppercase tracking-wider font-bold">
+                        <span class="px-2.5 py-1 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-md text-[10px] {{ app()->getLocale() == 'ar' ? '' : 'uppercase tracking-wider' }} font-bold">
                             {{ $labels[$expense->category] ?? __('Other') }}
                         </span>
                     </td>
@@ -250,7 +252,7 @@ function expenseFilter() {
         <div x-show="open" x-transition.opacity class="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" @click="open = false"></div>
 
         <div x-show="open" x-transition 
-             class="relative inline-block w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform glass-panel rounded-2xl shadow-xl border border-slate-200 dark:border-white/10"
+             class="relative inline-block w-full max-w-md p-6 overflow-hidden text-start align-middle transition-all transform glass-panel rounded-2xl shadow-xl border border-slate-200 dark:border-white/10"
              {{ app()->getLocale() == 'ar' ? 'dir="rtl"' : 'dir="ltr"' }}>
             
             <div class="flex justify-between items-center mb-6">
@@ -266,10 +268,10 @@ function expenseFilter() {
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Category') }}</label>
                     <select name="category" required class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium appearance-none">
-                        <option value="operating">{{ __('Operating Costs (تشغيلية)') }}</option>
-                        <option value="logistics">{{ __('Logistics & Patrols (تموين / دوريات)') }}</option>
-                        <option value="personal">{{ __('Personal Drawings (سحب شخصي)') }}</option>
-                        <option value="other">{{ __('Other (أخرى)') }}</option>
+                        <option value="operating">{{ __('Operating Costs') }}</option>
+                        <option value="logistics">{{ __('Logistics / Patrols') }}</option>
+                        <option value="personal">{{ __('Personal Drawings') }}</option>
+                        <option value="other">{{ __('Other Expenses') }}</option>
                     </select>
                 </div>
 
