@@ -21,23 +21,22 @@ class WorkDayController extends Controller
 
     public function show($id)
     {
-        $workDay = WorkDay::with(['distributions', 'supplies', 'expenses', 'workerShifts', 'workerTransactions', 'distributorReturns'])->findOrFail($id);
+        $workDay = WorkDay::with([
+            'supplies.currency',
+            'workerShifts.worker',
+            'workerShifts.currency',
+            'workerTransactions.currency',
+            'distributions.distributor',
+            'distributions.currency',
+            'distributorReturns.distributor',
+            'distributorReturns.currency',
+            'distributorTransactions.currency',
+            'expenses.currency',
+        ])->findOrFail($id);
 
-        $totalSales = $workDay->distributions->sum('total_price') - $workDay->distributorReturns->sum('total_refund');
+        $stats = $this->getWorkDayStatistics($workDay);
 
-        $totalExpenses = 0;
-        $totalExpenses += $workDay->supplies->sum('total_cost');
-        $totalExpenses += $workDay->supplies->where('unloading_fee_payer', 'bakery')->sum(function ($supply) {
-            return $supply->unloading_fee * ($supply->unloading_fee_exchange_rate ?? 1);
-        });
-        $totalExpenses += $workDay->workerShifts->sum('snapshot_daily_wage');
-        $totalExpenses += $workDay->workerTransactions->where('type', 'allowance')->sum('amount');
-        $totalExpenses -= $workDay->workerTransactions->where('type', 'deduction')->sum('amount');
-        $totalExpenses += $workDay->expenses->sum('amount');
-
-        $defaultCurrency = Currency::where('is_default', true)->first();
-
-        return view('Admin.WorkDays.close', compact('workDay', 'totalSales', 'totalExpenses', 'defaultCurrency'));
+        return view('Admin.WorkDays.close', array_merge(['workDay' => $workDay], $stats));
     }
 
     public function store(Request $request)
@@ -77,6 +76,13 @@ class WorkDayController extends Controller
             'expenses.currency',
         ]);
 
+        $stats = $this->getWorkDayStatistics($workDay);
+
+        return view('Admin.WorkDays.close', array_merge(['workDay' => $workDay], $stats));
+    }
+
+    private function getWorkDayStatistics(WorkDay $workDay)
+    {
         $defaultCurrency = Currency::where('is_default', true)->first();
         $currencyCode = $defaultCurrency->code ?? '';
 
@@ -124,13 +130,15 @@ class WorkDayController extends Controller
 
         // ── Cash collected from shifts ────────────────────────────────
         $totalCashFromShifts = $workDay->workerShifts->sum(function ($s) {
-            return $s->cash_collected * $s->cash_exchange_rate;
+            return $s->cash_collected * ($s->cash_exchange_rate ?? 1);
         });
 
         // ── Raw Material Categories for Consumption ──────────────────
         $materialNames = ['طحين', 'مازوت', 'خميرة', 'ملح'];
         $materialCategories = Category::whereIn('name', $materialNames)
-            ->withSum('supplies as total_in', 'quantity')
+            ->withSum(['supplies as total_in' => function ($query) {
+                // Future: filter supplies by work_day_id if needed, but categories usually track global stock
+            }], 'quantity')
             ->withSum('consumptions as total_out', 'quantity')
             ->get()
             ->map(function ($cat) {
@@ -139,21 +147,35 @@ class WorkDayController extends Controller
                 return $cat;
             });
 
-        return view('Admin.WorkDays.close', compact(
-            'workDay', 'defaultCurrency', 'currencyCode', 'currencies', 'materialCategories', 'calculatedRemainingBundles', 'totalCashFromShifts',
+        return [
+            'defaultCurrency' => $defaultCurrency,
+            'currencyCode' => $currencyCode,
+            'currencies' => $currencies,
+            'materialCategories' => $materialCategories,
+            'calculatedRemainingBundles' => $calculatedRemainingBundles,
+            'totalCashFromShifts' => $totalCashFromShifts,
             // Sales
-            'totalSales', 'totalRefunds', 'totalPaymentsReceived', 'netSales',
+            'totalSales' => $totalSales,
+            'totalRefunds' => $totalRefunds,
+            'totalPaymentsReceived' => $totalPaymentsReceived,
+            'netSales' => $netSales,
             // Expenses
-            'suppliesCost', 'unloadingFees', 'shiftWages', 'workerAllowances',
-            'workerAdvances', 'workerDeductions', 'operationalExpenses', 'totalExpenses',
-            'netDayBalance',
+            'suppliesCost' => $suppliesCost,
+            'unloadingFees' => $unloadingFees,
+            'shiftWages' => $shiftWages,
+            'workerAllowances' => $workerAllowances,
+            'workerAdvances' => $workerAdvances,
+            'workerDeductions' => $workerDeductions,
+            'operationalExpenses' => $operationalExpenses,
+            'totalExpenses' => $totalExpenses,
+            'netDayBalance' => $netDayBalance,
             // Bundles
-            'bundlesDistributed', 'bundlesReturnedByDistributors',
-            'bundlesReceivedByShifts', 'bundlesReturnedByShifts',
-            'previousCarryOverBundles', 'calculatedRemainingBundles',
-            // Cash
-            'totalCashFromShifts'
-        ));
+            'bundlesDistributed' => $bundlesDistributed,
+            'bundlesReturnedByDistributors' => $bundlesReturnedByDistributors,
+            'bundlesReceivedByShifts' => $bundlesReceivedByShifts,
+            'bundlesReturnedByShifts' => $bundlesReturnedByShifts,
+            'previousCarryOverBundles' => $previousCarryOverBundles,
+        ];
     }
 
     public function close(Request $request, WorkDay $workDay)
