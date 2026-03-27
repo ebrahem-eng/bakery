@@ -51,7 +51,7 @@
                             </template>
                         </select>
                     </div>
-                    <div>
+                    <div x-show="!syp_ids.includes(parseInt(item.currency_id))" x-transition>
                         <label class="block text-xs text-slate-400 mb-1">{{ __('Exchange Rate') }}</label>
                         <input type="number" step="0.01" x-bind:name="`supplies[${index}][exchange_rate]`" x-model="item.exchange_rate" required class="glass-input w-full px-3 py-2 rounded-lg text-sm">
                     </div>
@@ -138,9 +138,9 @@
                                     </select>
                                 </div>
                             </div>
-                            <div>
+                            <div x-show="!syp_ids.includes(parseInt(item.unloading_fee_currency_id))" x-transition>
                                 <label class="block text-[10px] text-slate-400 mb-1">{{ __('Fee Ex-Rate') }}</label>
-                                <input type="number" step="0.01" x-bind:name="`supplies[${index}][unloading_fee_exchange_rate]`" x-model="item.unloading_fee_exchange_rate" class="glass-input w-full px-2 py-1.5 rounded text-xs bg-black/40 text-slate-200 border-none outline-none" title="Exchange rate for unloading fee">
+                                <input type="number" step="0.01" x-bind:name="`supplies[${index}][unloading_fee_exchange_rate]`" x-model="item.unloading_fee_exchange_rate" class="glass-input w-full px-2 py-1.5 rounded text-xs bg-black/40 text-slate-200 border-none outline-none" :title="'{{ __('Exchange rate for unloading fee') }}'">
                             </div>
                         </div>
                     </div>
@@ -187,6 +187,7 @@ document.addEventListener('alpine:init', () => {
         suppliers: @json($suppliers),
         categories: @json($categories),
         currencies: @json($currencies),
+        syp_ids: @json($currencies->filter(fn($c) => str_contains($c->code, 'SYP'))->pluck('id')->values()->toArray()),
         items: [],
         init() {
             this.addItem();
@@ -207,7 +208,7 @@ document.addEventListener('alpine:init', () => {
                 unloading_fee: 0,
                 unloading_fee_payer: 'bakery',
                 unloading_fee_currency_id: this.currencies.length > 0 ? this.currencies[0].id : '',
-                unloading_fee_exchange_rate: this.currencies.length > 0 ? this.currencies[0].default_exchange_rate : 1,
+                unloading_fee_exchange_rate: this.currencies.length > 0 ? this.currencies[0].exchange_rate : 1,
                 notes: '',
                 get total_cost() {
                     const q = this.category_name === 'خميرة' ? (this.boxes_count * this.box_weight) : this.quantity;
@@ -227,11 +228,11 @@ document.addEventListener('alpine:init', () => {
         },
         updateExchangeRate(item) {
             let cur = this.currencies.find(c => c.id == item.currency_id);
-            if(cur) item.exchange_rate = cur.default_exchange_rate;
+            if(cur) item.exchange_rate = cur.exchange_rate;
         },
         updateFeeExchangeRate(item) {
             let cur = this.currencies.find(c => c.id == item.unloading_fee_currency_id);
-            if(cur) item.unloading_fee_exchange_rate = cur.default_exchange_rate;
+            if(cur) item.unloading_fee_exchange_rate = cur.exchange_rate;
         }
     }))
 })
