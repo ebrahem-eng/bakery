@@ -65,6 +65,7 @@ class DistributorController extends Controller
                 'date' => $d->created_at,
                 'type' => 'Sale',
                 'ref' => '#'.$d->id.' - '.$d->bundle_count.' '.__('Bundles'),
+                'notes' => $d->notes,
                 'debit' => $d->total_price,
                 'credit' => 0,
                 'color' => 'blue',
@@ -76,6 +77,7 @@ class DistributorController extends Controller
                     'date' => $d->created_at->addSecond(),
                     'type' => 'Payment',
                     'ref' => __('Down Payment for').' #'.$d->id,
+                    'notes' => null,
                     'debit' => 0,
                     'credit' => $d->amount_paid,
                     'color' => 'emerald',
@@ -90,6 +92,7 @@ class DistributorController extends Controller
                 'date' => $r->created_at,
                 'type' => 'Return',
                 'ref' => '#'.$r->id.' - '.$r->bundle_count.' '.__('Bundles'),
+                'notes' => $r->notes,
                 'debit' => 0,
                 'credit' => $r->total_refund,
                 'color' => 'amber',
@@ -102,7 +105,8 @@ class DistributorController extends Controller
             $activities->push([
                 'date' => $t->created_at,
                 'type' => ucfirst($t->type), // payment, discount, etc.
-                'ref' => $t->notes ?? __('Direct Transaction'),
+                'ref' => __('Direct Transaction'),
+                'notes' => $t->notes,
                 'debit' => 0,
                 'credit' => $t->amount,
                 'color' => $t->type == 'payment' ? 'emerald' : ($t->type == 'discount' ? 'rose' : 'slate'),

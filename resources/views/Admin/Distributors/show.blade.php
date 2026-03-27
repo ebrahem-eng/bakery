@@ -154,6 +154,7 @@
                             <th class="p-4">{{ __('Date') }}</th>
                             <th class="p-4">{{ __('Type') }}</th>
                             <th class="p-4">{{ __('Reference') }}</th>
+                            <th class="p-4">{{ __('Notes') }}</th>
                             <th class="p-4">{{ __('Created By') }}</th>
                             <th class="p-4 text-right">{{ __('Debit') }} (+)</th>
                             <th class="p-4 text-right">{{ __('Credit') }} (-)</th>
@@ -171,6 +172,7 @@
                                 </span>
                             </td>
                             <td class="p-4 text-xs text-slate-700 dark:text-slate-300">{{ $activity['ref'] }}</td>
+                            <td class="p-4 text-xs text-slate-500 italic">{{ $activity['notes'] ?? '--' }}</td>
                             <td class="p-4">
                                 <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">{{ $activity['admin'] }}</span>
                             </td>
@@ -186,7 +188,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="p-8 text-center text-slate-500 italic text-sm">
+                            <td colspan="9" class="p-8 text-center text-slate-500 italic text-sm">
                                 {{ __('No transactions found for this distributor.') }}
                             </td>
                         </tr>
