@@ -147,25 +147,21 @@ class WorkerAttendanceController extends Controller
             return back()->with('error_message', __('No active work day found.'));
         }
 
-        $workDayDate = $activeWorkDay->start_time->format('Y-m-d');
         $startTimeStr = $activeWorkDay->start_time->format('Y-m-d H:i:s');
 
         $request->validate([
             'worker_id' => 'required|exists:workers,id',
-            'arrival_time' => [
-                'required',
-                'date',
-                'after_or_equal:' . $startTimeStr,
-                function ($attribute, $value, $fail) use ($workDayDate, $activeWorkDay) {
-                    if (date('Y-m-d', strtotime($value)) !== $workDayDate) {
-                        $fail(__('The arrival date must be the same as the active work day date (:date).', ['date' => $workDayDate]));
-                    }
-                    if (strtotime($value) < $activeWorkDay->start_time->timestamp) {
-                        $fail(__('The arrival time must be after the work day start time (:time).', ['time' => $activeWorkDay->start_time->translatedFormat('h:i A')]));
-                    }
-                },
-            ],
+            'arrival_time' => 'required|date|after_or_equal:' . $startTimeStr,
         ]);
+
+        // Check if already present
+        $alreadyPresent = WorkerAttendance::where('worker_id', $request->worker_id)
+            ->where('work_day_id', $activeWorkDay->id)
+            ->exists();
+
+        if ($alreadyPresent) {
+            return back()->with('error_message', __('Worker is already marked as present for this workday.'));
+        }
 
         WorkerAttendance::create([
             'worker_id' => $request->worker_id,
@@ -177,31 +173,45 @@ class WorkerAttendanceController extends Controller
         return back()->with('success_message', __('Attendance marked successfully.'));
     }
 
-    public function markDeparture(Request $request, WorkerAttendance $attendance)
+    public function bulkMarkAttendance(Request $request)
     {
         $activeWorkDay = WorkDay::where('status', 'active')->first();
         if (!$activeWorkDay) {
             return back()->with('error_message', __('No active work day found.'));
         }
 
-        $workDayDate = $activeWorkDay->start_time->format('Y-m-d');
         $startTimeStr = $activeWorkDay->start_time->format('Y-m-d H:i:s');
 
         $request->validate([
-            'departure_time' => [
-                'required',
-                'date',
-                'after:arrival_time',
-                'after_or_equal:' . $startTimeStr,
-                function ($attribute, $value, $fail) use ($workDayDate, $activeWorkDay) {
-                    if (date('Y-m-d', strtotime($value)) !== $workDayDate) {
-                        $fail(__('The departure date must be the same as the active work day date (:date).', ['date' => $workDayDate]));
-                    }
-                    if (strtotime($value) < $activeWorkDay->start_time->timestamp) {
-                        $fail(__('The departure time must be after the work day start time (:time).', ['time' => $activeWorkDay->start_time->translatedFormat('h:i A')]));
-                    }
-                },
-            ],
+            'worker_ids' => 'required|array',
+            'worker_ids.*' => 'exists:workers,id',
+            'arrival_time' => 'required|date|after_or_equal:' . $startTimeStr,
+        ]);
+
+        $count = 0;
+        foreach ($request->worker_ids as $workerId) {
+            $exists = WorkerAttendance::where('worker_id', $workerId)
+                ->where('work_day_id', $activeWorkDay->id)
+                ->exists();
+
+            if (!$exists) {
+                WorkerAttendance::create([
+                    'worker_id' => $workerId,
+                    'work_day_id' => $activeWorkDay->id,
+                    'arrival_time' => $request->arrival_time,
+                    'admin_id' => auth()->id(),
+                ]);
+                $count++;
+            }
+        }
+
+        return back()->with('success_message', __(':count workers marked as present.', ['count' => $count]));
+    }
+
+    public function markDeparture(Request $request, WorkerAttendance $attendance)
+    {
+        $request->validate([
+            'departure_time' => 'required|date|after:arrival_time',
         ]);
 
         $attendance->update([
@@ -209,6 +219,37 @@ class WorkerAttendanceController extends Controller
         ]);
 
         return back()->with('success_message', __('Departure time recorded successfully.'));
+    }
+
+    public function bulkMarkDeparture(Request $request)
+    {
+        $activeWorkDay = WorkDay::where('status', 'active')->first();
+        if (!$activeWorkDay) {
+            return back()->with('error_message', __('No active work day found.'));
+        }
+
+        $request->validate([
+            'worker_ids' => 'required|array',
+            'worker_ids.*' => 'exists:workers,id',
+            'departure_time' => 'required|date',
+        ]);
+
+        $count = 0;
+        foreach ($request->worker_ids as $workerId) {
+            $attendance = WorkerAttendance::where('worker_id', $workerId)
+                ->where('work_day_id', $activeWorkDay->id)
+                ->whereNull('departure_time')
+                ->first();
+
+            if ($attendance && $request->departure_time > $attendance->arrival_time->format('Y-m-d H:i:s')) {
+                $attendance->update([
+                    'departure_time' => $request->departure_time,
+                ]);
+                $count++;
+            }
+        }
+
+        return back()->with('success_message', __(':count workers marked as departed.', ['count' => $count]));
     }
 
     public function storeTransaction(Request $request)

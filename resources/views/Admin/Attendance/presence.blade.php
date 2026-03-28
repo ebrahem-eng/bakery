@@ -40,8 +40,46 @@
     </div>
 @else
     <!-- Presence Management Section -->
-    <div class="p-8 glass-panel rounded-3xl border border-white/5">
-        <div class="flex items-center justify-between mb-8">
+    <div x-data="{ 
+            selectedWorkers: [],
+            allWorkerIds: {{ json_encode($workers->pluck('id')) }},
+            workerNames: {{ json_encode($workers->mapWithKeys(fn($w) => [$w->id => $w->first_name . ' ' . $w->last_name])) }},
+            toggleWorker(id) {
+                if (this.selectedWorkers.includes(id)) {
+                    this.selectedWorkers = this.selectedWorkers.filter(w => w !== id);
+                } else {
+                    this.selectedWorkers.push(id);
+                }
+            },
+            selectAll() {
+                if (this.selectedWorkers.length === this.allWorkerIds.length) {
+                    this.selectedWorkers = [];
+                } else {
+                    this.selectedWorkers = [...this.allWorkerIds];
+                }
+            },
+            getSelectedArrivable() {
+                // Workers with no attendance record
+                const presentIds = [
+                    @foreach($workers as $w)
+                        @if($w->attendances->first()) {{ $w->id }}, @endif
+                    @endforeach
+                ];
+                return this.selectedWorkers.filter(id => !presentIds.includes(id));
+            },
+            getSelectedDepartable() {
+                // Workers with attendance but no departure
+                const departableIds = [
+                    @foreach($workers as $w)
+                        @php $attn = $w->attendances->first(); @endphp
+                        @if($attn && !$attn->departure_time) {{ $w->id }}, @endif
+                    @endforeach
+                ];
+                return this.selectedWorkers.filter(id => departableIds.includes(id));
+            }
+         }" 
+         class="p-8 glass-panel rounded-3xl border border-white/5 relative">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <div>
                 <h2 class="text-xl font-bold text-white flex items-center gap-3">
                     <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -49,19 +87,31 @@
                 </h2>
                 <p class="text-sm text-slate-500 mt-1">{{ __('Select workers who have arrived and log their initial entry time.') }}</p>
             </div>
-            <button type="button" @click="$dispatch('open-attendance-modal')" class="px-6 py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-2xl font-bold flex items-center gap-2 transition-all group">
-                <span class="w-6 h-6 rounded-full bg-emerald-500 text-black flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                </span>
-                {{ __('Log Arrival') }}
-            </button>
+            <div class="flex items-center gap-3">
+                <button type="button" @click="selectAll()" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 rounded-xl text-xs font-bold transition-all">
+                    <span x-text="selectedWorkers.length === allWorkerIds.length ? '{{ __('Deselect All') }}' : '{{ __('Select All') }}'"></span>
+                </button>
+                <button type="button" @click="$dispatch('open-attendance-modal')" class="px-6 py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-2xl font-bold flex items-center gap-2 transition-all group">
+                    <span class="w-6 h-6 rounded-full bg-emerald-500 text-black flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                    </span>
+                    {{ __('Log Arrival') }}
+                </button>
+            </div>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
             @forelse($workers as $worker)
                 @php $attendance = $worker->attendances->first(); @endphp
-                <div class="p-4 rounded-2xl border transition-all {{ $attendance ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-white/5 border-white/5 grayscale pointer-events-none opacity-60' }}">
-                    <div class="flex items-center gap-3 mb-4">
+                <div @click="toggleWorker({{ $worker->id }})" 
+                     :class="selectedWorkers.includes({{ $worker->id }}) ? 'border-amber-500 ring-1 ring-amber-500/50' : 'border-white/5'"
+                     class="group/card relative p-4 rounded-2xl border transition-all cursor-pointer select-none {{ $attendance ? 'bg-emerald-500/5' : 'bg-white/5' }}">
+                    
+                    <div class="absolute top-3 right-3 z-10">
+                        <input type="checkbox" :checked="selectedWorkers.includes({{ $worker->id }})" class="w-4 h-4 rounded border-white/10 bg-black/20 text-amber-500 focus:ring-amber-500/50 focus:ring-offset-0 transition-all">
+                    </div>
+
+                    <div class="flex items-center gap-3 mb-4 {{ !$attendance ? 'grayscale opacity-60 group-hover/card:grayscale-0 group-hover/card:opacity-100 transition-all' : '' }}">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold {{ $attendance ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-slate-700 text-slate-400' }}">
                             {{ mb_substr($worker->first_name, 0, 1) }}
                         </div>
@@ -106,8 +156,149 @@
                 </div>
             @endforelse
         </div>
+
+        <!-- Sticky Bulk Actions Bar -->
+        <div x-show="selectedWorkers.length > 0" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-10"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 translate-y-10"
+             class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[90] w-fit min-w-[300px] max-w-[90vw] glass-panel rounded-full border border-white/10 shadow-2xl p-2 px-6 flex items-center justify-between gap-8 animate-in fade-in slide-in-from-bottom-5">
+            <div class="flex items-center gap-3">
+                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-black text-[10px] font-bold" x-text="selectedWorkers.length"></span>
+                <span class="text-xs font-bold text-white uppercase tracking-widest">{{ __('Selected') }}</span>
+            </div>
+            
+            <div class="h-8 w-px bg-white/10"></div>
+            
+            <div class="flex items-center gap-2">
+                <button x-show="getSelectedArrivable().length > 0" 
+                        @click="$dispatch('open-bulk-arrival-modal', { ids: getSelectedArrivable() })"
+                        class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black rounded-full text-[10px] font-bold transition-all shadow-lg flex items-center gap-2">
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                    {{ __('Group Arrival') }} (<span x-text="getSelectedArrivable().length"></span>)
+                </button>
+                
+                <button x-show="getSelectedDepartable().length > 0" 
+                        @click="$dispatch('open-bulk-departure-modal', { ids: getSelectedDepartable() })"
+                        class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black rounded-full text-[10px] font-bold transition-all shadow-lg flex items-center gap-2">
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {{ __('Group Departure') }} (<span x-text="getSelectedDepartable().length"></span>)
+                </button>
+                
+                <button @click="selectedWorkers = []" class="p-2 text-slate-400 hover:text-white transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
     </div>
 @endif
+
+<!-- Bulk Arrival Modal -->
+<div x-data="{ open: false, workerIds: [] }"
+     @open-bulk-arrival-modal.window="open = true; workerIds = $event.detail.ids" 
+     x-show="open" 
+     class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+        <div x-show="open" x-transition.opacity class="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" @click="open = false"></div>
+        <div x-show="open" x-transition 
+             class="relative inline-block w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform glass-panel rounded-2xl shadow-xl border border-white/10"
+             {{ app()->getLocale() == 'ar' ? 'dir="rtl"' : 'dir="ltr"' }}>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">{{ __('Group Arrival') }}</h3>
+                <button @click="open = false" class="text-slate-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form action="{{ route('admin.attendance.bulk_mark_attendance') }}" method="POST" class="space-y-4">
+                @csrf
+                <template x-for="id in workerIds" :key="id">
+                    <input type="hidden" name="worker_ids[]" :value="id">
+                </template>
+
+                <div class="mb-6 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-2 font-bold">{{ __('Marking attendance for:') }}</p>
+                    <div class="flex flex-wrap gap-2">
+                        <template x-for="id in workerIds" :key="id">
+                            <span class="px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded-md text-[10px] font-bold border border-emerald-500/10"
+                                  x-text="workerNames[id]"></span>
+                        </template>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Arrival Time') }}</label>
+                    <input type="datetime-local" name="arrival_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
+                        min="{{ $activeWorkDay->start_time->format('Y-m-d\TH:i') }}"
+                        required 
+                        class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
+                    <p class="text-[10px] text-slate-500 mt-2 italic px-1">
+                        {{ __('Must be after') }} {{ $activeWorkDay->start_time->translatedFormat('Y-m-d h:i A') }}
+                    </p>
+                </div>
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black px-4 py-3 rounded-xl text-sm font-bold transition-colors shadow-lg">
+                        {{ __('Save Group Arrival') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Departure Modal -->
+<div x-data="{ open: false, workerIds: [] }"
+     @open-bulk-departure-modal.window="open = true; workerIds = $event.detail.ids" 
+     x-show="open" 
+     class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+        <div x-show="open" x-transition.opacity class="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" @click="open = false"></div>
+        <div x-show="open" x-transition 
+             class="relative inline-block w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform glass-panel rounded-2xl shadow-xl border border-white/10"
+             {{ app()->getLocale() == 'ar' ? 'dir="rtl"' : 'dir="ltr"' }}>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">{{ __('Group Departure') }}</h3>
+                <button @click="open = false" class="text-slate-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form action="{{ route('admin.attendance.bulk_mark_departure') }}" method="POST" class="space-y-4">
+                @csrf
+                <template x-for="id in workerIds" :key="id">
+                    <input type="hidden" name="worker_ids[]" :value="id">
+                </template>
+
+                <div class="mb-6 p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl">
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-2 font-bold">{{ __('Signing out:') }}</p>
+                    <div class="flex flex-wrap gap-2">
+                        <template x-for="id in workerIds" :key="id">
+                            <span class="px-2 py-1 bg-amber-500/10 text-amber-400 rounded-md text-[10px] font-bold border border-amber-500/10"
+                                  x-text="workerNames[id]"></span>
+                        </template>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Departure Time') }}</label>
+                    <input type="datetime-local" name="departure_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
+                        min="{{ $activeWorkDay->start_time->format('Y-m-d\TH:i') }}"
+                        required 
+                        class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
+                    <p class="text-[10px] text-slate-500 mt-2 italic px-1">
+                        {{ __('Must be after arrival time.') }}
+                    </p>
+                </div>
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-black px-4 py-3 rounded-xl text-sm font-bold transition-colors shadow-lg">
+                        {{ __('Save Group Departure') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <!-- Attendance Modal -->
 <div x-data="{ open: false }"

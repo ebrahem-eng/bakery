@@ -906,5 +906,17 @@
     "after": "بعد",
     "The arrival time must be after the work day start time (:time).": "يجب أن يكون وقت الوصول بعد وقت بدء يوم العمل (:time).",
     "The departure time must be after the work day start time (:time).": "يجب أن يكون وقت المغادرة بعد وقت بدء يوم العمل (:time).",
-    "Must be after arrival and same day as": "يجب أن يكون بعد الوصول وفي نفس يوم"
+    "Must be after arrival and same day as": "يجب أن يكون بعد الوصول وفي نفس يوم",
+    "Group Arrival": "وصول مجموعة",
+    "Group Departure": "مغادرة مجموعة",
+    "Save Group Arrival": "حفظ وصول المجموعة",
+    "Save Group Departure": "حفظ مغادرة المجموعة",
+    "Select All": "تحديد الكل",
+    "Deselect All": "إلغاء تحديد الكل",
+    "Marking attendance for:": "تسجيل حضور لـ:",
+    "Signing out:": "تسجيل خروج لـ:",
+    "Must be after arrival time.": "يجب أن يكون بعد وقت الوصول.",
+    ":count workers marked as present.": "تم تسجيل حضور :count عمال.",
+    ":count workers marked as departed.": "تم تسجيل مغادرة :count عمال.",
+    "Worker is already marked as present for this workday.": "العامل مسجل حضوره بالفعل لهذا اليوم."
 }

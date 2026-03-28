@@ -91,7 +91,9 @@ Route::group(['middleware' => ['admin.auth']], function () {
     Route::group(['middleware' => ['permission:view presence,admin']], function () {
         Route::get('attendance/presence', [WorkerAttendanceController::class, 'presence'])->name('attendance.presence');
         Route::post('attendance/mark-attendance', [WorkerAttendanceController::class, 'markAttendance'])->name('attendance.mark_attendance');
+        Route::post('attendance/bulk-mark-attendance', [WorkerAttendanceController::class, 'bulkMarkAttendance'])->name('attendance.bulk_mark_attendance');
         Route::post('attendance/{attendance}/mark-departure', [WorkerAttendanceController::class, 'markDeparture'])->name('attendance.mark_departure');
+        Route::post('attendance/bulk-mark-departure', [WorkerAttendanceController::class, 'bulkMarkDeparture'])->name('attendance.bulk_mark_departure');
     });
 
     Route::group(['middleware' => ['permission:view attendance,admin']], function () {
