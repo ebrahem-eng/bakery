@@ -148,15 +148,20 @@ class WorkerAttendanceController extends Controller
         }
 
         $workDayDate = $activeWorkDay->start_time->format('Y-m-d');
+        $startTimeStr = $activeWorkDay->start_time->format('Y-m-d H:i:s');
 
         $request->validate([
             'worker_id' => 'required|exists:workers,id',
             'arrival_time' => [
                 'required',
                 'date',
-                function ($attribute, $value, $fail) use ($workDayDate) {
+                'after_or_equal:' . $startTimeStr,
+                function ($attribute, $value, $fail) use ($workDayDate, $activeWorkDay) {
                     if (date('Y-m-d', strtotime($value)) !== $workDayDate) {
                         $fail(__('The arrival date must be the same as the active work day date (:date).', ['date' => $workDayDate]));
+                    }
+                    if (strtotime($value) < $activeWorkDay->start_time->timestamp) {
+                        $fail(__('The arrival time must be after the work day start time (:time).', ['time' => $activeWorkDay->start_time->translatedFormat('h:i A')]));
                     }
                 },
             ],
@@ -180,15 +185,20 @@ class WorkerAttendanceController extends Controller
         }
 
         $workDayDate = $activeWorkDay->start_time->format('Y-m-d');
+        $startTimeStr = $activeWorkDay->start_time->format('Y-m-d H:i:s');
 
         $request->validate([
             'departure_time' => [
                 'required',
                 'date',
                 'after:arrival_time',
-                function ($attribute, $value, $fail) use ($workDayDate) {
+                'after_or_equal:' . $startTimeStr,
+                function ($attribute, $value, $fail) use ($workDayDate, $activeWorkDay) {
                     if (date('Y-m-d', strtotime($value)) !== $workDayDate) {
                         $fail(__('The departure date must be the same as the active work day date (:date).', ['date' => $workDayDate]));
+                    }
+                    if (strtotime($value) < $activeWorkDay->start_time->timestamp) {
+                        $fail(__('The departure time must be after the work day start time (:time).', ['time' => $activeWorkDay->start_time->translatedFormat('h:i A')]));
                     }
                 },
             ],

@@ -139,12 +139,12 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Arrival Time') }}</label>
                     <input type="datetime-local" name="arrival_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
-                        min="{{ $activeWorkDay->start_time->format('Y-m-d\T00:00') }}"
+                        min="{{ $activeWorkDay->start_time->format('Y-m-d\TH:i') }}"
                         max="{{ $activeWorkDay->start_time->format('Y-m-d\T23:59') }}"
                         required 
                         class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
                     <p class="text-[10px] text-slate-500 mt-2 italic px-1">
-                        {{ __('Must be on') }} {{ $activeWorkDay->start_time->translatedFormat('Y-m-d') }}
+                        {{ __('Must be on') }} {{ $activeWorkDay->start_time->translatedFormat('Y-m-d') }} {{ __('after') }} {{ $activeWorkDay->start_time->translatedFormat('h:i A') }}
                     </p>
                 </div>
                 <div class="pt-4">
@@ -190,6 +190,9 @@
                         max="{{ $activeWorkDay->start_time->format('Y-m-d\T23:59') }}"
                         required 
                         class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
+                    <p class="text-[10px] text-slate-500 mt-2 italic px-1">
+                        {{ __('Must be after arrival and same day as') }} {{ $activeWorkDay->start_time->translatedFormat('Y-m-d') }}
+                    </p>
                 </div>
                 <div class="pt-4">
                     <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-[#0f1115] px-4 py-3 rounded-xl text-sm font-bold transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]">

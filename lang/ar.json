@@ -902,5 +902,9 @@
     "Save Departure": "حفظ المغادرة",
     "Departure time recorded successfully.": "تم تسجيل وقت المغادرة بنجاح.",
     "The arrival date must be the same as the active work day date (:date).": "يجب أن يكون تاريخ الوصول هو نفس تاريخ يوم العمل النشط (:date).",
-    "The departure date must be the same as the active work day date (:date).": "يجب أن يكون تاريخ المغادرة هو نفس تاريخ يوم العمل النشط (:date)."
+    "The departure date must be the same as the active work day date (:date).": "يجب أن يكون تاريخ المغادرة هو نفس تاريخ يوم العمل النشط (:date).",
+    "after": "بعد",
+    "The arrival time must be after the work day start time (:time).": "يجب أن يكون وقت الوصول بعد وقت بدء يوم العمل (:time).",
+    "The departure time must be after the work day start time (:time).": "يجب أن يكون وقت المغادرة بعد وقت بدء يوم العمل (:time).",
+    "Must be after arrival and same day as": "يجب أن يكون بعد الوصول وفي نفس يوم"
 }
