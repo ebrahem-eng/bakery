@@ -925,5 +925,8 @@
     "Total Advances": "إجمالي السلف",
     "From Shifts": "من الورديات",
     "Pending Settlement": "قيد التسوية",
-    "To be paid": "بانتظار الدفع"
+    "To be paid": "بانتظار الدفع",
+    "Payment recorded successfully.": "تم تسجيل الدفعة بنجاح.",
+    "Discount recorded successfully.": "تم تسجيل الحسم بنجاح.",
+    "Enter notes here...": "أدخل الملاحظات هنا..."
 }
