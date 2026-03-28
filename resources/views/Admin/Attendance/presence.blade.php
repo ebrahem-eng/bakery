@@ -4,7 +4,7 @@
 <div class="mb-8">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end w-full gap-4">
         <div>
-            <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Daily') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">{{ __('Staff Presence') }}</span></h1>
+            <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Daily Staff Presence') }}</h1>
             <p class="text-sm text-slate-400">
                 {{ __('Marking staff as present for Active Work Day:') }} 
                 @if($activeWorkDay)
