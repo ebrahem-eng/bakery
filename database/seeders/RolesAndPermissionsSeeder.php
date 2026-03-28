@@ -25,6 +25,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'distributors',
             'workers',
             'attendance',
+            'presence',
+            'wages',
             'admins',
             'roles',
         ];

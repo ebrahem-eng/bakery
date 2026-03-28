@@ -18,8 +18,10 @@ class PermissionSeeder extends Seeder
             'view_supplies', 'add_supply', 'edit_supply', 'delete_supply',
             // Workers
             'view_workers', 'add_worker', 'edit_worker', 'delete_worker',
-            // Worker Attendance / Shifts
+            // Worker Attendance / Changes
             'view_attendance', 'manage_attendance',
+            'view_presence', 'manage_presence',
+            'view_wages', 'manage_wages',
             // Distributors
             'view_distributors', 'add_distributor', 'edit_distributor', 'delete_distributor',
             // Sales / Distributions
