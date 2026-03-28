@@ -5,50 +5,50 @@
         <div>
             <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Worker') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">{{ __('Attendance & Shifts') }}</span></h1>
             <p class="text-sm text-slate-400">
-                {{ __('Managing attendance for Active Work Day:') }} 
+                {{ __('Managing shifts for Active Work Day:') }} 
                 <span class="font-bold text-emerald-500">{{ $activeWorkDay->start_time->translatedFormat('Y-m-d h:i A') }}</span>
             </p>
         </div>
-        <button type="button" @click="$dispatch('open-history-modal')" class="bg-white/5 shadow-sm hover:bg-white/10 text-white px-4 py-2 rounded-xl text-sm font-medium border border-white/10 flex items-center transition-all">
-            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            {{ __('Presence History') }}
-        </button>
+        <a href="{{ route('admin.attendance.presence') }}" class="bg-emerald-500 hover:bg-emerald-400 text-black px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center shadow-lg shadow-emerald-500/20">
+            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+            {{ __('Manage Daily Presence') }}
+        </a>
     </div>
 </div>
 
-<!-- Daily Presence Section -->
-<div class="mb-8 p-6 glass-panel rounded-2xl border border-white/5">
-    <div class="flex items-center justify-between mb-6">
-        <div>
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                {{ __('Daily Presence') }}
-            </h2>
-            <p class="text-xs text-slate-500">{{ __('Workers marked as present for the current active work day.') }}</p>
+@php 
+    $pendingWorkers = $workers->filter(function($w) use ($activeWorkDay) {
+        return $w->attendances->isNotEmpty() && 
+               !$w->shifts->where('work_day_id', $activeWorkDay->id)->whereNull('check_out')->first();
+    });
+@endphp
+
+@if($pendingWorkers->isNotEmpty())
+    <!-- Pending Shifts Alert -->
+    <div class="mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-amber-500">{{ __('Staff Ready for Shift') }}</h3>
+                <p class="text-[11px] text-slate-400">{{ $pendingWorkers->count() }} {{ __('workers are marked as present but haven\'t started a shift yet.') }}</p>
+            </div>
         </div>
-        <button type="button" @click="$dispatch('open-attendance-modal')" class="w-10 h-10 rounded-full bg-amber-500 hover:bg-amber-400 text-black flex items-center justify-center transition-all shadow-lg hover:scale-110 active:scale-95" title="{{ __('Log Attendance') }}">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-        </button>
-    </div>
-
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-        @forelse($workers->reject(fn($w) => $w->attendances->isEmpty()) as $presentWorker)
-            <div class="p-3 bg-white/5 border border-white/5 rounded-xl flex items-center gap-3 group hover:border-amber-500/30 transition-all">
-                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xs font-bold">
-                    {{ mb_substr($presentWorker->first_name, 0, 1) }}
+        <div class="flex -space-x-2">
+            @foreach($pendingWorkers->take(5) as $pw)
+                <div class="w-8 h-8 rounded-full border-2 border-[#0f1115] bg-slate-800 flex items-center justify-center text-[10px] font-bold text-white shadow-lg" title="{{ $pw->first_name }}">
+                    {{ mb_substr($pw->first_name, 0, 1) }}
                 </div>
-                <div class="min-w-0">
-                    <p class="text-xs font-bold text-slate-200 truncate">{{ $presentWorker->first_name }}</p>
-                    <p class="text-[9px] text-slate-500">{{ $presentWorker->attendances->first()->arrival_time->translatedFormat('h:i A') }}</p>
+            @endforeach
+            @if($pendingWorkers->count() > 5)
+                <div class="w-8 h-8 rounded-full border-2 border-[#0f1115] bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-400 shadow-lg">
+                    +{{ $pendingWorkers->count() - 5 }}
                 </div>
-            </div>
-        @empty
-            <div class="col-span-full py-8 text-center border-2 border-dashed border-white/5 rounded-2xl">
-                <p class="text-sm text-slate-500">{{ __('No workers marked as present yet.') }}</p>
-            </div>
-        @endforelse
+            @endif
+        </div>
     </div>
-</div>
+@endif
 
 <!-- Alerts -->
 @if(session('success_message'))
@@ -316,102 +316,6 @@
                     </button>
                 </div>
             </form>
-        </div>
-    </div>
-</div>
-<!-- Attendance Modal -->
-<div x-data="{ open: false }"
-     @open-attendance-modal.window="open = true" 
-     x-show="open" 
-     class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
-    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-        <div x-show="open" x-transition.opacity class="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" @click="open = false"></div>
-        <div x-show="open" x-transition 
-             class="relative inline-block w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform glass-panel rounded-2xl shadow-xl border border-white/10"
-             {{ app()->getLocale() == 'ar' ? 'dir="rtl"' : 'dir="ltr"' }}>
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-white">{{ __('Log Daily Presence') }}</h3>
-                <button @click="open = false" class="text-slate-400 hover:text-white transition-colors">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-            <form action="{{ route('admin.attendance.mark_attendance') }}" method="POST" class="space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Select Worker') }}</label>
-                    <select name="worker_id" required class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium appearance-none">
-                        <option value="">{{ __('Select Worker...') }}</option>
-                        @foreach($workers as $worker)
-                            <option value="{{ $worker->id }}">{{ $worker->first_name }} {{ $worker->last_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Arrival Time') }}</label>
-                    <input type="datetime-local" name="arrival_time" value="{{ now()->format('Y-m-d\TH:i') }}" required 
-                        class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
-                </div>
-                <div class="pt-4">
-                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-[#0f1115] px-4 py-3 rounded-xl text-sm font-bold transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-                        {{ __('Save Attendance') }}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Presence History Modal -->
-<div x-data="{ open: false }"
-     @open-history-modal.window="open = true" 
-     x-show="open" 
-     class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
-    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-        <div x-show="open" x-transition.opacity class="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" @click="open = false"></div>
-        <div x-show="open" x-transition 
-             class="relative inline-block w-full max-w-4xl p-6 overflow-hidden text-left align-middle transition-all transform glass-panel rounded-2xl shadow-xl border border-white/10"
-             {{ app()->getLocale() == 'ar' ? 'dir="rtl"' : 'dir="ltr"' }}>
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-white">{{ __('Presence History') }}</h3>
-                <button @click="open = false" class="text-slate-400 hover:text-white transition-colors">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }} text-slate-300">
-                    <thead class="text-xs text-slate-500 uppercase bg-white/5">
-                        <tr>
-                            <th class="px-6 py-3">{{ __('Worker') }}</th>
-                            <th class="px-6 py-3">{{ __('Days Present') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5">
-                        @foreach($workers as $w)
-                            @php
-                                $presenceDates = \App\Models\WorkerAttendance::where('worker_id', $w->id)
-                                    ->latest('arrival_time')
-                                    ->get()
-                                    ->groupBy(fn($a) => $a->arrival_time->format('Y-m-d'));
-                            @endphp
-                            <tr>
-                                <td class="px-6 py-4 font-bold text-white">{{ $w->first_name }} {{ $w->last_name }}</td>
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-wrap gap-2">
-                                        @forelse($presenceDates as $date => $logs)
-                                            <span class="px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded-md text-[10px] border border-emerald-500/10" title="{{ $logs->first()->arrival_time->translatedFormat('h:i A') }}">
-                                                {{ \Carbon\Carbon::parse($date)->translatedFormat('M d, Y') }}
-                                            </span>
-                                        @empty
-                                            <span class="text-slate-600 italic">{{ __('No history') }}</span>
-                                        @endforelse
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 </div>

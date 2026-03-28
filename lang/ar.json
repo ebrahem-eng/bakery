@@ -88,6 +88,7 @@
     "Assigned Permissions": "الصلاحيات المعينة",
     "At": "في",
     "Attendance & Shifts": "الحضور والورديات",
+    "Attendance Dashboard": "لوحة التحكم بالحضور",
     "Attendance marked successfully.": "تم تسجيل الحضور بنجاح.",
     "Attendance (Shifts)": "الحضور (الورديات)",
     "Ausent / Pending": "غائب / معلق",
@@ -368,10 +369,12 @@
     "Manage and track chronological accounting periods.": "إدارة وتتبع الفترات المحاسبية الزمنية.",
     "Manage authorization thresholds and custom capability scopes.": "إدارة حدود التفويض ونطاقات الصلاحيات المخصصة.",
     "Manage bakery staff, titles, and daily wages.": "إدارة طاقم المخبز، المسميات، والأجور اليومية.",
+    "Manage Daily Presence": "إدارة الحضور اليومي",
     "Manage system personnel and their active roles.": "إدارة موظفي النظام وأدوارهم النشطة.",
     "Manage vendors mapping to raw material categories.": "إدارة الموردين وربطهم بفئات المواد الخام.",
     "Manageable via Personnel HR": "يمكن إدارته عبر شؤون الموظفين",
     "Managing attendance for Active Work Day:": "إدارة الحضور ليوم العمل النشط:",
+    "Marking staff as present for Active Work Day:": "تسجيل حضور الكادر ليوم العمل النشط:",
     "Managing outbound supply for Active Work Day:": "إدارة الإمدادات الصادرة ليوم العمل النشط:",
     "Material Categories": "فئات المواد",
     "Material Category": "فئة المادة",
@@ -586,6 +589,8 @@
     "Sign In": "دخول",
     "Sign in to your account to continue": "سجل الدخول للمتابعة",
     "Sort By": "ترتيب حسب",
+    "Staff Presence": "حضور الكادر",
+    "Staff Ready for Shift": "كادر جاهز للوردية",
     "Start New Shift": "بدء وردية جديدة",
     "Start Time": "وقت البدء",
     "Shift Start Time": "وقت بدء الوردية",
@@ -842,5 +847,6 @@
     "view_workers": "عرض العمال",
     "warehouse": "المستودع",
     "work days": "أيام العمل",
-    "workers": "العمال"
+    "workers": "العمال",
+    "workers are marked as present but haven't started a shift yet.": "عمال مسجل حضورهم ولكن لم يبدأوا وردية بعد."
 }

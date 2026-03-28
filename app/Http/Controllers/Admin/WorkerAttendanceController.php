@@ -38,6 +38,25 @@ class WorkerAttendanceController extends Controller
         return view('Admin.Attendance.index', compact('workers', 'activeWorkDay', 'currencies'));
     }
 
+    public function presence()
+    {
+        $activeWorkDay = WorkDay::where('status', 'active')->first();
+        if (!$activeWorkDay) {
+            return view('Admin.Attendance.presence', [
+                'workers' => collect(),
+                'activeWorkDay' => null,
+            ]);
+        }
+
+        $workers = Worker::with([
+            'attendances' => function ($query) use ($activeWorkDay) {
+                $query->where('work_day_id', $activeWorkDay->id);
+            },
+        ])->get();
+
+        return view('Admin.Attendance.presence', compact('workers', 'activeWorkDay'));
+    }
+
     public function clockIn(Request $request)
     {
         $request->validate([
