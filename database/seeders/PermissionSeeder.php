@@ -11,30 +11,30 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             // Work Days
-            'view_work_days', 'add_work_day', 'edit_work_day', 'delete_work_day',
+            'view work days', 'create work days', 'edit work days', 'delete work days',
             // Suppliers
-            'view_suppliers', 'add_supplier', 'edit_supplier', 'delete_supplier',
+            'view suppliers', 'create suppliers', 'edit suppliers', 'delete suppliers',
             // Supply (Purchases)
-            'view_supplies', 'add_supply', 'edit_supply', 'delete_supply',
+            'view supplies', 'create supplies', 'edit supplies', 'delete supplies',
             // Workers
-            'view_workers', 'add_worker', 'edit_worker', 'delete_worker',
+            'view workers', 'create workers', 'edit workers', 'delete workers',
             // Worker Attendance / Changes
-            'view_attendance', 'manage_attendance',
-            'view_presence', 'manage_presence',
-            'view_wages', 'manage_wages',
+            'view attendance', 'manage attendance',
+            'view presence', 'manage presence',
+            'view wages', 'manage wages',
             // Distributors
-            'view_distributors', 'add_distributor', 'edit_distributor', 'delete_distributor',
+            'view distributors', 'create distributors', 'edit distributors', 'delete distributors',
             // Sales / Distributions
-            'view_sales', 'add_sale', 'edit_sale', 'delete_sale',
+            'view distributions', 'create distributions', 'edit distributions', 'delete distributions',
             // Expenses / Drawings
-            'view_expenses', 'add_expense', 'edit_expense', 'delete_expense',
+            'view expenses', 'create expenses', 'edit expenses', 'delete expenses',
             // Reports / Financials
-            'view_financial_reports',
+            'view financial reports',
             // Admins & Roles
-            'view_admins', 'add_admin', 'edit_admin', 'delete_admin',
-            'view_roles', 'add_role', 'edit_role', 'delete_role',
+            'view admins', 'create admins', 'edit admins', 'delete admins',
+            'view roles', 'create roles', 'edit roles', 'delete roles',
             // Settings & Categories
-            'manage_settings', 'manage_categories',
+            'manage settings', 'manage categories',
         ];
 
         foreach ($permissions as $permission) {
