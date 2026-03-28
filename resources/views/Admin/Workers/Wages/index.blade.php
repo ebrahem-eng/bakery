@@ -25,7 +25,7 @@
         <div class="glass-panel p-6 rounded-3xl border border-white/5 sticky top-8"
              x-data="{ 
                 selectedWorkerId: '',
-                selectedCurrency: '{{ $currencies->where('is_default', true)->first()->id ?? '' }}',
+                selectedCurrency: '',
                 usdId: '{{ $currencies->where('code', 'USD')->first()->id ?? '' }}',
                 usdRate: '{{ $currencies->where('code', 'USD')->first()->exchange_rate ?? '0' }}',
                 workers: @js($workers)
@@ -61,6 +61,7 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Currency') }}</label>
                         <select name="currency_id" x-model="selectedCurrency" required class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-medium appearance-none">
+                            <option value="">{{ __('Select Currency...') }}</option>
                             @foreach($currencies as $curr)
                                 <option value="{{ $curr->id }}">{{ $curr->code }}</option>
                             @endforeach
