@@ -142,15 +142,25 @@ class WorkerAttendanceController extends Controller
 
     public function markAttendance(Request $request)
     {
-        $request->validate([
-            'worker_id' => 'required|exists:workers,id',
-            'arrival_time' => 'required|date',
-        ]);
-
         $activeWorkDay = WorkDay::where('status', 'active')->first();
         if (!$activeWorkDay) {
             return back()->with('error_message', __('No active work day found.'));
         }
+
+        $workDayDate = $activeWorkDay->start_time->format('Y-m-d');
+
+        $request->validate([
+            'worker_id' => 'required|exists:workers,id',
+            'arrival_time' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) use ($workDayDate) {
+                    if (date('Y-m-d', strtotime($value)) !== $workDayDate) {
+                        $fail(__('The arrival date must be the same as the active work day date (:date).', ['date' => $workDayDate]));
+                    }
+                },
+            ],
+        ]);
 
         WorkerAttendance::create([
             'worker_id' => $request->worker_id,
@@ -160,6 +170,35 @@ class WorkerAttendanceController extends Controller
         ]);
 
         return back()->with('success_message', __('Attendance marked successfully.'));
+    }
+
+    public function markDeparture(Request $request, WorkerAttendance $attendance)
+    {
+        $activeWorkDay = WorkDay::where('status', 'active')->first();
+        if (!$activeWorkDay) {
+            return back()->with('error_message', __('No active work day found.'));
+        }
+
+        $workDayDate = $activeWorkDay->start_time->format('Y-m-d');
+
+        $request->validate([
+            'departure_time' => [
+                'required',
+                'date',
+                'after:arrival_time',
+                function ($attribute, $value, $fail) use ($workDayDate) {
+                    if (date('Y-m-d', strtotime($value)) !== $workDayDate) {
+                        $fail(__('The departure date must be the same as the active work day date (:date).', ['date' => $workDayDate]));
+                    }
+                },
+            ],
+        ]);
+
+        $attendance->update([
+            'departure_time' => $request->departure_time,
+        ]);
+
+        return back()->with('success_message', __('Departure time recorded successfully.'));
     }
 
     public function storeTransaction(Request $request)

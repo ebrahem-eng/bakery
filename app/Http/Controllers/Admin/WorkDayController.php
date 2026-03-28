@@ -94,18 +94,22 @@ class WorkDayController extends Controller
 
         // ── Expense Breakdown ─────────────────────────────────────────
         $suppliesCost = $workDay->supplies->sum('total_cost');
-        $unloadingFees = $workDay->supplies->where('unloading_fee_payer', 'bakery')->values()->sum(function ($s) {
-            return $s->unloading_fee * ($s->unloading_fee_exchange_rate ?? 1);
-        });
+        $unloadingFees = $workDay->supplies->where('unloading_fee_payer', 'bakery')->reduce(function ($carry, $s) {
+            return $carry + ($s->unloading_fee * ($s->unloading_fee_exchange_rate ?? 1));
+        }, 0);
         
         // Use actual recorded transactions instead of theoretical shift wages
         $workerPayments = $workDay->workerTransactions
             ->whereIn('type', ['salary', 'wage', 'advance', 'allowance', 'bonus'])
-            ->sum(function($t) { return $t->amount * ($t->exchange_rate ?? 1); });
+            ->reduce(function($carry, $t) { 
+                return $carry + ($t->amount * ($t->exchange_rate ?? 1)); 
+            }, 0);
             
         $workerDeductions = $workDay->workerTransactions
             ->where('type', 'deduction')
-            ->sum(function($t) { return $t->amount * ($t->exchange_rate ?? 1); });
+            ->reduce(function($carry, $t) { 
+                return $carry + ($t->amount * ($t->exchange_rate ?? 1)); 
+            }, 0);
             
         $operationalExpenses = $workDay->expenses->sum('amount');
 

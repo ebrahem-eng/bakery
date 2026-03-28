@@ -10,11 +10,13 @@ class WorkerAttendance extends Model
         'worker_id',
         'work_day_id',
         'arrival_time',
+        'departure_time',
         'admin_id',
     ];
 
     protected $casts = [
         'arrival_time' => 'datetime',
+        'departure_time' => 'datetime',
     ];
 
     public function worker()

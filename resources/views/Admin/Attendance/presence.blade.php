@@ -72,11 +72,27 @@
                     </div>
                     
                     @if($attendance)
-                        <div class="pt-3 border-t border-emerald-500/10">
+                        <div class="pt-3 border-t border-emerald-500/10 space-y-2">
                             <div class="flex items-center justify-between text-[10px]">
                                 <span class="text-emerald-500/60 uppercase font-bold">{{ __('ARRIVED') }}</span>
                                 <span class="text-emerald-400 font-bold bg-emerald-400/10 px-1.5 py-0.5 rounded-md">{{ $attendance->arrival_time->translatedFormat('h:i A') }}</span>
                             </div>
+                            @if($attendance->departure_time)
+                                <div class="flex items-center justify-between text-[10px]">
+                                    <span class="text-amber-500/60 uppercase font-bold">{{ __('DEPARTED') }}</span>
+                                    <span class="text-amber-400 font-bold bg-amber-400/10 px-1.5 py-0.5 rounded-md">{{ $attendance->departure_time->translatedFormat('h:i A') }}</span>
+                                </div>
+                            @else
+                                <button type="button" 
+                                    @click="$dispatch('open-departure-modal', { 
+                                        id: {{ $attendance->id }}, 
+                                        name: '{{ $worker->first_name }} {{ $worker->last_name }}',
+                                        arrival: '{{ $attendance->arrival_time->format('Y-m-d\TH:i') }}'
+                                    })"
+                                    class="w-full mt-2 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 text-[10px] font-bold rounded-lg border border-amber-500/20 transition-all pointer-events-auto grayscale-0 opacity-100">
+                                    {{ __('Sign Out') }}
+                                </button>
+                            @endif
                         </div>
                     @else
                         <div class="pt-3 border-t border-white/5 text-center">
@@ -122,12 +138,62 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Arrival Time') }}</label>
-                    <input type="datetime-local" name="arrival_time" value="{{ now()->format('Y-m-d\TH:i') }}" required 
+                    <input type="datetime-local" name="arrival_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
+                        min="{{ $activeWorkDay->start_time->format('Y-m-d\T00:00') }}"
+                        max="{{ $activeWorkDay->start_time->format('Y-m-d\T23:59') }}"
+                        required 
                         class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
+                    <p class="text-[10px] text-slate-500 mt-2 italic px-1">
+                        {{ __('Must be on') }} {{ $activeWorkDay->start_time->translatedFormat('Y-m-d') }}
+                    </p>
                 </div>
                 <div class="pt-4">
                     <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-[#0f1115] px-4 py-3 rounded-xl text-sm font-bold transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]">
                         {{ __('Save Arrival') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Departure Modal -->
+<div x-data="{ open: false, attendanceId: '', workerName: '', arrivalTime: '' }"
+     @open-departure-modal.window="open = true; attendanceId = $event.detail.id; workerName = $event.detail.name; arrivalTime = $event.detail.arrival" 
+     x-show="open" 
+     class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+        <div x-show="open" x-transition.opacity class="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" @click="open = false"></div>
+        <div x-show="open" x-transition 
+             class="relative inline-block w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform glass-panel rounded-2xl shadow-xl border border-white/10"
+             {{ app()->getLocale() == 'ar' ? 'dir="rtl"' : 'dir="ltr"' }}>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">{{ __('Log Departure') }}</h3>
+                <button @click="open = false" class="text-slate-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="mb-6 p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl">
+                <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">{{ __('Worker') }}</p>
+                <p class="text-lg font-bold text-white" x-text="workerName"></p>
+                <div class="flex items-center gap-2 mt-2 text-[10px] text-emerald-500 font-bold bg-emerald-500/10 w-fit px-2 py-1 rounded-md">
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {{ __('Arrived at:') }} <span x-text="new Date(arrivalTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span>
+                </div>
+            </div>
+            <form :action="`/admin/attendance/${attendanceId}/mark-departure`" method="POST" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Departure Time') }}</label>
+                    <input type="datetime-local" name="departure_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
+                        :min="arrivalTime"
+                        max="{{ $activeWorkDay->start_time->format('Y-m-d\T23:59') }}"
+                        required 
+                        class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
+                </div>
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-[#0f1115] px-4 py-3 rounded-xl text-sm font-bold transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                        {{ __('Save Departure') }}
                     </button>
                 </div>
             </form>
