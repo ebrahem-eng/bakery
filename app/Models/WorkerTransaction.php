@@ -11,6 +11,13 @@ class WorkerTransaction extends Model
 {
     use HasFactory, LogsActivity;
 
+    const TYPE_ADVANCE = 'advance';
+    const TYPE_ALLOWANCE = 'allowance';
+    const TYPE_DEDUCTION = 'deduction';
+    const TYPE_SALARY = 'salary';
+    const TYPE_WAGE = 'wage';
+    const TYPE_BONUS = 'bonus';
+
     protected $fillable = [
         'worker_id',
         'work_day_id',

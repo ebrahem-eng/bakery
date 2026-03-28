@@ -166,8 +166,10 @@ class WorkerAttendanceController extends Controller
     {
         $request->validate([
             'worker_id' => 'required|exists:workers,id',
-            'type' => 'required|in:advance,allowance,deduction',
+            'type' => 'required|in:advance,allowance,deduction,salary,wage,bonus',
             'amount' => 'required|numeric|min:0.01',
+            'currency_id' => 'nullable|exists:currencies,id',
+            'exchange_rate' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
 
@@ -177,19 +179,37 @@ class WorkerAttendanceController extends Controller
         }
 
         $worker = Worker::findOrFail($request->worker_id);
-        $rate = $worker->currency->is_local ? 1 : $worker->currency->exchange_rate;
+        
+        // Resolve Currency & Exchange Rate
+        $currencyId = $request->currency_id ?? $worker->currency_id;
+        $currency = Currency::find($currencyId);
+        
+        $rate = 1;
+        if ($currency && !$currency->is_default) {
+            $rate = $request->exchange_rate ?? $currency->exchange_rate;
+        }
 
         WorkerTransaction::create([
             'worker_id' => $worker->id,
             'work_day_id' => $activeWorkDay->id,
             'type' => $request->type,
             'amount' => $request->amount,
-            'currency_id' => $worker->currency_id,
+            'currency_id' => $currencyId,
             'exchange_rate' => $rate,
             'notes' => $request->notes,
             'admin_id' => auth()->id(),
         ]);
 
-        return back()->with('success_message', __(':type recorded successfully.', ['type' => __(ucfirst($request->type))]));
+        $typeLabel = match($request->type) {
+            'advance' => __('Advance'),
+            'allowance' => __('Allowance'),
+            'deduction' => __('Deduction'),
+            'salary' => __('Salary'),
+            'wage' => __('Wage'),
+            'bonus' => __('Bonus'),
+            default => ucfirst($request->type)
+        };
+
+        return back()->with('success_message', __(':type recorded successfully.', ['type' => $typeLabel]));
     }
 }

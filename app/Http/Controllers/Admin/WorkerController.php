@@ -125,7 +125,8 @@ class WorkerController extends Controller
             return $s->snapshot_daily_wage * ($s->snapshot_exchange_rate ?: 1);
         });
 
-        $totalAdvancesSYPN = $transactions->whereIn('type', ['advance', 'payment'])->sum(function ($t) {
+        // Actual cash paid to worker
+        $totalAdvancesSYPN = $transactions->whereIn('type', ['advance', 'salary', 'wage', 'bonus', 'allowance'])->sum(function ($t) {
             return $t->amount * ($t->exchange_rate ?: 1);
         });
 
@@ -133,11 +134,12 @@ class WorkerController extends Controller
             return $t->amount * ($t->exchange_rate ?: 1);
         });
 
-        $totalAllowancesSYPN = $transactions->where('type', 'allowance')->sum(function ($t) {
+        // For display: specifically Salary/Wage vs Advances
+        $totalSalariesSYPN = $transactions->whereIn('type', ['salary', 'wage', 'bonus'])->sum(function ($t) {
             return $t->amount * ($t->exchange_rate ?: 1);
         });
 
-        $balanceSYPN = $totalEarnedSYPN + $totalAllowancesSYPN - $totalAdvancesSYPN - $totalDiscountsSYPN;
+        $balanceSYPN = $totalEarnedSYPN - ($totalAdvancesSYPN - $totalDiscountsSYPN);
 
         // Unified History for Display
         $historyList = collect();
@@ -191,7 +193,7 @@ class WorkerController extends Controller
             'totalEarnedSYPN' => $totalEarnedSYPN,
             'totalAdvancesSYPN' => $totalAdvancesSYPN,
             'totalDiscountsSYPN' => $totalDiscountsSYPN,
-            'totalAllowancesSYPN' => $totalAllowancesSYPN,
+            'totalSalariesSYPN' => $totalSalariesSYPN,
             'balanceSYPN' => $balanceSYPN,
             'startDate' => $startDate,
             'endDate' => $endDate,

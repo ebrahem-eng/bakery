@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\WorkDayController;
 use App\Http\Controllers\Admin\WorkerAttendanceController;
 use App\Http\Controllers\Admin\WorkerController;
+use App\Http\Controllers\Admin\WorkerWageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'loginPage'])->name('login.page');
@@ -94,6 +95,10 @@ Route::group(['middleware' => ['admin.auth']], function () {
         Route::post('attendance/mark-attendance', [WorkerAttendanceController::class, 'markAttendance'])->name('attendance.mark_attendance');
         Route::post('attendance/{shift}/clock-out', [WorkerAttendanceController::class, 'clockOut'])->name('attendance.clock_out');
         Route::post('attendance/transaction', [WorkerAttendanceController::class, 'storeTransaction'])->name('attendance.transaction');
+        
+        // Employee Wages - Standalone Page
+        Route::get('wages', [WorkerWageController::class, 'index'])->name('wages.index');
+        Route::post('wages/store', [WorkerWageController::class, 'store'])->name('wages.store');
     });
 
     // ── Activity Log (Monitoring) ─────────────────────────────────────

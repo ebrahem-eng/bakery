@@ -94,16 +94,22 @@ class WorkDayController extends Controller
 
         // ── Expense Breakdown ─────────────────────────────────────────
         $suppliesCost = $workDay->supplies->sum('total_cost');
-        $unloadingFees = $workDay->supplies->where('unloading_fee_payer', 'bakery')->sum(function ($s) {
+        $unloadingFees = $workDay->supplies->where('unloading_fee_payer', 'bakery')->values()->sum(function ($s) {
             return $s->unloading_fee * ($s->unloading_fee_exchange_rate ?? 1);
         });
-        $shiftWages = $workDay->workerShifts->sum('snapshot_daily_wage');
-        $workerAllowances = $workDay->workerTransactions->where('type', 'allowance')->sum('amount');
-        $workerAdvances = $workDay->workerTransactions->where('type', 'advance')->sum('amount');
-        $workerDeductions = $workDay->workerTransactions->where('type', 'deduction')->sum('amount');
+        
+        // Use actual recorded transactions instead of theoretical shift wages
+        $workerPayments = $workDay->workerTransactions
+            ->whereIn('type', ['salary', 'wage', 'advance', 'allowance', 'bonus'])
+            ->sum(function($t) { return $t->amount * ($t->exchange_rate ?? 1); });
+            
+        $workerDeductions = $workDay->workerTransactions
+            ->where('type', 'deduction')
+            ->sum(function($t) { return $t->amount * ($t->exchange_rate ?? 1); });
+            
         $operationalExpenses = $workDay->expenses->sum('amount');
 
-        $totalExpenses = $suppliesCost + $unloadingFees + $shiftWages + $workerAllowances - $workerDeductions + $operationalExpenses;
+        $totalExpenses = $suppliesCost + $unloadingFees + $workerPayments - $workerDeductions + $operationalExpenses;
         $netDayBalance = $netSales - $totalExpenses;
 
         // ── Bundle Flow ───────────────────────────────────────────────
@@ -162,9 +168,7 @@ class WorkDayController extends Controller
             // Expenses
             'suppliesCost' => $suppliesCost,
             'unloadingFees' => $unloadingFees,
-            'shiftWages' => $shiftWages,
-            'workerAllowances' => $workerAllowances,
-            'workerAdvances' => $workerAdvances,
+            'workerPayments' => $workerPayments,
             'workerDeductions' => $workerDeductions,
             'operationalExpenses' => $operationalExpenses,
             'totalExpenses' => $totalExpenses,

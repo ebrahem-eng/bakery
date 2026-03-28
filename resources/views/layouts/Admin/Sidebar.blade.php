@@ -133,6 +133,7 @@
                         @can('view attendance')
                         <a href="{{ route('admin.attendance.presence') }}" class="{{ request()->routeIs('admin.attendance.presence') ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }} block {{ app()->getLocale() == 'ar' ? 'pr-12' : 'pl-12' }} py-2 text-xs transition-colors">{{ __('Daily Presence') }}</a>
                         <a href="{{ route('admin.attendance.index') }}" class="{{ request()->routeIs('admin.attendance.index') ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }} block {{ app()->getLocale() == 'ar' ? 'pr-12' : 'pl-12' }} py-2 text-xs transition-colors">{{ __('Attendance (Shifts)') }}</a>
+                        <a href="{{ route('admin.wages.index') }}" class="{{ request()->routeIs('admin.wages.*') ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }} block {{ app()->getLocale() == 'ar' ? 'pr-12' : 'pl-12' }} py-2 text-xs transition-colors">{{ __('Employee Wages') }}</a>
                         @endcan
                     </div>
                 </div>

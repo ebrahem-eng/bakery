@@ -25,7 +25,12 @@ class ExpenseController extends Controller
         $currencies = Currency::all();
         $defaultCurrency = Currency::where('is_default', true)->first();
 
-        return view('Admin.Expenses.index', compact('expenses', 'currencies', 'activeWorkDay', 'defaultCurrency'));
+        $workerPaymentsLocal = \App\Models\WorkerTransaction::where('work_day_id', $activeWorkDay->id)
+            ->whereIn('type', ['salary', 'wage', 'bonus', 'advance', 'allowance'])
+            ->get()
+            ->sum(fn($t) => $t->amount * ($t->exchange_rate ?? 1));
+
+        return view('Admin.Expenses.index', compact('expenses', 'currencies', 'activeWorkDay', 'defaultCurrency', 'workerPaymentsLocal'));
     }
 
     public function store(Request $request)
