@@ -152,6 +152,7 @@
 
             <!-- Actions Footer -->
             <div class="p-4 border-t border-white/5 bg-black/20 flex gap-2">
+                @if(!$activeShift)
                         @if(!$isPresent)
                             <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
                                 <p class="text-[10px] font-bold text-red-400 uppercase tracking-widest">{{ __('Worker is not present today') }}</p>
