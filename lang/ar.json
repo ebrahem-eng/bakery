@@ -921,5 +921,9 @@
     "Worker is already marked as present for this workday.": "العامل مسجل حضوره بالفعل لهذا اليوم.",
     "Search & Select Personnel": "البحث واختيار الموظفين",
     "Filter by name...": "تصفية حسب الاسم...",
-    "No personnel found matching search.": "لم يتم العثور على موظفين يطابقون البحث."
+    "No personnel found matching search.": "لم يتم العثور على موظفين يطابقون البحث.",
+    "Total Advances": "إجمالي السلف",
+    "From Shifts": "من الورديات",
+    "Pending Settlement": "قيد التسوية",
+    "To be paid": "بانتظار الدفع"
 }

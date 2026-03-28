@@ -9,7 +9,7 @@
             </a>
             <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ $worker->first_name }} {{ $worker->last_name }}</h1>
         </div>
-        <p class="text-sm text-slate-500 mt-1 {{ app()->getLocale() == 'ar' ? 'mr-12' : 'ml-12' }}">{{ $worker->title ?: __('Worker') }} • {{ __('Daily Wage:') }} {{ number_format($worker->daily_wage, 2) }} {{ $worker->currency?->code }}</p>
+        <p class="text-sm text-slate-500 mt-1 ms-12">{{ $worker->title ?: __('Worker') }} • {{ __('Daily Wage:') }} {{ number_format($worker->daily_wage, 2) }} {{ $worker->currency?->code }}</p>
     </div>
     <div class="flex gap-3">
         <a href="{{ route('admin.workers.edit', $worker->id) }}" class="px-4 py-2 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all flex items-center gap-2">
@@ -27,7 +27,7 @@
             <svg class="w-10 h-10 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         </div>
         <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Total Earned') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalEarnedSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ml-1 lowercase">{{ __('SYPN') }}</span></div>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalEarnedSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ __('SYPN') }}</span></div>
         <div class="mt-1 text-[9px] text-emerald-500 font-bold uppercase">{{ __('From Shifts') }}</div>
     </div>
 
@@ -37,7 +37,7 @@
             <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
         </div>
         <h3 class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1">{{ __('Wages & Bonuses') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalSalariesSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ml-1 lowercase">{{ __('SYPN') }}</span></div>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalSalariesSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ __('SYPN') }}</span></div>
         <div class="mt-1 text-[9px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">{{ __('Actual Paid') }}</div>
     </div>
 
@@ -47,7 +47,7 @@
             <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
         </div>
         <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Total Advances') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalAdvancesSYPN - $totalSalariesSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ml-1 lowercase">{{ __('SYPN') }}</span></div>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalAdvancesSYPN - $totalSalariesSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ __('SYPN') }}</span></div>
         <div class="mt-1 text-[9px] text-sky-500 font-bold uppercase">{{ __('Pending Settlement') }}</div>
     </div>
 
@@ -57,7 +57,7 @@
             <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
         </div>
         <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Discounts') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalDiscountsSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ml-1 lowercase">{{ __('SYPN') }}</span></div>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalDiscountsSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ __('SYPN') }}</span></div>
         <div class="mt-1 text-[9px] text-amber-500 font-bold uppercase">{{ __('Deductions') }}</div>
     </div>
 
@@ -67,7 +67,7 @@
             <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         </div>
         <h3 class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-1">{{ __('Net Liability') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($balanceSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ml-1 lowercase">{{ __('SYPN') }}</span></div>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($balanceSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ __('SYPN') }}</span></div>
         <div class="mt-1 text-[9px] text-slate-500 font-bold uppercase">{{ __('To be paid') }}</div>
     </div>
 </div>
@@ -103,7 +103,7 @@
     </div>
 
     <div class="overflow-x-auto custom-scrollbar">
-        <table class="w-full text-left border-collapse" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+        <table class="w-full text-start border-collapse" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
             <thead>
                 <tr class="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-white/5 opacity-70">
                     <th class="py-4 px-6 font-bold">{{ __('Date / Time') }}</th>
@@ -139,7 +139,7 @@
                         <div class="text-slate-500 dark:text-slate-400 text-xs font-medium">{{ $item['admin'] }}</div>
                     </td>
                     <td class="py-4 px-6">
-                        <div class="text-slate-900 dark:text-white font-black">{{ number_format($item['amount'], 2) }} <span class="text-[10px] text-slate-400 font-normal ml-1">{{ $item['currency'] }}</span></div>
+                        <div class="text-slate-900 dark:text-white font-black">{{ number_format($item['amount'], 2) }} <span class="text-[10px] text-slate-400 font-normal ms-1">{{ $item['currency'] }}</span></div>
                     </td>
                     <td class="py-4 px-6">
                         <div class="text-xs text-slate-500 font-medium italic">
