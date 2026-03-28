@@ -69,6 +69,8 @@ Route::group(['middleware' => ['admin.auth']], function () {
 
     // ── Distributions (Sales) ──────────────────────────────────────────
     Route::resource('distributors', DistributorController::class)->middleware('permission:view distributors,admin');
+    Route::post('distributors/{distributor}/transaction', [DistributorController::class, 'storeTransaction'])->name('distributors.transaction.store')->middleware('permission:view distributors,admin');
+    Route::get('distributors/{distributor}/transaction/create', [DistributorController::class, 'createTransaction'])->name('distributors.transaction.create')->middleware('permission:view distributors,admin');
 
     Route::group(['middleware' => ['permission:view distributions,admin']], function () {
         Route::get('distributions', [DistributionController::class, 'index'])->name('distributions.index');

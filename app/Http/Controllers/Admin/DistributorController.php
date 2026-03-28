@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\Distributor;
 use App\Models\DistributorMobile;
+use App\Models\DistributorTransaction;
+use App\Models\WorkDay;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -14,8 +16,9 @@ class DistributorController extends Controller
     public function index()
     {
         $distributors = Distributor::with('mobiles', 'currency')->orderBy('id', 'desc')->get();
+        $currencies = Currency::all();
 
-        return view('Admin.Distributors.index', compact('distributors'));
+        return view('Admin.Distributors.index', compact('distributors', 'currencies'));
     }
 
     public function create()
@@ -148,7 +151,9 @@ class DistributorController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('Admin.Distributors.show', compact('distributor', 'history'));
+        $currencies = Currency::all();
+
+        return view('Admin.Distributors.show', compact('distributor', 'history', 'currencies'));
     }
 
     public function edit(Distributor $distributor)
@@ -193,5 +198,50 @@ class DistributorController extends Controller
         $distributor->delete();
 
         return redirect()->route('admin.distributors.index')->with('success_message', __('Distributor removed completely.'));
+    }
+
+    public function storeTransaction(Request $request, Distributor $distributor)
+    {
+        $activeWorkDay = WorkDay::whereNull('end_time')->first();
+        if (! $activeWorkDay) {
+            return redirect()->back()->with('error_message', __('No active work day found. Please start a day first.'));
+        }
+
+        $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+            'currency_id' => 'required|exists:currencies,id',
+            'type' => 'required|in:payment,discount',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $currency = Currency::find($request->currency_id);
+
+        DistributorTransaction::create([
+            'distributor_id' => $distributor->id,
+            'work_day_id' => $activeWorkDay->id,
+            'type' => $request->type,
+            'amount' => $request->amount,
+            'currency_id' => $request->currency_id,
+            'exchange_rate' => $currency->exchange_rate,
+            'notes' => $request->notes,
+            'created_by' => auth()->id(),
+        ]);
+
+        $msg = $request->type == 'payment' ? __('Payment recorded successfully.') : __('Discount recorded successfully.');
+
+        return redirect()->route('admin.distributors.show', $distributor)->with('success_message', $msg);
+    }
+
+    public function createTransaction(Distributor $distributor)
+    {
+        $distributor->load(['currency', 'distributions', 'returns', 'transactions']);
+        $currencies = Currency::all();
+
+        $balance = $distributor->distributions->sum('total_price')
+                 - $distributor->returns->sum('total_refund')
+                 - $distributor->transactions->where('type', 'payment')->sum('amount')
+                 - $distributor->transactions->where('type', 'discount')->sum('amount');
+
+        return view('Admin.Distributors.record_payment', compact('distributor', 'currencies', 'balance'));
     }
 }
