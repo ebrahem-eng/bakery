@@ -190,16 +190,8 @@
                     <span class="font-bold text-slate-900 dark:text-white">{{ number_format($unloadingFees, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Worker Shift Wages') }}</span>
-                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($shiftWages, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
-                </div>
-                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Worker Allowances') }}</span>
-                    <span class="font-bold text-slate-900 dark:text-white">+ {{ number_format($workerAllowances, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
-                </div>
-                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Worker Advances Paid') }}</span>
-                    <span class="font-bold text-amber-600 dark:text-amber-400">{{ number_format($workerAdvances, 2) }} <span class="text-xs text-amber-400/50">{{ __($currencyCode) }}</span></span>
+                    <span class="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-tight">{{ __('Employee Wages & Payments') }}</span>
+                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($workerPayments, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Worker Deductions') }}</span>
