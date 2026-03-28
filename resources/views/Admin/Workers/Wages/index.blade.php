@@ -52,7 +52,6 @@
                         <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Payment Type') }}</label>
                         <select name="type" required class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-medium appearance-none">
                             <option value="wage">{{ __('Wage') }}</option>
-                            <option value="salary">{{ __('Salary') }}</option>
                             <option value="bonus">{{ __('Bonus') }}</option>
                             <option value="advance">{{ __('Advance') }}</option>
                             <option value="allowance">{{ __('Allowance') }}</option>
@@ -136,7 +135,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider {{ $t->type == 'salary' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-sky-500/10 text-sky-500' }}">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-500">
                                     {{ __(ucfirst($t->type)) }}
                                 </span>
                             </td>
