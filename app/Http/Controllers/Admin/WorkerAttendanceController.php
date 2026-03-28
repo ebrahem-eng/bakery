@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\WorkDay;
 use App\Models\Worker;
+use App\Models\WorkerAttendance;
 use App\Models\WorkerShift;
 use App\Models\WorkerTransaction;
 use Illuminate\Http\Request;
@@ -24,6 +25,9 @@ class WorkerAttendanceController extends Controller
                 $query->where('work_day_id', $activeWorkDay->id)->orderBy('id', 'asc');
             },
             'transactions' => function ($query) use ($activeWorkDay) {
+                $query->where('work_day_id', $activeWorkDay->id);
+            },
+            'attendances' => function ($query) use ($activeWorkDay) {
                 $query->where('work_day_id', $activeWorkDay->id);
             },
             'currency',
@@ -57,6 +61,15 @@ class WorkerAttendanceController extends Controller
 
         if ($existingShift) {
             return back()->with('error_message', __('Worker is already clocked in.'));
+        }
+
+        // STRICT CHECK: Must be marked as present in WorkerAttendance for this WorkDay
+        $isPresent = WorkerAttendance::where('worker_id', $worker->id)
+            ->where('work_day_id', $activeWorkDay->id)
+            ->exists();
+
+        if (!$isPresent) {
+            return back()->with('error_message', __('Worker is not present today. Please mark attendance first.'));
         }
 
         $rate = $worker->currency->is_local ? 1 : $worker->currency->exchange_rate;
@@ -98,7 +111,7 @@ class WorkerAttendanceController extends Controller
         }
 
         $shift->update([
-            'check_out' => now(),
+            'check_out' => $request->check_out ?? now(),
             'bundles_returned' => $request->bundles_returned ?? 0,
             'cash_collected' => $request->cash_collected ?? 0,
             'cash_currency_id' => $request->cash_currency_id,
@@ -106,6 +119,28 @@ class WorkerAttendanceController extends Controller
         ]);
 
         return back()->with('success_message', __('Worker clocked out successfully.'));
+    }
+
+    public function markAttendance(Request $request)
+    {
+        $request->validate([
+            'worker_id' => 'required|exists:workers,id',
+            'arrival_time' => 'required|date',
+        ]);
+
+        $activeWorkDay = WorkDay::where('status', 'active')->first();
+        if (!$activeWorkDay) {
+            return back()->with('error_message', __('No active work day found.'));
+        }
+
+        WorkerAttendance::create([
+            'worker_id' => $request->worker_id,
+            'work_day_id' => $activeWorkDay->id,
+            'arrival_time' => $request->arrival_time,
+            'admin_id' => auth()->id(),
+        ]);
+
+        return back()->with('success_message', __('Attendance marked successfully.'));
     }
 
     public function storeTransaction(Request $request)

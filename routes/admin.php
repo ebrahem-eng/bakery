@@ -90,6 +90,7 @@ Route::group(['middleware' => ['admin.auth']], function () {
     Route::group(['middleware' => ['permission:view attendance,admin']], function () {
         Route::get('attendance', [WorkerAttendanceController::class, 'index'])->name('attendance.index');
         Route::post('attendance/clock-in', [WorkerAttendanceController::class, 'clockIn'])->name('attendance.clock_in');
+        Route::post('attendance/mark-attendance', [WorkerAttendanceController::class, 'markAttendance'])->name('attendance.mark_attendance');
         Route::post('attendance/{shift}/clock-out', [WorkerAttendanceController::class, 'clockOut'])->name('attendance.clock_out');
         Route::post('attendance/transaction', [WorkerAttendanceController::class, 'storeTransaction'])->name('attendance.transaction');
     });

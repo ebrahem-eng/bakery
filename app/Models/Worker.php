@@ -41,4 +41,9 @@ class Worker extends Model
     {
         return $this->hasMany(WorkerTransaction::class);
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(WorkerAttendance::class);
+    }
 }

@@ -47,6 +47,11 @@ class WorkDay extends Model
         return $this->hasMany(WorkerShift::class);
     }
 
+    public function workerAttendances()
+    {
+        return $this->hasMany(WorkerAttendance::class);
+    }
+
     public function workerTransactions()
     {
         return $this->hasMany(WorkerTransaction::class);
