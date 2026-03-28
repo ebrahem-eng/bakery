@@ -19,7 +19,30 @@
 </div>
 
 <div class="max-w-3xl mx-auto">
-    <div class="glass-panel p-8 rounded-3xl border border-slate-200 dark:border-white/5 shadow-2xl relative overflow-hidden bg-white dark:bg-slate-900">
+    <div class="glass-panel p-8 rounded-3xl border border-slate-200 dark:border-white/5 shadow-2xl relative overflow-hidden bg-white dark:bg-slate-900"
+         x-data="{ 
+            currencyId: '{{ $distributor->preferred_currency_id }}',
+            exchangeRate: 1,
+            currencies: {
+                @foreach($currencies as $currency)
+                    '{{ $currency->id }}': { 
+                        rate: {{ $currency->exchange_rate }}, 
+                        code: '{{ $currency->code }}',
+                        isDefault: {{ $currency->is_default ? 'true' : 'false' }} 
+                    },
+                @endforeach
+            },
+            init() {
+                this.updateRate();
+                this.$watch('currencyId', () => this.updateRate());
+            },
+            updateRate() {
+                const cur = this.currencies[this.currencyId];
+                if (cur) {
+                    this.exchangeRate = cur.rate;
+                }
+            }
+         }">
         <!-- Decoration -->
         <div class="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
             <svg class="w-32 h-32 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
@@ -75,10 +98,10 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">{{ __('Payment Currency') }}</label>
                     <div class="relative group">
-                        <select name="currency_id" required
+                        <select name="currency_id" x-model="currencyId" required
                                 class="block w-full px-5 py-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white font-medium focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none appearance-none">
                             @foreach($currencies as $currency)
-                                <option value="{{ $currency->id }}" {{ $currency->id == $distributor->preferred_currency_id ? 'selected' : '' }}>
+                                <option value="{{ $currency->id }}">
                                     {{ $currency->code }} - {{ $currency->name }}
                                 </option>
                             @endforeach
@@ -86,6 +109,18 @@
                         <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'left-4' : 'right-4' }} flex items-center pointer-events-none">
                             <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="currencies[currencyId] && currencies[currencyId].code === 'USD'" x-cloak x-transition class="pt-2">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">{{ __('Exchange Rate') }}</label>
+                <div class="relative group">
+                    <input type="number" name="exchange_rate" x-model="exchangeRate" step="0.01" required
+                           class="block w-full px-5 py-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white font-medium focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none" 
+                           placeholder="0.00">
+                    <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'left-4' : 'right-4' }} flex items-center pointer-events-none">
+                        <span class="text-slate-400 text-xs font-bold uppercase">{{ __('Per 1 Unit') }}</span>
                     </div>
                 </div>
             </div>
