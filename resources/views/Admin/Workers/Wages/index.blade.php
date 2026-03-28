@@ -120,6 +120,7 @@
                             <th class="px-6 py-4">{{ __('Type') }}</th>
                             <th class="px-6 py-4">{{ __('Amount') }}</th>
                             <th class="px-6 py-4">{{ __('Local Value') }}</th>
+                            <th class="px-6 py-4 text-center">{{ __('Note') }}</th>
                             <th class="px-6 py-4">{{ __('Time') }}</th>
                         </tr>
                     </thead>
@@ -147,13 +148,22 @@
                                     {{ number_format($t->amount * $t->exchange_rate, 0) }} <span class="text-[9px] uppercase">{{ __('SYPN') }}</span>
                                 </span>
                             </td>
+                            <td class="px-6 py-4 text-center">
+                                @if($t->notes)
+                                    <span class="text-xs text-slate-400 font-medium italic truncate max-w-[150px] inline-block" title="{{ $t->notes }}">
+                                        {{ $t->notes }}
+                                    </span>
+                                @else
+                                    <span class="text-[10px] text-slate-600">—</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-4 text-slate-500 text-xs">
                                 {{ $t->created_at->translatedFormat('h:i A') }}
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-12 text-center text-slate-500 italic">
+                            <td colspan="6" class="px-6 py-12 text-center text-slate-500 italic">
                                 {{ __('No payments recorded for today.') }}
                             </td>
                         </tr>
