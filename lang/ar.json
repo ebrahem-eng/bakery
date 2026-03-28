@@ -918,5 +918,8 @@
     "Must be after arrival time.": "يجب أن يكون بعد وقت الوصول.",
     ":count workers marked as present.": "تم تسجيل حضور :count عمال.",
     ":count workers marked as departed.": "تم تسجيل مغادرة :count عمال.",
-    "Worker is already marked as present for this workday.": "العامل مسجل حضوره بالفعل لهذا اليوم."
+    "Worker is already marked as present for this workday.": "العامل مسجل حضوره بالفعل لهذا اليوم.",
+    "Search & Select Personnel": "البحث واختيار الموظفين",
+    "Filter by name...": "تصفية حسب الاسم...",
+    "No personnel found matching search.": "لم يتم العثور على موظفين يطابقون البحث."
 }

@@ -107,8 +107,20 @@
                      :class="selectedWorkers.includes({{ $worker->id }}) ? 'border-amber-500 ring-1 ring-amber-500/50' : 'border-white/5'"
                      class="group/card relative p-4 rounded-2xl border transition-all cursor-pointer select-none {{ $attendance ? 'bg-emerald-500/5' : 'bg-white/5' }}">
                     
-                    <div class="absolute top-3 right-3 z-10">
-                        <input type="checkbox" :checked="selectedWorkers.includes({{ $worker->id }})" class="w-4 h-4 rounded border-white/10 bg-black/20 text-amber-500 focus:ring-amber-500/50 focus:ring-offset-0 transition-all">
+                    <div class="absolute top-4 right-4 z-20">
+                        <div @click.stop="toggleWorker({{ $worker->id }})" 
+                             :class="selectedWorkers.includes({{ $worker->id }}) ? 'bg-amber-500 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-110' : 'bg-black/40 border-white/10 hover:border-white/20'"
+                             class="w-6 h-6 rounded-lg border flex items-center justify-center transition-all duration-300 cursor-pointer overflow-hidden group/check">
+                            <span x-show="selectedWorkers.includes({{ $worker->id }})" 
+                                  x-transition:enter="transition ease-out duration-200"
+                                  x-transition:enter-start="scale-0 opacity-0"
+                                  x-transition:enter-end="scale-100 opacity-100"
+                                  class="text-black">
+                                <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                        </div>
                     </div>
 
                     <div class="flex items-center gap-3 mb-4 {{ !$attendance ? 'grayscale opacity-60 group-hover/card:grayscale-0 group-hover/card:opacity-100 transition-all' : '' }}">
@@ -134,7 +146,7 @@
                                 </div>
                             @else
                                 <button type="button" 
-                                    @click="$dispatch('open-departure-modal', { 
+                                    @click.stop="$dispatch('open-departure-modal', { 
                                         id: {{ $attendance->id }}, 
                                         name: '{{ $worker->first_name }} {{ $worker->last_name }}',
                                         arrival: '{{ $attendance->arrival_time->format('Y-m-d\TH:i') }}'
@@ -300,53 +312,6 @@
     </div>
 </div>
 
-<!-- Attendance Modal -->
-<div x-data="{ open: false }"
-     @open-attendance-modal.window="open = true" 
-     x-show="open" 
-     class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
-    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-        <div x-show="open" x-transition.opacity class="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" @click="open = false"></div>
-        <div x-show="open" x-transition 
-             class="relative inline-block w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform glass-panel rounded-2xl shadow-xl border border-white/10"
-             {{ app()->getLocale() == 'ar' ? 'dir="rtl"' : 'dir="ltr"' }}>
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-white">{{ __('Log Arrival') }}</h3>
-                <button @click="open = false" class="text-slate-400 hover:text-white transition-colors">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-            <form action="{{ route('admin.attendance.mark_attendance') }}" method="POST" class="space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Select Worker') }}</label>
-                    <select name="worker_id" required class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium appearance-none">
-                        <option value="">{{ __('Select Worker...') }}</option>
-                        @foreach($workers as $worker)
-                            <option value="{{ $worker->id }}">{{ $worker->first_name }} {{ $worker->last_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Arrival Time') }}</label>
-                    <input type="datetime-local" name="arrival_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
-                        min="{{ $activeWorkDay->start_time->format('Y-m-d\TH:i') }}"
-                        max="{{ $activeWorkDay->start_time->format('Y-m-d\T23:59') }}"
-                        required 
-                        class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
-                    <p class="text-[10px] text-slate-500 mt-2 italic px-1">
-                        {{ __('Must be on') }} {{ $activeWorkDay->start_time->translatedFormat('Y-m-d') }} {{ __('after') }} {{ $activeWorkDay->start_time->translatedFormat('h:i A') }}
-                    </p>
-                </div>
-                <div class="pt-4">
-                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-[#0f1115] px-4 py-3 rounded-xl text-sm font-bold transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-                        {{ __('Save Arrival') }}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <!-- Departure Modal -->
 <div x-data="{ open: false, attendanceId: '', workerName: '', arrivalTime: '' }"
@@ -378,11 +343,10 @@
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Departure Time') }}</label>
                     <input type="datetime-local" name="departure_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
                         :min="arrivalTime"
-                        max="{{ $activeWorkDay->start_time->format('Y-m-d\T23:59') }}"
                         required 
                         class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
                     <p class="text-[10px] text-slate-500 mt-2 italic px-1">
-                        {{ __('Must be after arrival and same day as') }} {{ $activeWorkDay->start_time->translatedFormat('Y-m-d') }}
+                        {{ __('Must be after arrival time.') }}
                     </p>
                 </div>
                 <div class="pt-4">
@@ -449,4 +413,106 @@
         </div>
     </div>
 </div>
-@endsection
+
+<!-- Attendance Modal -->
+<div x-data="{ 
+        open: false, 
+        search: '',
+        selectedIds: [],
+        workers: {{ json_encode($workers->filter(fn($w) => !$w->attendances->first())->map(fn($w) => [
+            'id' => $w->id,
+            'name' => $w->first_name . ' ' . $w->last_name,
+            'title' => $w->title
+        ])->values()) }},
+        get filteredWorkers() {
+            return this.workers.filter(w => w.name.toLowerCase().includes(this.search.toLowerCase()));
+        },
+        toggleId(id) {
+            if (this.selectedIds.includes(id)) {
+                this.selectedIds = this.selectedIds.filter(i => i !== id);
+            } else {
+                this.selectedIds.push(id);
+            }
+        }
+     }"
+     @open-attendance-modal.window="open = true" 
+     x-show="open" 
+     class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+        <div x-show="open" x-transition.opacity class="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" @click="open = false"></div>
+        <div x-show="open" x-transition 
+             class="relative inline-block w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform glass-panel rounded-2xl shadow-xl border border-white/10"
+             {{ app()->getLocale() == 'ar' ? 'dir="rtl"' : 'dir="ltr"' }}>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">{{ __('Log Arrival') }}</h3>
+                <button @click="open = false" class="text-slate-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            
+            <form action="{{ route('admin.attendance.bulk_mark_attendance') }}" method="POST" class="space-y-4">
+                @csrf
+                <template x-for="id in selectedIds" :key="id">
+                    <input type="hidden" name="worker_ids[]" :value="id">
+                </template>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Search & Select Personnel') }}</label>
+                    <div class="relative group mb-3">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-slate-500 group-focus-within:text-amber-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" x-model="search" placeholder="{{ __('Filter by name...') }}" 
+                               class="block w-full pl-10 pr-4 py-2.5 bg-black/40 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 transition-all">
+                    </div>
+
+                    <div class="max-h-[200px] overflow-y-auto pr-2 space-y-1 custom-scrollbar">
+                        <template x-for="worker in filteredWorkers" :key="worker.id">
+                            <div @click="toggleId(worker.id)" 
+                                 :class="selectedIds.includes(worker.id) ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/5 border-white/5 hover:bg-white/10'"
+                                 class="p-3 border rounded-xl cursor-pointer transition-all flex items-center justify-between group/item">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 group-hover/item:bg-amber-500 group-hover/item:text-black transition-colors" x-text="worker.name.charAt(0)"></div>
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-bold text-white truncate" x-text="worker.name"></p>
+                                        <p class="text-[10px] text-slate-500 uppercase tracking-widest" x-text="worker.title"></p>
+                                    </div>
+                                </div>
+                                <div :class="selectedIds.includes(worker.id) ? 'bg-amber-500 scale-110' : 'bg-black/40 border-white/10'"
+                                     class="w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-300">
+                                    <svg x-show="selectedIds.includes(worker.id)" class="w-3 h-3 text-black" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="filteredWorkers.length === 0">
+                            <div class="text-center py-4 text-slate-500 text-xs italic">{{ __('No personnel found matching search.') }}</div>
+                        </template>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Arrival Time') }}</label>
+                    <input type="datetime-local" name="arrival_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
+                        min="{{ $activeWorkDay->start_time->format('Y-m-d\TH:i') }}"
+                        required 
+                        class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
+                    <p class="text-[10px] text-slate-500 mt-2 italic px-1">
+                        {{ __('Must be after') }} {{ $activeWorkDay->start_time->translatedFormat('Y-m-d h:i A') }}
+                    </p>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" 
+                            :disabled="selectedIds.length === 0"
+                            :class="selectedIds.length > 0 ? 'bg-amber-500 hover:bg-amber-400 text-[#0f1115]' : 'bg-slate-700 text-slate-500 cursor-not-allowed grayscale'"
+                            class="w-full px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)] flex items-center justify-center gap-2">
+                        {{ __('Save Arrival') }}
+                        <span x-show="selectedIds.length > 0" class="px-2 py-0.5 bg-black/20 rounded text-[10px]" x-text="selectedIds.length"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>@endsection
