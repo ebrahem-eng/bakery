@@ -210,6 +210,7 @@ class DistributorController extends Controller
         $request->validate([
             'amount' => 'required|numeric|min:0.01',
             'currency_id' => 'required|exists:currencies,id',
+            'exchange_rate' => 'nullable|numeric|min:0.01',
             'type' => 'required|in:payment,discount',
             'notes' => 'nullable|string|max:500',
         ]);
@@ -222,7 +223,7 @@ class DistributorController extends Controller
             'type' => $request->type,
             'amount' => $request->amount,
             'currency_id' => $request->currency_id,
-            'exchange_rate' => $currency->exchange_rate,
+            'exchange_rate' => $request->exchange_rate ?? $currency->exchange_rate,
             'notes' => $request->notes,
             'created_by' => auth()->id(),
         ]);
