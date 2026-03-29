@@ -148,7 +148,7 @@
                             @endif
                         </td>
                         <td class="p-4">
-                            <span class="text-xs text-slate-700 dark:text-slate-300 line-clamp-2">{{ $activity->description }}</span>
+                            <span class="text-xs text-slate-700 dark:text-slate-300 line-clamp-2">{{ __($activity->description) }}</span>
                         </td>
                         <td class="p-4">
                             @if($activity->causer)

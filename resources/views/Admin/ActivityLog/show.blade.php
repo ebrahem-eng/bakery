@@ -42,7 +42,7 @@
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-slate-100 dark:border-white/5">
                     <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">{{ __('Description') }}</span>
-                    <span class="text-sm text-slate-700 dark:text-slate-300">{{ $activity->description }}</span>
+                    <span class="text-sm text-slate-700 dark:text-slate-300">{{ __($activity->description) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-slate-100 dark:border-white/5">
                     <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">{{ __('Log Name') }}</span>
