@@ -99,24 +99,22 @@
     <!-- Right Column: Financial Summary & Activity -->
     <div class="lg:col-span-2 space-y-6">
         <!-- Stats Widgets -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div class="glass-panel p-5 rounded-2xl border border-blue-500/20 bg-blue-500/5">
-                <p class="text-[10px] uppercase tracking-widest text-blue-600 dark:text-blue-400 font-bold mb-1">{{ __('Total Sales') }}</p>
-                <h4 class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($distributor->distributions->sum('total_price'), 2) }} <span class="text-xs">{{ $distributor->currency->code }}</span></h4>
+                <p class="text-[10px] uppercase tracking-widest text-blue-600 dark:text-blue-400 font-bold mb-1">{{ __('Net Sales') }}</p>
+                <h4 class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($netSales, 2) }} <span class="text-xs">{{ $distributor->currency->code }}</span></h4>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-amber-500/20 bg-amber-500/5">
+                <p class="text-[10px] uppercase tracking-widest text-amber-600 dark:text-amber-400 font-bold mb-1">{{ __('Total Returns') }}</p>
+                <h4 class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($totalReturns, 2) }} <span class="text-xs">{{ $distributor->currency->code }}</span></h4>
             </div>
             <div class="glass-panel p-5 rounded-2xl border border-emerald-500/20 bg-emerald-500/5">
                 <p class="text-[10px] uppercase tracking-widest text-emerald-600 dark:text-emerald-400 font-bold mb-1">{{ __('Total Paid') }}</p>
-                <h4 class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($distributor->transactions->where('type', 'payment')->sum('amount'), 2) }} <span class="text-xs">{{ $distributor->currency->code }}</span></h4>
+                <h4 class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($totalPaid, 2) }} <span class="text-xs">{{ $distributor->currency->code }}</span></h4>
             </div>
             <div class="glass-panel p-5 rounded-2xl border border-red-500/20 bg-red-500/5">
                 <p class="text-[10px] uppercase tracking-widest text-red-600 dark:text-red-400 font-bold mb-1">{{ __('Outstanding Balance') }}</p>
-                @php
-                    $balance = $distributor->distributions->sum('total_price') 
-                             - $distributor->returns->sum('total_refund')
-                             - $distributor->transactions->where('type', 'payment')->sum('amount')
-                             - $distributor->transactions->where('type', 'discount')->sum('amount');
-                @endphp
-                <h4 class="text-2xl font-black {{ $balance > 0 ? 'text-red-500' : 'text-slate-900 dark:text-white' }}">{{ number_format($balance, 2) }} <span class="text-xs">{{ $distributor->currency->code }}</span></h4>
+                <h4 class="text-2xl font-black {{ $outstandingBalance > 0 ? 'text-red-500' : 'text-slate-900 dark:text-white' }}">{{ number_format($outstandingBalance, 2) }} <span class="text-xs">{{ $distributor->currency->code }}</span></h4>
             </div>
         </div>
 

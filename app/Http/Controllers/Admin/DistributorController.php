@@ -151,9 +151,29 @@ class DistributorController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
+        // Final Totals for Summary Cards
+        $grossSales = $distributor->distributions->sum('total_price');
+        $totalReturns = $distributor->returns->sum('total_refund');
+        $netSales = $grossSales - $totalReturns;
+        
+        $directPayments = $distributor->transactions->where('type', 'payment')->sum('amount');
+        $downPayments = $distributor->distributions->sum('amount_paid');
+        $totalPaid = $directPayments + $downPayments;
+        
+        $totalDiscounts = $distributor->transactions->where('type', 'discount')->sum('amount');
+        $outstandingBalance = $netSales - $totalPaid - $totalDiscounts;
+
         $currencies = Currency::all();
 
-        return view('Admin.Distributors.show', compact('distributor', 'history', 'currencies'));
+        return view('Admin.Distributors.show', compact(
+            'distributor', 
+            'history', 
+            'currencies', 
+            'netSales', 
+            'totalReturns', 
+            'totalPaid', 
+            'outstandingBalance'
+        ));
     }
 
     public function edit(Distributor $distributor)
@@ -240,6 +260,7 @@ class DistributorController extends Controller
 
         $balance = $distributor->distributions->sum('total_price')
                  - $distributor->returns->sum('total_refund')
+                 - $distributor->distributions->sum('amount_paid')
                  - $distributor->transactions->where('type', 'payment')->sum('amount')
                  - $distributor->transactions->where('type', 'discount')->sum('amount');
 
