@@ -35,7 +35,15 @@ class WorkerAttendanceController extends Controller
 
         $currencies = Currency::all();
 
-        return view('Admin.Attendance.index', compact('workers', 'activeWorkDay', 'currencies'));
+        // Get the last closed shift's returned bundles for hand-off
+        $lastShift = WorkerShift::where('work_day_id', $activeWorkDay->id)
+            ->whereNotNull('check_out')
+            ->orderBy('id', 'desc')
+            ->first();
+        
+        $defaultBundles = $lastShift ? $lastShift->bundles_returned : 0;
+
+        return view('Admin.Attendance.index', compact('workers', 'activeWorkDay', 'currencies', 'defaultBundles'));
     }
 
     public function presence()
