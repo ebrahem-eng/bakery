@@ -14,7 +14,6 @@
             {{ __('Manage Daily Presence') }}
         </a>
     </div>
-</div>
 
 @php 
     $pendingWorkers = $workers->filter(function($w) use ($activeWorkDay) {
