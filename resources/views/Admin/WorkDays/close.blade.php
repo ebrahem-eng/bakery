@@ -23,6 +23,30 @@
     </div>
 @endif
 
+@if(isset($activeShifts) && $activeShifts->count() > 0)
+    <div class="mb-6 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
+        <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/20">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-bold text-amber-600 dark:text-amber-400 leading-tight">{{ __('Active Workers Warning') }}</h3>
+                <p class="text-xs text-amber-600/70 dark:text-amber-400/60 mt-1 font-medium">{{ __('There are employees still clocked in. Please ensure you have recorded their returned bread and cash totals before finalizing the day.') }}</p>
+                
+                <div class="mt-4 flex flex-wrap gap-2">
+                    @foreach($activeShifts as $as)
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/50 dark:bg-black/20 border border-amber-500/30 rounded-lg">
+                            <div class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-200">{{ $as->worker->first_name }}</span>
+                            <span class="text-[10px] text-slate-500">{{ $as->check_in->format('h:i A') }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
+
 {{-- ════════════════════════════════════════════════════════════════ --}}
 {{-- SUMMARY STATS CARDS                                             --}}
 {{-- ════════════════════════════════════════════════════════════════ --}}

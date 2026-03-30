@@ -183,6 +183,7 @@ class WorkDayController extends Controller
             'bundlesReceivedByShifts' => $bundlesReceivedByShifts,
             'bundlesReturnedByShifts' => $bundlesReturnedByShifts,
             'previousCarryOverBundles' => $previousCarryOverBundles,
+            'activeShifts' => $workDay->workerShifts->whereNull('check_out'),
         ];
     }
 
@@ -225,9 +226,11 @@ class WorkDayController extends Controller
             }
         }
 
+        $endTime = now();
+
         $workDay->update([
             'status' => 'closed',
-            'end_time' => now(),
+            'end_time' => $endTime,
             'closed_by' => auth()->guard('admin')->id(),
             'total_expenses_at_close' => $request->total_expenses_at_close,
             'total_sales_at_close' => $request->total_sales_at_close,
@@ -235,6 +238,11 @@ class WorkDayController extends Controller
             'carried_over_money' => $request->carried_over_money,
             'carried_over_currency_id' => $request->carried_over_currency_id,
             'carried_over_exchange_rate' => $exchangeRate,
+        ]);
+
+        // Auto-close any active shifts
+        $workDay->workerShifts()->whereNull('check_out')->update([
+            'check_out' => $endTime
         ]);
 
         // Store Consumption Records
