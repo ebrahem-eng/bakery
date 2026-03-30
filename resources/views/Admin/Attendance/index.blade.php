@@ -171,7 +171,7 @@
 
                                 <div>
                                     <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Bundles Received') }}</label>
-                                    <input type="number" name="bundles_received" value="{{ $defaultBundles ?? 0 }}" min="0" 
+                                    <input type="number" name="bundles_received" value="{{ $defaultBundles ?? 0 }}" min="{{ $defaultBundles ?? 0 }}" 
                                         class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-emerald-500/50 transition-all font-medium"
                                         placeholder="0">
                                 </div>

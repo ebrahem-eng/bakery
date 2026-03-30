@@ -67,16 +67,23 @@ class WorkerAttendanceController extends Controller
 
     public function clockIn(Request $request)
     {
-        $request->validate([
-            'worker_id' => 'required|exists:workers,id',
-            'check_in' => 'nullable|date',
-            'bundles_received' => 'nullable|integer|min:0',
-        ]);
-
         $activeWorkDay = WorkDay::where('status', 'active')->first();
         if (! $activeWorkDay) {
             return back()->with('error_message', __('No active work day found.'));
         }
+
+        // Get minimum bundles required (from last hand-off)
+        $lastShift = WorkerShift::where('work_day_id', $activeWorkDay->id)
+            ->whereNotNull('check_out')
+            ->orderBy('id', 'desc')
+            ->first();
+        $minBundles = $lastShift ? $lastShift->bundles_returned : 0;
+
+        $request->validate([
+            'worker_id' => 'required|exists:workers,id',
+            'check_in' => 'nullable|date',
+            'bundles_received' => "nullable|integer|min:$minBundles",
+        ]);
 
         $worker = Worker::findOrFail($request->worker_id);
 
