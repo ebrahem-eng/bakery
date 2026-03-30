@@ -24,13 +24,19 @@
 @endif
 
 @if(isset($activeShifts) && $activeShifts->count() > 0)
-    <div class="mb-6 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
+    <a href="#shift-details" class="block mb-6 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.1)] hover:bg-amber-500/20 transition-all group">
         <div class="flex items-start gap-4">
-            <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/20">
+            <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform">
                 <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
             </div>
             <div class="flex-1 min-w-0">
-                <h3 class="text-sm font-bold text-amber-600 dark:text-amber-400 leading-tight">{{ __('Active Workers Warning') }}</h3>
+                <div class="flex justify-between items-start">
+                    <h3 class="text-sm font-bold text-amber-600 dark:text-amber-400 leading-tight">{{ __('Active Workers Warning') }}</h3>
+                    <div class="flex items-center gap-1 text-[10px] font-bold text-amber-600 uppercase tracking-widest bg-amber-500/20 px-2 py-0.5 rounded-md">
+                        {{ __('View Details') }}
+                        <svg class="w-3 h-3 {{ app()->getLocale() == 'ar' ? 'rotate-180' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </div>
+                </div>
                 <p class="text-xs text-amber-600/70 dark:text-amber-400/60 mt-1 font-medium">{{ __('There are employees still clocked in. Please ensure you have recorded their returned bread and cash totals before finalizing the day.') }}</p>
                 
                 <div class="mt-4 flex flex-wrap gap-2">
@@ -44,7 +50,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </a>
 @endif
 
 {{-- ════════════════════════════════════════════════════════════════ --}}
@@ -147,7 +153,7 @@
 
             {{-- Per-shift breakdown --}}
             @if($workDay->workerShifts->count() > 0)
-            <div class="border-t border-slate-200 dark:border-white/5">
+            <div id="shift-details" class="border-t border-slate-200 dark:border-white/5 scroll-mt-6">
                 <div class="p-4 bg-slate-50 dark:bg-black/20">
                     <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest">{{ __('Shift Bundle Details') }}</h4>
                 </div>
