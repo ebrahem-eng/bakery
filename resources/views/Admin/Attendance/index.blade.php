@@ -16,7 +16,8 @@
     </div>
 
     <!-- Alerts -->
-    @if(session('success_message'))
+    <div class="mt-8 space-y-4">
+        @if(session('success_message'))
         <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center shadow-lg shadow-emerald-500/5">
             <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -40,7 +41,8 @@
                 @endforeach
             </ul>
         </div>
-    @endif
+        @endif
+    </div>
 
 @php 
     $pendingWorkers = $workers->filter(function($w) use ($activeWorkDay) {
@@ -51,7 +53,7 @@
 
 @if($pendingWorkers->isNotEmpty())
     <!-- Pending Shifts Alert -->
-    <div class="mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between gap-4">
+    <div class="mt-8 mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between gap-4 shadow-lg shadow-amber-500/5">
         <div class="flex items-center gap-4">
             <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
@@ -77,7 +79,7 @@
 @endif
 
 <!-- Cards Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-10">
     @foreach($workers as $worker)
         @php
             $activeShift = $worker->shifts->whereNull('check_out')->first();
