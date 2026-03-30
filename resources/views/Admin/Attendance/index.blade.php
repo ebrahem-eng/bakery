@@ -15,6 +15,7 @@
         </a>
     </div>
 
+    <br>
     <!-- Alerts -->
     <div class="mt-8 space-y-4">
         @if(session('success_message'))
@@ -50,7 +51,7 @@
                !$w->shifts->where('work_day_id', $activeWorkDay->id)->whereNull('check_out')->first();
     });
 @endphp
-
+<br>
 @if($pendingWorkers->isNotEmpty())
     <!-- Pending Shifts Alert -->
     <div class="mt-8 mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between gap-4 shadow-lg shadow-amber-500/5">
