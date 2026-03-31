@@ -27,7 +27,7 @@
             <svg class="w-10 h-10 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         </div>
         <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Total Earned') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalEarnedSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ __('SYPN') }}</span></div>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalEarnedSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}</span></div>
         <div class="mt-1 text-[9px] text-emerald-500 font-bold uppercase">{{ __('From Shifts') }}</div>
     </div>
 
@@ -37,7 +37,7 @@
             <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
         </div>
         <h3 class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1">{{ __('Wages & Bonuses') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalSalariesSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ __('SYPN') }}</span></div>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalSalariesSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}</span></div>
         <div class="mt-1 text-[9px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">{{ __('Actual Paid') }}</div>
     </div>
 
@@ -47,7 +47,7 @@
             <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
         </div>
         <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Total Advances') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalAdvancesSYPN - $totalSalariesSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ __('SYPN') }}</span></div>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalAdvancesSYP - $totalSalariesSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}</span></div>
         <div class="mt-1 text-[9px] text-sky-500 font-bold uppercase">{{ __('Pending Settlement') }}</div>
     </div>
 
@@ -57,7 +57,7 @@
             <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
         </div>
         <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Discounts') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalDiscountsSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ __('SYPN') }}</span></div>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalDiscountsSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}</span></div>
         <div class="mt-1 text-[9px] text-amber-500 font-bold uppercase">{{ __('Deductions') }}</div>
     </div>
 
@@ -67,7 +67,7 @@
             <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         </div>
         <h3 class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-1">{{ __('Net Liability') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($balanceSYPN, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ __('SYPN') }}</span></div>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($balanceSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}</span></div>
         <div class="mt-1 text-[9px] text-slate-500 font-bold uppercase">{{ __('To be paid') }}</div>
     </div>
 </div>
@@ -111,7 +111,7 @@
                     <th class="py-4 px-6 font-bold">{{ __('Recorded By') }}</th>
                     <th class="py-4 px-6 font-bold">{{ __('Amount Recorded') }}</th>
                     <th class="py-4 px-6 font-bold">{{ __('Exchange') }}</th>
-                    <th class="py-4 px-6 font-bold {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">{{ __('Total Local (SYPN)') }}</th>
+                    <th class="py-4 px-6 font-bold {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">{{ __('Total Local') }} ({{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }})</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-200 dark:divide-white/5 text-sm">

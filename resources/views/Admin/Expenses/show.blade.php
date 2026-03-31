@@ -79,12 +79,12 @@
                 <div class="pt-4 border-t border-slate-200 dark:border-white/5">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-[11px] text-slate-500">{{ __('Exchange Rate Cache') }}</span>
-                        <span class="text-xs font-mono font-bold text-slate-700 dark:text-slate-300">1 {{ $expense->currency->code ?? '' }} = {{ number_format($expense->exchange_rate, 4) }} SYP</span>
+                        <span class="text-xs font-mono font-bold text-slate-700 dark:text-slate-300">1 {{ $expense->currency->code ?? '' }} = {{ number_format($expense->exchange_rate, 4) }} {{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-[11px] text-slate-500 font-bold uppercase">{{ __('Final Local Value') }}</span>
                         <span class="text-sm font-black text-slate-900 dark:text-white font-mono">
-                            {{ number_format($expense->amount * $expense->exchange_rate, 2) }} SYP
+                            {{ number_format(\App\Models\Currency::convertAmount($expense->amount, $expense->exchange_rate), 2) }} {{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}
                         </span>
                     </div>
                 </div>

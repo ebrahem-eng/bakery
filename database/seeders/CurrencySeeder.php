@@ -14,11 +14,10 @@ class CurrencySeeder extends Seeder
             ['name' => 'دولار أمريكي', 'exchange_rate' => 1.00, 'is_default' => true]
         );
         Currency::firstOrCreate(
-            ['code' => 'SYPO'],
             ['name' => 'ليرة سورية (قديمة)', 'exchange_rate' => 15000.00, 'is_default' => false]
         );
         Currency::firstOrCreate(
-            ['code' => 'SYPN'],
+            ['code' => 'SYP'],
             ['name' => 'ليرة سورية (جديدة)', 'exchange_rate' => 15500.00, 'is_default' => false]
         );
     }

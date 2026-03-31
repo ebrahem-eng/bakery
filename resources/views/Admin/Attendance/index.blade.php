@@ -317,7 +317,7 @@
                         <input type="number" step="0.01" name="exchange_rate" :value="usdRate"
                             class="block w-full px-4 py-3 bg-[#0f1115] border border-emerald-500/20 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500/50 transition-all font-medium">
                         <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'left-0 pl-4' : 'right-0 pr-4' }} flex items-center pointer-events-none">
-                            <span class="text-slate-500 text-[10px] font-bold uppercase">{{ __('SYPN / 1 USD') }}</span>
+                            <span class="text-slate-500 text-[10px] font-bold uppercase">{{ __('SYP / 1 USD') }}</span>
                         </div>
                     </div>
                     <p class="text-[10px] text-slate-500 italic">{{ __('Retrieved from system settings. You can adjust it for this specific payment.') }}</p>

@@ -74,7 +74,7 @@
                         <input type="number" step="0.01" name="exchange_rate" :value="usdRate"
                             class="block w-full px-4 py-3 bg-[#0f1115] border border-emerald-500/20 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500/50 transition-all font-medium">
                         <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'left-0 pl-4' : 'right-0 pr-4' }} flex items-center pointer-events-none">
-                            <span class="text-slate-500 text-[10px] font-bold uppercase">{{ __('SYPN / 1 USD') }}</span>
+                            <span class="text-slate-500 text-[10px] font-bold uppercase">{{ __('SYP / 1 USD') }}</span>
                         </div>
                     </div>
                 </div>
@@ -144,7 +144,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <span class="text-emerald-400 font-bold">
-                                    {{ number_format($t->amount * $t->exchange_rate, 0) }} <span class="text-[9px] uppercase">{{ __('SYPN') }}</span>
+                                    {{ number_format($t->amount * $t->exchange_rate, 0) }} <span class="text-[9px] uppercase">{{ __('SYP') }}</span>
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-center">
