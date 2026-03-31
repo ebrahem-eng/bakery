@@ -87,11 +87,22 @@
                         @endif
                     </td>
                     <td class="py-3 px-4">
-                        <div class="text-sm font-mono text-slate-900 dark:text-white font-bold">{{ number_format($supply->quantity, 2) }} {{ __('Units') }}</div>
-                        @if($supply->boxes_count)
-                            <div class="text-[10px] text-slate-500 mt-1 font-mono">{{ $supply->boxes_count }} {{ __('Boxes') }} × {{ $supply->box_weight }} {{ __('KG') }}</div>
+                        @if($supply->category->input_mode === 'bags_weight')
+                            <div class="text-sm font-mono text-slate-900 dark:text-white font-bold">{{ $supply->bags_count }} {{ __('bags') }} × {{ $supply->bag_weight }} {{ __('kg') }}</div>
+                            <div class="text-[10px] text-emerald-500 mt-1 font-mono font-bold">= {{ number_format($supply->quantity, 2) }} {{ __('kg') }}</div>
+                            @if($supply->material_type_name)
+                                <div class="text-[10px] text-amber-500 mt-1 font-bold">{{ $supply->material_type_name }}</div>
+                            @endif
+                        @elseif($supply->category->input_mode === 'cartons_molds')
+                            <div class="text-sm font-mono text-slate-900 dark:text-white font-bold">{{ $supply->boxes_count }} {{ __('cartons') }} × {{ $supply->molds_per_carton }} {{ __('molds') }}</div>
+                            <div class="text-[10px] text-emerald-500 mt-1 font-mono font-bold">= {{ number_format($supply->quantity, 0) }} {{ __('molds') }}</div>
+                        @else
+                            <div class="text-sm font-mono text-slate-900 dark:text-white font-bold">{{ number_format($supply->quantity, 2) }} {{ __($supply->category->unit ?? 'Units') }}</div>
+                            @if($supply->bag_type)
+                                <div class="text-[10px] text-amber-500 mt-1 font-bold">{{ $supply->bag_type }}</div>
+                            @endif
                         @endif
-                        <div class="text-[11px] text-slate-500 mt-1">{{ __('At') }} {{ number_format($supply->unit_price, 2) }} {{ $currencyCode }} / {{ __('Unit') }}</div>
+                        <div class="text-[11px] text-slate-500 mt-1">{{ __('At') }} {{ number_format($supply->unit_price, 2) }} {{ $currencyCode }} / {{ __($supply->category->input_mode === 'bags_weight' ? 'ton' : ($supply->category->input_mode === 'cartons_molds' ? 'carton' : ($supply->category->unit ?? 'unit'))) }}</div>
                     </td>
                     <td class="py-3 px-4 text-right">
                         <div class="text-sm font-bold text-slate-900 dark:text-white font-mono">

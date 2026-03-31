@@ -31,7 +31,13 @@
                 </div>
                 <div>
                     <label class="block text-xs text-slate-500 uppercase tracking-wider mb-1">{{ __('Quantity') }}</label>
-                    <div class="font-bold text-slate-900 dark:text-white font-mono">{{ number_format($supply->quantity, 2) }} {{ __('Units') }}</div>
+                    @if($supply->category->input_mode === 'bags_weight')
+                        <div class="font-bold text-slate-900 dark:text-white font-mono">{{ $supply->bags_count }} {{ __('bags') }} × {{ $supply->bag_weight }} {{ __('kg') }} = {{ number_format($supply->quantity, 2) }} {{ __('kg') }}</div>
+                    @elseif($supply->category->input_mode === 'cartons_molds')
+                        <div class="font-bold text-slate-900 dark:text-white font-mono">{{ $supply->boxes_count }} {{ __('cartons') }} × {{ $supply->molds_per_carton }} {{ __('molds') }} = {{ number_format($supply->quantity, 0) }} {{ __('molds') }}</div>
+                    @else
+                        <div class="font-bold text-slate-900 dark:text-white font-mono">{{ number_format($supply->quantity, 2) }} {{ __($supply->category->unit ?? 'Units') }}</div>
+                    @endif
                 </div>
                 <div>
                     <label class="block text-xs text-slate-500 uppercase tracking-wider mb-1">{{ __('Registered By') }}</label>

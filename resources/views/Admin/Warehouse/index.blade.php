@@ -32,7 +32,7 @@
                     <div class="mt-4">
                         <div class="text-2xl font-black text-slate-900 dark:text-white">
                             {{ number_format($category->current_stock, 2) }}
-                            <span class="text-xs font-normal text-slate-500 uppercase">{{ __('Units') }}</span>
+                            <span class="text-xs font-normal text-slate-500 uppercase">{{ __($category->unit ?? 'Units') }}</span>
                         </div>
                         <div class="flex items-center gap-4 mt-2 text-[10px] font-bold uppercase tracking-wider">
                             <span class="text-emerald-500">{{ __('In') }}: {{ number_format($category->total_in ?? 0, 1) }}</span>
