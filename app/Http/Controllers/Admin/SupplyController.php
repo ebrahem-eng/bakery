@@ -59,6 +59,8 @@ class SupplyController extends Controller
             'supplies.*.quantity' => 'required|numeric|min:0',
             'supplies.*.unit_price' => 'required|numeric|min:0',
             'supplies.*.paid_amount' => 'required|numeric|min:0',
+            'supplies.*.paid_currency_id' => 'required|exists:currencies,id',
+            'supplies.*.paid_exchange_rate' => 'required|numeric|min:0.01',
             'supplies.*.unloading_fee' => 'required|numeric|min:0',
             'supplies.*.unloading_fee_payer' => 'required|in:bakery,supplier',
             'supplies.*.unloading_fee_currency_id' => 'nullable|exists:currencies,id',
@@ -90,7 +92,7 @@ class SupplyController extends Controller
                 $total_cost = ($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0);
             }
 
-            $paid = min($item['paid_amount'], $total_cost);
+            $paid = $item['paid_amount'];
             $fee_currency = ! empty($item['unloading_fee_currency_id']) ? $item['unloading_fee_currency_id'] : $item['currency_id'];
 
             Supply::create([
@@ -104,6 +106,8 @@ class SupplyController extends Controller
                 'unit_price' => $item['unit_price'],
                 'total_cost' => $total_cost,
                 'paid_amount' => $paid,
+                'paid_currency_id' => $item['paid_currency_id'],
+                'paid_exchange_rate' => $item['paid_exchange_rate'],
                 'unloading_fee' => $item['unloading_fee'],
                 'unloading_fee_payer' => $item['unloading_fee_payer'] ?? 'bakery',
                 'unloading_fee_currency_id' => $fee_currency,

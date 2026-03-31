@@ -172,14 +172,23 @@
                             <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Total Native Cost') }}</div>
                             <div class="text-xl font-bold font-mono text-slate-900 dark:text-white" x-text="calcTotalCost(item).toLocaleString(undefined, {minimumFractionDigits: 2})"></div>
                         </div>
-                        <div class="mt-2">
-                            <label class="block text-[10px] text-emerald-400 mb-1 {{ app()->getLocale() == 'ar' ? 'text-right' : 'text-left' }}">{{ __('Amount Paid From Register') }}</label>
-                            <div class="relative">
-                                <input type="number" step="0.01" x-bind:name="`supplies[${index}][paid_amount]`" x-model="item.paid_amount" 
-                                    class="glass-input block w-full {{ app()->getLocale() == 'ar' ? 'pl-20 pr-4' : 'pr-20 pl-4' }} py-2 rounded-lg text-sm font-bold text-emerald-300 {{ app()->getLocale() == 'ar' ? 'text-right' : 'text-left' }}">
-                                <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'left-0 pl-4' : 'right-0 pr-4' }} flex items-center pointer-events-none">
-                                    <span class="text-emerald-400/50 text-xs font-bold" x-text="currencies.find(c => c.id == item.currency_id)?.symbol || ''"></span>
+                        <div class="mt-2 text-right border-t border-slate-200 dark:border-white/5 pt-3">
+                            <label class="block text-[10px] text-emerald-400 mb-2 {{ app()->getLocale() == 'ar' ? 'text-right' : 'text-left' }}">{{ __('Amount Paid From Register') }}</label>
+                            <div class="flex gap-2 mb-2">
+                                <div class="relative w-2/3">
+                                    <input type="number" step="0.01" x-bind:name="`supplies[${index}][paid_amount]`" x-model="item.paid_amount" 
+                                        class="glass-input block w-full px-4 py-2 rounded-lg text-sm font-bold text-emerald-300 {{ app()->getLocale() == 'ar' ? 'text-right' : 'text-left' }}">
                                 </div>
+                                <select x-bind:name="`supplies[${index}][paid_currency_id]`" x-model="item.paid_currency_id" @change="updatePaidExchangeRate(item)" class="glass-input w-1/3 px-2 py-2 rounded-lg text-sm bg-white/50 dark:bg-black/40 text-slate-900 dark:text-slate-200 focus:ring-[#eab308]">
+                                    <template x-for="c in currencies" :key="c.id">
+                                        <option :value="c.id" x-text="c.code"></option>
+                                    </template>
+                                </select>
+                            </div>
+                            <!-- Paid Exchange Rate - Only visible if not SYP -->
+                            <div x-show="!syp_ids.includes(parseInt(item.paid_currency_id))" x-transition class="flex items-center gap-2">
+                                <label class="w-1/3 text-[10px] text-slate-400 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">{{ __('Ex. Rate') }}</label>
+                                <input type="number" step="0.01" x-bind:name="`supplies[${index}][paid_exchange_rate]`" x-model="item.paid_exchange_rate" class="glass-input w-2/3 px-2 py-1.5 rounded-lg text-xs bg-white/50 dark:bg-black/40 text-slate-900 dark:text-slate-200 placeholder-slate-400">
                             </div>
                         </div>
                     </div>
@@ -232,6 +241,8 @@ document.addEventListener('alpine:init', () => {
                 bag_type: '',
                 unit_price: null,
                 paid_amount: 0,
+                paid_currency_id: this.currencies.length > 0 ? this.currencies[0].id : '',
+                paid_exchange_rate: this.currencies.length > 0 ? this.currencies[0].exchange_rate : 1,
                 unloading_fee: 0,
                 unloading_fee_payer: 'bakery',
                 unloading_fee_currency_id: this.currencies.length > 0 ? this.currencies[0].id : '',
@@ -254,6 +265,13 @@ document.addEventListener('alpine:init', () => {
         updateExchangeRate(item) {
             let cur = this.currencies.find(c => c.id == item.currency_id);
             if(cur) item.exchange_rate = cur.exchange_rate;
+            // Also sync paid_currency roughly if they haven't manually changed it yet, though optional
+            item.paid_currency_id = item.currency_id;
+            item.paid_exchange_rate = item.exchange_rate;
+        },
+        updatePaidExchangeRate(item) {
+            let cur = this.currencies.find(c => c.id == item.paid_currency_id);
+            if(cur) item.paid_exchange_rate = cur.exchange_rate;
         },
         updateFeeExchangeRate(item) {
             let cur = this.currencies.find(c => c.id == item.unloading_fee_currency_id);

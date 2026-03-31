@@ -34,6 +34,8 @@ class Supply extends Model
         'unloading_fee_currency_id',
         'unloading_fee_exchange_rate',
         'notes',
+        'paid_currency_id',
+        'paid_exchange_rate',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -43,6 +45,32 @@ class Supply extends Model
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
             ->setDescriptionForEvent(fn (string $eventName) => "Supply was {$eventName}");
+    }
+
+    public function getUnpaidAmountAttribute(): float
+    {
+        $paidInBase = Currency::convertAmount($this->paid_amount ?? 0, $this->paid_exchange_rate ?? 1);
+        $costInBase = Currency::convertAmount($this->total_cost ?? 0, $this->exchange_rate ?? 1);
+
+        $unpaidInBase = max(0, $costInBase - $paidInBase);
+        
+        // Convert difference back to native supply currency for standardized display tracking
+        $baseToNativeRate = Currency::convertAmount(1, $this->exchange_rate ?? 1);
+        if ($baseToNativeRate <= 0) return 0;
+        
+        $unpaidInNative = $unpaidInBase / $baseToNativeRate;
+
+        return round($unpaidInNative, 2);
+    }
+
+    public function getIsFullyPaidAttribute(): bool
+    {
+        return $this->unpaid_amount <= 0.05; // tolerance
+    }
+
+    public function paidCurrency()
+    {
+        return $this->belongsTo(Currency::class, 'paid_currency_id');
     }
 
     public function unloadingFeeCurrency()
