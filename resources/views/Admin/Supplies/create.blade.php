@@ -190,6 +190,12 @@
                                 <label class="w-1/3 text-[10px] text-slate-400 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">{{ __('Ex. Rate') }}</label>
                                 <input type="number" step="0.01" x-bind:name="`supplies[${index}][paid_exchange_rate]`" x-model="item.paid_exchange_rate" class="glass-input w-2/3 px-2 py-1.5 rounded-lg text-xs bg-white/50 dark:bg-black/40 text-slate-900 dark:text-slate-200 placeholder-slate-400">
                             </div>
+
+                            <!-- Due Date -->
+                            <div class="mt-3 flex items-center justify-between border-t border-slate-200 dark:border-white/5 pt-3">
+                                <label class="text-[10px] font-bold text-red-500 dark:text-red-400 uppercase tracking-wider">{{ __('Due Date') }}</label>
+                                <input type="date" x-bind:name="`supplies[${index}][due_date]`" x-model="item.due_date" class="glass-input w-2/3 px-3 py-1.5 rounded-lg text-xs bg-white/50 dark:bg-black/40 text-slate-900 dark:text-slate-200 focus:ring-red-500 outline-none">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -247,6 +253,7 @@ document.addEventListener('alpine:init', () => {
                 unloading_fee_payer: 'bakery',
                 unloading_fee_currency_id: this.currencies.length > 0 ? this.currencies[0].id : '',
                 unloading_fee_exchange_rate: this.currencies.length > 0 ? this.currencies[0].exchange_rate : 1,
+                due_date: '',
                 notes: '',
             });
         },

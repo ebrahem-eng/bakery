@@ -36,6 +36,11 @@ class Supply extends Model
         'notes',
         'paid_currency_id',
         'paid_exchange_rate',
+        'due_date',
+    ];
+
+    protected $casts = [
+        'due_date' => 'date',
     ];
 
     public function getActivitylogOptions(): LogOptions

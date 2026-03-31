@@ -294,6 +294,44 @@ class AccountsController extends Controller
         ));
     }
 
+    public function debts(Request $request)
+    {
+        $defaultCurrency = Currency::where('is_default', true)->first();
+        $currencyCode = $defaultCurrency->code ?? 'SYP';
+
+        // Load all supplies that aren't fully paid. We sort so older debts or those with closest due dates appear first.
+        // For performance in typical bakeries, loading and filtering unpaid supplies is perfectly efficient.
+        $supplies = Supply::with(['supplier', 'category', 'currency', 'paidCurrency'])
+            ->orderByRaw('due_date IS NULL ASC, due_date ASC')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->filter(fn($s) => !$s->is_fully_paid);
+
+        $totalOutstanding = 0;
+        $overdueAmount = 0;
+        $dueSoonAmount = 0;
+
+        foreach ($supplies as $s) {
+            $costInBase = Currency::convertAmount($s->total_cost, $s->exchange_rate);
+            $paidInBase = Currency::convertAmount($s->paid_amount, $s->paid_exchange_rate);
+            $unpaid = max(0, $costInBase - $paidInBase);
+            
+            $totalOutstanding += $unpaid;
+
+            if ($s->due_date) {
+                if ($s->due_date->startOfDay()->isPast()) {
+                    $overdueAmount += $unpaid;
+                } elseif ($s->due_date->startOfDay()->diffInDays(now()->startOfDay()) <= 7 && !$s->due_date->startOfDay()->isPast()) {
+                    $dueSoonAmount += $unpaid;
+                }
+            }
+        }
+
+        $currencies = Currency::all();
+
+        return view('Admin.Accounts.debts', compact('supplies', 'currencyCode', 'totalOutstanding', 'overdueAmount', 'dueSoonAmount', 'currencies'));
+    }
+
     private function getDateRange(string $period): array
     {
         return match ($period) {

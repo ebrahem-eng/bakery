@@ -41,6 +41,8 @@ Route::group(['middleware' => ['admin.auth']], function () {
     // ── Accounts ──────────────────────────────────────────────────────
     Route::get('/accounts', [AccountsController::class, 'index'])
         ->middleware('permission:view accounts,admin')->name('accounts.index');
+    Route::get('/accounts/debts', [AccountsController::class, 'debts'])
+        ->middleware('permission:view accounts,admin')->name('accounts.debts');
 
     // ── Roles & Permissions ────────────────────────────────────────────
     Route::resource('roles', RoleController::class)->middleware('permission:view roles,admin');
@@ -61,6 +63,7 @@ Route::group(['middleware' => ['admin.auth']], function () {
     // ── Supplies (Purchases) ───────────────────────────────────────────
     Route::group(['middleware' => ['permission:view supplies,admin']], function () {
         Route::resource('supplies', SupplyController::class)->except(['edit', 'update', 'destroy']);
+        Route::post('supplies/{supply}/pay', [SupplyController::class, 'registerPayment'])->name('supplies.pay');
     });
 
     // ── Warehouse ──────────────────────────────────────────────────────

@@ -73,6 +73,7 @@ class SupplyController extends Controller
             'supplies.*.molds_per_carton' => 'nullable|integer|min:1',
             'supplies.*.bag_type' => 'nullable|string',
             'supplies.*.notes' => 'nullable|string',
+            'supplies.*.due_date' => 'nullable|date',
         ]);
 
         foreach ($request->supplies as $item) {
@@ -120,9 +121,37 @@ class SupplyController extends Controller
                 'molds_per_carton' => $item['molds_per_carton'] ?? null,
                 'bag_type' => $item['bag_type'] ?? null,
                 'notes' => $item['notes'] ?? null,
+                'due_date' => $item['due_date'] ?? null,
             ]);
         }
 
         return redirect()->route('admin.supplies.index')->with('success', __('Supply registered and mapped securely into the Active Work Day ledger.'));
+    }
+
+    public function registerPayment(Request $request, Supply $supply)
+    {
+        $request->validate([
+            'payment_amount' => 'required|numeric|min:0.01',
+            'payment_currency_id' => 'required|exists:currencies,id',
+            'payment_exchange_rate' => 'required|numeric|min:0.01',
+        ]);
+
+        // Convert the incoming payment into the system's base currency standard
+        $paymentAmountInBase = \App\Models\Currency::convertAmount($request->payment_amount, $request->payment_exchange_rate);
+        
+        // Convert that base back into the supply's inherently tracked `paid_currency_id` scale
+        $paymentInSupplyPaidCurrency = $paymentAmountInBase / \App\Models\Currency::convertAmount(1, $supply->paid_exchange_rate);
+
+        $supply->paid_amount += $paymentInSupplyPaidCurrency;
+        
+        // If the entire debt is essentially paid within a 1 currency unit rounding error
+        if ($supply->unpaid_amount <= 1) {
+            $supply->paid_amount = \App\Models\Currency::convertAmount($supply->total_cost, $supply->exchange_rate) / \App\Models\Currency::convertAmount(1, $supply->paid_exchange_rate);
+            $supply->due_date = null; // Cleared if fully paid
+        }
+
+        $supply->save();
+
+        return redirect()->back()->with('success', __('Payment logged and linked to the supplier balance.'));
     }
 }
