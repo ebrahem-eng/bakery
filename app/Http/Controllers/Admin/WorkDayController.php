@@ -95,11 +95,10 @@ class WorkDayController extends Controller
 
         // ── Expense Breakdown ─────────────────────────────────────────
         $suppliesCost = $workDay->supplies
-            ->filter(fn($s) => $s->category?->track_in_daily_close ?? true)
             ->sum(fn($s) => Currency::convertAmount($s->total_cost, $s->exchange_rate));
             
         $unloadingFees = $workDay->supplies
-            ->filter(fn($s) => ($s->category?->track_in_daily_close ?? true) && $s->unloading_fee_payer === 'bakery')
+            ->filter(fn($s) => $s->unloading_fee_payer === 'bakery')
             ->reduce(function ($carry, $s) {
                 return $carry + Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate);
             }, 0);
