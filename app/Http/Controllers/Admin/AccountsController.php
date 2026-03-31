@@ -85,11 +85,13 @@ class AccountsController extends Controller
 
         // Cash Out
         $cashToSuppliers = Supply::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('paid_amount'));
+        $cashToFreight = Supply::whereIn('work_day_id', $workDayIds)->where('unloading_fee_payer', 'bakery')->sum(Currency::getSelectRaw('unloading_fee', 'unloading_fee_exchange_rate'));
+        
         $cashToWages = $workerWages;
         $cashToAdvances = $workerAdvances;
         $cashToAllowances = $workerAllowances;
         $cashToExpenses = $operationalExpenses;
-        $totalCashOut = $cashToSuppliers + $cashToWages + $cashToAdvances + $cashToAllowances + $cashToExpenses;
+        $totalCashOut = $cashToSuppliers + $cashToFreight + $cashToWages + $cashToAdvances + $cashToAllowances + $cashToExpenses;
 
         $netCashFlow = $totalCashIn - $totalCashOut;
 
@@ -121,7 +123,7 @@ class AccountsController extends Controller
                 'type' => 'expense',
                 'category' => __('Raw Materials').' ('.($s->category->name ?? '').')',
                 'description' => ($s->supplier->first_name ?? '').' '.($s->supplier->last_name ?? ''),
-                'amount' => Currency::convertAmount($s->total_cost, $s->exchange_rate),
+                'amount' => Currency::convertAmount($s->total_cost, $s->exchange_rate) + Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate),
                 'work_day_id' => $s->work_day_id,
             ]);
 
@@ -283,7 +285,7 @@ class AccountsController extends Controller
             'netProfit', 'netMargin',
             // Cash Flow
             'cashFromDistributors', 'cashFromShifts', 'totalCashIn',
-            'cashToSuppliers', 'cashToWages', 'cashToAdvances', 'cashToAllowances', 'cashToExpenses', 'totalCashOut',
+            'cashToSuppliers', 'cashToFreight', 'cashToWages', 'cashToAdvances', 'cashToAllowances', 'cashToExpenses', 'totalCashOut',
             'netCashFlow', 'carriedOverCash',
             // Ledger
             'paginatedTransactions', 'typeFilter',

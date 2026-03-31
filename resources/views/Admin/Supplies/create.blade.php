@@ -169,7 +169,7 @@
 
                     <div class="lg:col-span-4 flex flex-col justify-between h-full">
                         <div class="text-right">
-                            <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Total Native Cost') }}</div>
+                            <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Total Invoice Amount') }}</div>
                             <div class="text-xl font-bold font-mono text-slate-900 dark:text-white" x-text="calcTotalCost(item).toLocaleString(undefined, {minimumFractionDigits: 2})"></div>
                         </div>
                         <div class="mt-2 text-right border-t border-slate-200 dark:border-white/5 pt-3">
@@ -292,13 +292,29 @@ document.addEventListener('alpine:init', () => {
             return (totalKg / 1000) * (item.unit_price || 0);
         },
         calcTotalCost(item) {
+            let cost = 0;
             if (item.input_mode === 'bags_weight') {
-                return this.calcFlourCost(item);
+                cost = this.calcFlourCost(item);
+            } else if (item.input_mode === 'cartons_molds') {
+                cost = (item.boxes_count || 0) * (item.unit_price || 0);
+            } else {
+                cost = (item.quantity || 0) * (item.unit_price || 0);
             }
-            if (item.input_mode === 'cartons_molds') {
-                return (item.boxes_count || 0) * (item.unit_price || 0);
+            
+            // Include unloading fee in the visual total
+            let fee = parseFloat(item.unloading_fee) || 0;
+            if (fee > 0) {
+                if (item.unloading_fee_currency_id == item.currency_id) {
+                    cost += fee;
+                } else {
+                    let feeRate = parseFloat(item.unloading_fee_exchange_rate) || 1;
+                    let targetRate = parseFloat(item.exchange_rate) || 1;
+                    let feeInBase = fee * feeRate;
+                    cost += (feeInBase / targetRate);
+                }
             }
-            return (item.quantity || 0) * (item.unit_price || 0);
+            
+            return cost;
         }
     }))
 })
