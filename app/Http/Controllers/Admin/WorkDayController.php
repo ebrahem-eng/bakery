@@ -87,31 +87,31 @@ class WorkDayController extends Controller
         $currencyCode = $defaultCurrency->code ?? '';
 
         // ── Sales Statistics ──────────────────────────────────────────
-        $totalSales = $workDay->distributions->sum('total_price');
-        $totalRefunds = $workDay->distributorReturns->sum('total_refund');
-        $totalPaymentsReceived = $workDay->distributorTransactions->sum('amount');
+        $totalSales = $workDay->distributions->sum(fn($d) => Currency::convertAmount($d->total_price, $d->exchange_rate));
+        $totalRefunds = $workDay->distributorReturns->sum(fn($r) => Currency::convertAmount($r->total_refund, $r->exchange_rate));
+        $totalPaymentsReceived = $workDay->distributorTransactions->sum(fn($t) => Currency::convertAmount($t->amount, $t->exchange_rate));
         $netSales = $totalSales - $totalRefunds;
 
         // ── Expense Breakdown ─────────────────────────────────────────
-        $suppliesCost = $workDay->supplies->sum('total_cost');
+        $suppliesCost = $workDay->supplies->sum(fn($s) => Currency::convertAmount($s->total_cost, $s->exchange_rate));
         $unloadingFees = $workDay->supplies->where('unloading_fee_payer', 'bakery')->reduce(function ($carry, $s) {
-            return $carry + ($s->unloading_fee * ($s->unloading_fee_exchange_rate ?? 1));
+            return $carry + Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate);
         }, 0);
         
         // Use actual recorded transactions instead of theoretical shift wages
         $workerPayments = $workDay->workerTransactions
             ->whereIn('type', ['salary', 'wage', 'advance', 'allowance', 'bonus'])
             ->reduce(function($carry, $t) { 
-                return $carry + ($t->amount * ($t->exchange_rate ?? 1)); 
+                return $carry + Currency::convertAmount($t->amount, $t->exchange_rate); 
             }, 0);
             
         $workerDeductions = $workDay->workerTransactions
             ->where('type', 'deduction')
             ->reduce(function($carry, $t) { 
-                return $carry + ($t->amount * ($t->exchange_rate ?? 1)); 
+                return $carry + Currency::convertAmount($t->amount, $t->exchange_rate); 
             }, 0);
             
-        $operationalExpenses = $workDay->expenses->sum('amount');
+        $operationalExpenses = $workDay->expenses->sum(fn($e) => Currency::convertAmount($e->amount, $e->exchange_rate));
 
         $totalExpenses = $suppliesCost + $unloadingFees + $workerPayments - $workerDeductions + $operationalExpenses;
         $netDayBalance = $netSales - $totalExpenses;
@@ -140,7 +140,7 @@ class WorkDayController extends Controller
 
         // ── Cash collected from shifts ────────────────────────────────
         $totalCashFromShifts = $workDay->workerShifts->sum(function ($s) {
-            return $s->cash_collected * ($s->cash_exchange_rate ?? 1);
+            return Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate);
         });
 
         // ── Raw Material Categories for Consumption ──────────────────
@@ -232,8 +232,8 @@ class WorkDayController extends Controller
             'status' => 'closed',
             'end_time' => $endTime,
             'closed_by' => auth()->guard('admin')->id(),
-            'total_expenses_at_close' => $request->total_expenses_at_close,
-            'total_sales_at_close' => $request->total_sales_at_close,
+            'total_expenses_at_close' => Currency::revertToBase($request->total_expenses_at_close),
+            'total_sales_at_close' => Currency::revertToBase($request->total_sales_at_close),
             'carried_over_bundles' => $calculatedBundles,
             'carried_over_money' => $request->carried_over_money,
             'carried_over_currency_id' => $request->carried_over_currency_id,

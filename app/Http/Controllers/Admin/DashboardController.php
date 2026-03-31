@@ -47,19 +47,19 @@ class DashboardController extends Controller
         }
 
         // ── Revenue Metrics ───────────────────────────────────────────
-        $totalDistributions = Distribution::whereIn('work_day_id', $periodWorkDayIds)->sum('total_price');
-        $totalRefunds = DistributorReturn::whereIn('work_day_id', $periodWorkDayIds)->sum('total_refund');
+        $totalDistributions = Distribution::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_price'));
+        $totalRefunds = DistributorReturn::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_refund'));
         $totalRevenue = $totalDistributions - $totalRefunds;
-        $totalPaymentsReceived = DistributorTransaction::whereIn('work_day_id', $periodWorkDayIds)->sum('amount');
+        $totalPaymentsReceived = DistributorTransaction::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount'));
 
         // ── Expense Metrics ───────────────────────────────────────────
-        $suppliesCost = Supply::whereIn('work_day_id', $periodWorkDayIds)->sum('total_cost');
-        $unloadingFees = Supply::whereIn('work_day_id', $periodWorkDayIds)->sum('unloading_fee');
-        $shiftWages = WorkerShift::whereIn('work_day_id', $periodWorkDayIds)->sum('snapshot_daily_wage');
-        $workerAllowances = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'allowance')->sum('amount');
-        $workerAdvances = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'advance')->sum('amount');
-        $workerDeductions = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'deduction')->sum('amount');
-        $operationalExpenses = Expense::whereIn('work_day_id', $periodWorkDayIds)->sum('amount');
+        $suppliesCost = Supply::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_cost'));
+        $unloadingFees = Supply::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('unloading_fee', 'unloading_fee_exchange_rate'));
+        $shiftWages = WorkerShift::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('snapshot_daily_wage', 'snapshot_exchange_rate'));
+        $workerAllowances = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'allowance')->sum(Currency::getSelectRaw('amount'));
+        $workerAdvances = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'advance')->sum(Currency::getSelectRaw('amount'));
+        $workerDeductions = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'deduction')->sum(Currency::getSelectRaw('amount'));
+        $operationalExpenses = Expense::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount'));
 
         $totalExpenses = $suppliesCost + $unloadingFees + $shiftWages + $workerAllowances - $workerDeductions + $operationalExpenses;
         $netProfit = $totalRevenue - $totalExpenses;
@@ -87,9 +87,9 @@ class DashboardController extends Controller
 
         // ── Distributor Outstanding Balances ──────────────────────────
         $distributorBalances = Distributor::select('distributors.*')
-            ->withSum('distributions as total_billed', 'total_price')
-            ->withSum('transactions as total_paid', 'amount')
-            ->withSum('returns as total_refunded', 'total_refund')
+            ->withSum('distributions as total_billed', Currency::getSelectRaw('total_price'))
+            ->withSum('transactions as total_paid', Currency::getSelectRaw('amount'))
+            ->withSum('returns as total_refunded', Currency::getSelectRaw('total_refund'))
             ->get()
             ->map(function ($d) {
                 $d->outstanding = ($d->total_billed ?? 0) - ($d->total_paid ?? 0) - ($d->total_refunded ?? 0);
@@ -101,8 +101,8 @@ class DashboardController extends Controller
 
         // ── Supplier Outstanding Balances ─────────────────────────────
         $supplierBalances = Supplier::select('suppliers.*')
-            ->withSum('supplies as total_owed', 'total_cost')
-            ->withSum('supplies as total_paid_amount', 'paid_amount')
+            ->withSum('supplies as total_owed', Currency::getSelectRaw('total_cost'))
+            ->withSum('supplies as total_paid_amount', Currency::getSelectRaw('paid_amount'))
             ->get()
             ->map(function ($s) {
                 $s->outstanding = ($s->total_owed ?? 0) - ($s->total_paid_amount ?? 0);
@@ -121,8 +121,8 @@ class DashboardController extends Controller
             ->map(function ($wd) {
                 return [
                     'date' => $wd->start_time->format('m/d'),
-                    'revenue' => $wd->total_sales_at_close ?? 0,
-                    'expenses' => $wd->total_expenses_at_close ?? 0,
+                    'revenue' => Currency::convertAmount($wd->total_sales_at_close ?? 0),
+                    'expenses' => Currency::convertAmount($wd->total_expenses_at_close ?? 0),
                 ];
             });
 
@@ -130,7 +130,7 @@ class DashboardController extends Controller
         $topDistributors = Distributor::select('distributors.*')
             ->withSum(['distributions as period_sales' => function ($q) use ($periodWorkDayIds) {
                 $q->whereIn('work_day_id', $periodWorkDayIds);
-            }], 'total_price')
+            }], Currency::getSelectRaw('total_price'))
             ->withSum(['distributions as period_bundles' => function ($q) use ($periodWorkDayIds) {
                 $q->whereIn('work_day_id', $periodWorkDayIds);
             }], 'bundle_count')
@@ -152,13 +152,15 @@ class DashboardController extends Controller
         $todayBundlesSold = 0;
 
         if ($activeWorkDay) {
-            $todaySales = $activeWorkDay->distributions->sum('total_price') - $activeWorkDay->distributorReturns->sum('total_refund');
+            $todaySales = $activeWorkDay->distributions->sum(fn($d) => Currency::convertAmount($d->total_price, $d->exchange_rate)) 
+                        - $activeWorkDay->distributorReturns->sum(fn($r) => Currency::convertAmount($r->total_refund, $r->exchange_rate));
             $todayBundlesSold = $activeWorkDay->distributions->sum('bundle_count');
-            $todayExpenses += $activeWorkDay->supplies->sum('total_cost') + $activeWorkDay->supplies->sum('unloading_fee');
-            $todayExpenses += $activeWorkDay->workerShifts->sum('snapshot_daily_wage');
-            $todayExpenses += $activeWorkDay->workerTransactions->where('type', 'allowance')->sum('amount');
-            $todayExpenses -= $activeWorkDay->workerTransactions->where('type', 'deduction')->sum('amount');
-            $todayExpenses += $activeWorkDay->expenses->sum('amount');
+            $todayExpenses += $activeWorkDay->supplies->sum(fn($s) => Currency::convertAmount($s->total_cost, $s->exchange_rate)) 
+                           + $activeWorkDay->supplies->sum(fn($s) => Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate));
+            $todayExpenses += $activeWorkDay->workerShifts->sum(fn($w) => Currency::convertAmount($w->snapshot_daily_wage, $w->snapshot_exchange_rate));
+            $todayExpenses += $activeWorkDay->workerTransactions->where('type', 'allowance')->sum(fn($wtf) => Currency::convertAmount($wtf->amount, $wtf->exchange_rate));
+            $todayExpenses -= $activeWorkDay->workerTransactions->where('type', 'deduction')->sum(fn($wtf) => Currency::convertAmount($wtf->amount, $wtf->exchange_rate));
+            $todayExpenses += $activeWorkDay->expenses->sum(fn($e) => Currency::convertAmount($e->amount, $e->exchange_rate));
         }
 
         return view('Admin.dashboard', compact(

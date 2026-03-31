@@ -69,7 +69,7 @@ class DistributorController extends Controller
                 'type' => 'Sale',
                 'ref' => '#'.$d->id.' - '.$d->bundle_count.' '.__('Bundles'),
                 'notes' => $d->notes,
-                'debit' => $d->total_price,
+                'debit' => Currency::convertAmount($d->total_price, $d->exchange_rate),
                 'credit' => 0,
                 'color' => 'blue',
                 'admin' => $d->createdBy ? $d->createdBy->first_name : '--',
@@ -82,7 +82,7 @@ class DistributorController extends Controller
                     'ref' => __('Down Payment for').' #'.$d->id,
                     'notes' => null,
                     'debit' => 0,
-                    'credit' => $d->amount_paid,
+                    'credit' => Currency::convertAmount($d->amount_paid, $d->exchange_rate),
                     'color' => 'emerald',
                     'admin' => $d->createdBy ? $d->createdBy->first_name : '--',
                 ]);
@@ -97,7 +97,7 @@ class DistributorController extends Controller
                 'ref' => '#'.$r->id.' - '.$r->bundle_count.' '.__('Bundles'),
                 'notes' => $r->notes,
                 'debit' => 0,
-                'credit' => $r->total_refund,
+                'credit' => Currency::convertAmount($r->total_refund, $r->exchange_rate),
                 'color' => 'amber',
                 'admin' => $r->createdBy ? $r->createdBy->first_name : '--',
             ]);
@@ -111,7 +111,7 @@ class DistributorController extends Controller
                 'ref' => __('Direct Transaction'),
                 'notes' => $t->notes,
                 'debit' => 0,
-                'credit' => $t->amount,
+                'credit' => Currency::convertAmount($t->amount, $t->exchange_rate),
                 'color' => $t->type == 'payment' ? 'emerald' : ($t->type == 'discount' ? 'rose' : 'slate'),
                 'admin' => $t->createdBy ? $t->createdBy->first_name : '--',
             ]);
@@ -152,15 +152,15 @@ class DistributorController extends Controller
         );
 
         // Final Totals for Summary Cards
-        $grossSales = $distributor->distributions->sum('total_price');
-        $totalReturns = $distributor->returns->sum('total_refund');
+        $grossSales = $distributor->distributions->sum(fn($d) => Currency::convertAmount($d->total_price, $d->exchange_rate));
+        $totalReturns = $distributor->returns->sum(fn($r) => Currency::convertAmount($r->total_refund, $r->exchange_rate));
         $netSales = $grossSales - $totalReturns;
         
-        $directPayments = $distributor->transactions->where('type', 'payment')->sum('amount');
-        $downPayments = $distributor->distributions->sum('amount_paid');
+        $directPayments = $distributor->transactions->where('type', 'payment')->sum(fn($t) => Currency::convertAmount($t->amount, $t->exchange_rate));
+        $downPayments = $distributor->distributions->sum(fn($d) => Currency::convertAmount($d->amount_paid, $d->exchange_rate));
         $totalPaid = $directPayments + $downPayments;
         
-        $totalDiscounts = $distributor->transactions->where('type', 'discount')->sum('amount');
+        $totalDiscounts = $distributor->transactions->where('type', 'discount')->sum(fn($t) => Currency::convertAmount($t->amount, $t->exchange_rate));
         $outstandingBalance = $netSales - $totalPaid - $totalDiscounts;
 
         $currencies = Currency::all();
@@ -258,11 +258,11 @@ class DistributorController extends Controller
         $distributor->load(['currency', 'distributions', 'returns', 'transactions']);
         $currencies = Currency::all();
 
-        $balance = $distributor->distributions->sum('total_price')
-                 - $distributor->returns->sum('total_refund')
-                 - $distributor->distributions->sum('amount_paid')
-                 - $distributor->transactions->where('type', 'payment')->sum('amount')
-                 - $distributor->transactions->where('type', 'discount')->sum('amount');
+        $balance = $distributor->distributions->sum(fn($d) => Currency::convertAmount($d->total_price, $d->exchange_rate))
+                 - $distributor->returns->sum(fn($r) => Currency::convertAmount($r->total_refund, $r->exchange_rate))
+                 - $distributor->distributions->sum(fn($d) => Currency::convertAmount($d->amount_paid, $d->exchange_rate))
+                 - $distributor->transactions->where('type', 'payment')->sum(fn($t) => Currency::convertAmount($t->amount, $t->exchange_rate))
+                 - $distributor->transactions->where('type', 'discount')->sum(fn($t) => Currency::convertAmount($t->amount, $t->exchange_rate));
 
         return view('Admin.Distributors.record_payment', compact('distributor', 'currencies', 'balance'));
     }

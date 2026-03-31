@@ -28,7 +28,7 @@ class ExpenseController extends Controller
         $workerPaymentsLocal = \App\Models\WorkerTransaction::where('work_day_id', $activeWorkDay->id)
             ->whereIn('type', ['salary', 'wage', 'bonus', 'advance', 'allowance'])
             ->get()
-            ->sum(fn($t) => $t->amount * ($t->exchange_rate ?? 1));
+            ->sum(fn($t) => Currency::convertAmount($t->amount, $t->exchange_rate));
 
         return view('Admin.Expenses.index', compact('expenses', 'currencies', 'activeWorkDay', 'defaultCurrency', 'workerPaymentsLocal'));
     }
@@ -54,10 +54,8 @@ class ExpenseController extends Controller
         // Automated Conversion Logic
         $rate = $request->exchange_rate;
         if (! $rate) {
-            if ($currency->code === 'SYPN' || $currency->is_default) {
+            if ($currency->code === 'SYP' || $currency->is_default) {
                 $rate = 1.0;
-            } elseif ($currency->code === 'SYPO') {
-                $rate = 0.01; // The "Remove 00" rule: 120,000 SYPO = 1,200 SYPN
             } else {
                 $rate = $currency->exchange_rate;
             }
