@@ -75,18 +75,18 @@
             
             <div class="flex justify-between items-end mb-4">
                 <div class="text-xs text-slate-500 dark:text-slate-400">{{ __('Unit Price') }}</div>
-                <div class="text-sm font-bold text-slate-900 dark:text-white font-mono">{{ number_format($supply->unit_price, 2) }} {{ $supply->currency->code ?? '' }}</div>
+                <div class="text-sm font-bold text-slate-900 dark:text-white font-mono">{{ number_format($supply->unit_price, 2) }} {{ $currencyCode }}</div>
             </div>
             
             <div class="flex justify-between items-end mb-4">
                 <div class="text-xs text-slate-500 dark:text-slate-400">{{ __('Total Invoice Cost') }}</div>
-                <div class="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">{{ number_format($supply->total_cost, 2) }} {{ $supply->currency->code ?? '' }}</div>
+                <div class="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">{{ number_format($supply->total_cost, 2) }} {{ $currencyCode }}</div>
             </div>
 
             <div class="flex justify-between items-end mb-6 pb-6 border-b border-slate-200 dark:border-white/5">
                 <div class="text-xs text-slate-500 dark:text-slate-400">{{ __('Amount Paid') }}</div>
                 <div class="text-sm font-bold {{ $supply->paid_amount < $supply->total_cost ? 'text-red-500 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400' }} font-mono">
-                    {{ number_format($supply->paid_amount, 2) }} {{ $supply->currency->code ?? '' }}
+                    {{ number_format($supply->paid_amount, 2) }} {{ $currencyCode }}
                 </div>
             </div>
 

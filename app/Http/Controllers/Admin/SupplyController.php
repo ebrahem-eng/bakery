@@ -15,8 +15,9 @@ class SupplyController extends Controller
     public function index()
     {
         $supplies = Supply::with('supplier', 'category', 'currency', 'admin', 'workDay')->orderBy('id', 'desc')->get();
+        $currencyCode = Currency::where('is_default', true)->value('code') ?? 'SYP';
 
-        return view('Admin.Supplies.index', compact('supplies'));
+        return view('Admin.Supplies.index', compact('supplies', 'currencyCode'));
     }
 
     public function create()
@@ -37,8 +38,9 @@ class SupplyController extends Controller
     public function show($id)
     {
         $supply = Supply::with(['supplier', 'category', 'currency', 'unloadingFeeCurrency', 'admin', 'workDay'])->findOrFail($id);
+        $currencyCode = Currency::where('is_default', true)->value('code') ?? 'SYP';
 
-        return view('Admin.Supplies.show', compact('supply'));
+        return view('Admin.Supplies.show', compact('supply', 'currencyCode'));
     }
 
     public function store(Request $request)
