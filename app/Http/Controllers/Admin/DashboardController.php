@@ -120,7 +120,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($wd) {
                 return [
-                    'date' => $wd->start_time->format('m/d'),
+                    'date' => $wd->start_time->translatedFormat('m/d'),
                     'revenue' => Currency::convertAmount($wd->total_sales_at_close ?? 0),
                     'expenses' => Currency::convertAmount($wd->total_expenses_at_close ?? 0),
                 ];

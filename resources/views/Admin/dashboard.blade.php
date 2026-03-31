@@ -48,7 +48,7 @@
                     <h2 class="text-xl font-bold text-emerald-900 dark:text-white tracking-wide">{{ __('ACTIVE WORK DAY') }}</h2>
                 </div>
                 <p class="text-emerald-400/80 text-sm font-medium tracking-widest uppercase">
-                    {{ __('Commenced At: ') }} {{ $activeWorkDay->start_time->format('Y-m-d h:i A') }}
+                    {{ __('Commenced At: ') }} {{ $activeWorkDay->start_time->translatedFormat('Y-m-d h:i A') }}
                     <span class="text-slate-500 {{ app()->getLocale() == 'ar' ? 'mr-2' : 'ml-2' }}">({{ $activeWorkDay->start_time->diffForHumans() }})</span>
                 </p>
                 <div class="mt-3 flex gap-4 text-xs">
@@ -327,8 +327,8 @@
                     <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                         <td class="p-4 text-xs font-medium text-slate-500">#{{ $day->id }}</td>
                         <td class="p-4">
-                            <p class="text-sm font-bold text-slate-900 dark:text-white tracking-wide">{{ $day->start_time->format('Y-m-d') }}</p>
-                            <p class="text-[10px] text-slate-500 mt-0.5">{{ $day->start_time->format('H:i') }} - {{ $day->end_time->format('H:i') }}</p>
+                            <p class="text-sm font-bold text-slate-900 dark:text-white tracking-wide">{{ $day->start_time->translatedFormat('Y-m-d') }}</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">{{ $day->start_time->translatedFormat('H:i') }} - {{ $day->end_time->translatedFormat('H:i') }}</p>
                         </td>
                         <td class="p-4">
                             <span class="text-xs text-slate-700 dark:text-slate-300 font-medium px-2.5 py-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded">

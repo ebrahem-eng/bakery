@@ -149,7 +149,7 @@
                                     @click.stop="$dispatch('open-departure-modal', { 
                                         id: {{ $attendance->id }}, 
                                         name: '{{ $worker->first_name }} {{ $worker->last_name }}',
-                                        arrival: '{{ $attendance->arrival_time->format('Y-m-d\TH:i') }}'
+                                        arrival: '{{ $attendance->arrival_time->translatedFormat('Y-m-d\TH:i') }}'
                                     })"
                                     class="w-full mt-2 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 text-[10px] font-bold rounded-lg border border-amber-500/20 transition-all pointer-events-auto grayscale-0 opacity-100">
                                     {{ __('Sign Out') }}
@@ -242,8 +242,8 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Arrival Time') }}</label>
-                    <input type="datetime-local" name="arrival_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
-                        min="{{ $activeWorkDay->start_time->format('Y-m-d\TH:i') }}"
+                    <input type="datetime-local" name="arrival_time" value="{{ now()->translatedFormat('Y-m-d\TH:i') }}" 
+                        min="{{ $activeWorkDay->start_time->translatedFormat('Y-m-d\TH:i') }}"
                         required 
                         class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
                     <p class="text-[10px] text-slate-500 mt-2 italic px-1">
@@ -294,8 +294,8 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Departure Time') }}</label>
-                    <input type="datetime-local" name="departure_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
-                        min="{{ $activeWorkDay->start_time->format('Y-m-d\TH:i') }}"
+                    <input type="datetime-local" name="departure_time" value="{{ now()->translatedFormat('Y-m-d\TH:i') }}" 
+                        min="{{ $activeWorkDay->start_time->translatedFormat('Y-m-d\TH:i') }}"
                         required 
                         class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
                     <p class="text-[10px] text-slate-500 mt-2 italic px-1">
@@ -341,7 +341,7 @@
                 @csrf
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Departure Time') }}</label>
-                    <input type="datetime-local" name="departure_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
+                    <input type="datetime-local" name="departure_time" value="{{ now()->translatedFormat('Y-m-d\TH:i') }}" 
                         :min="arrivalTime"
                         required 
                         class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
@@ -390,7 +390,7 @@
                                 $presenceDates = \App\Models\WorkerAttendance::where('worker_id', $w->id)
                                     ->latest('arrival_time')
                                     ->get()
-                                    ->groupBy(fn($a) => $a->arrival_time->format('Y-m-d'));
+                                    ->groupBy(fn($a) => $a->arrival_time->translatedFormat('Y-m-d'));
                             @endphp
                             <tr>
                                 <td class="px-6 py-4 font-bold text-white">{{ $w->first_name }} {{ $w->last_name }}</td>
@@ -494,8 +494,8 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{{ __('Arrival Time') }}</label>
-                    <input type="datetime-local" name="arrival_time" value="{{ now()->format('Y-m-d\TH:i') }}" 
-                        min="{{ $activeWorkDay->start_time->format('Y-m-d\TH:i') }}"
+                    <input type="datetime-local" name="arrival_time" value="{{ now()->translatedFormat('Y-m-d\TH:i') }}" 
+                        min="{{ $activeWorkDay->start_time->translatedFormat('Y-m-d\TH:i') }}"
                         required 
                         class="block w-full px-4 py-3 bg-[#0f1115] border border-white/5 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
                     <p class="text-[10px] text-slate-500 mt-2 italic px-1">

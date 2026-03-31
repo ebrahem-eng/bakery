@@ -73,7 +73,7 @@
                         @forelse($supplier->supplies->take(20) as $supply)
                         <tr class="hover:bg-white/5 transition-colors">
                             <td class="py-3 px-4">
-                                <div class="font-medium text-white">{{ $supply->created_at->format('Y-m-d H:i') }}</div>
+                                <div class="font-medium text-white">{{ $supply->created_at->translatedFormat('Y-m-d H:i') }}</div>
                                 <div class="text-xs text-slate-500">{{ __('Day ID:') }} {{ $supply->work_day_id }}</div>
                             </td>
                             <td class="py-3 px-4 text-emerald-400">

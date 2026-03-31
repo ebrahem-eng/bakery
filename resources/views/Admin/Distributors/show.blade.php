@@ -172,7 +172,7 @@
                         @forelse($history as $activity)
                         <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                             <td class="p-4 text-xs text-slate-400 font-mono">{{ $activity['index'] }}</td>
-                            <td class="p-4 text-xs text-slate-500 whitespace-nowrap">{{ $activity['date']->format('Y-m-d H:i') }}</td>
+                            <td class="p-4 text-xs text-slate-500 whitespace-nowrap">{{ $activity['date']->translatedFormat('Y-m-d H:i') }}</td>
                             <td class="p-4">
                                 <span class="px-2 py-0.5 bg-{{ $activity['color'] }}-500/10 text-{{ $activity['color'] }}-500 border border-{{ $activity['color'] }}-500/20 rounded-md text-[10px] font-bold uppercase whitespace-nowrap">
                                     {{ __($activity['type']) }}

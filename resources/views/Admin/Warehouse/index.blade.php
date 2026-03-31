@@ -76,8 +76,8 @@
                             @foreach($recentSupplies as $supply)
                                 <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                                     <td class="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
-                                        {{ $supply->created_at->format('Y-m-d') }}
-                                        <p class="text-[10px] opacity-50">{{ $supply->created_at->format('h:i A') }}</p>
+                                        {{ $supply->created_at->translatedFormat('Y-m-d') }}
+                                        <p class="text-[10px] opacity-50">{{ $supply->created_at->translatedFormat('h:i A') }}</p>
                                     </td>
                                     <td class="px-4 py-3">
                                         <span class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ $supply->category->name }}</span>
@@ -113,14 +113,14 @@
                             @foreach($recentConsumptions as $cons)
                                 <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                                     <td class="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
-                                        {{ $cons->created_at->format('Y-m-d') }}
-                                        <p class="text-[10px] opacity-50">{{ $cons->created_at->format('h:i A') }}</p>
+                                        {{ $cons->created_at->translatedFormat('Y-m-d') }}
+                                        <p class="text-[10px] opacity-50">{{ $cons->created_at->translatedFormat('h:i A') }}</p>
                                     </td>
                                     <td class="px-4 py-3">
                                         <span class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ $cons->category->name }}</span>
                                     </td>
                                     <td class="px-4 py-3 text-xs text-slate-600 dark:text-slate-400">
-                                        #{{ $cons->work_day_id }} ({{ $cons->workDay->start_time->format('M j') }})
+                                        #{{ $cons->work_day_id }} ({{ $cons->workDay->start_time->translatedFormat('M j') }})
                                     </td>
                                     <td class="px-4 py-3 text-right">
                                         <span class="text-sm font-black text-red-600 dark:text-red-400">-{{ number_format($cons->quantity, 2) }}</span>

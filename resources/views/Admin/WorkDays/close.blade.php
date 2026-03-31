@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ __('End of Day') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">{{ __('Settlement') }}</span></h1>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
             {{ __('Work Day started:') }} 
-            <span class="font-bold text-amber-600 dark:text-amber-500">{{ $workDay->start_time->format('Y-m-d h:i A') }}</span>
+            <span class="font-bold text-amber-600 dark:text-amber-500">{{ $workDay->start_time->translatedFormat('Y-m-d h:i A') }}</span>
         </p>
     </div>
     <a href="{{ route('admin.work_days.index') }}" class="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium flex items-center">
@@ -44,7 +44,7 @@
                         <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/50 dark:bg-black/20 border border-amber-500/30 rounded-lg">
                             <div class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
                             <span class="text-xs font-bold text-slate-700 dark:text-slate-200">{{ $as->worker->first_name }}</span>
-                            <span class="text-[10px] text-slate-500">{{ $as->check_in->format('h:i A') }}</span>
+                            <span class="text-[10px] text-slate-500">{{ $as->check_in->translatedFormat('h:i A') }}</span>
                         </div>
                     @endforeach
                 </div>

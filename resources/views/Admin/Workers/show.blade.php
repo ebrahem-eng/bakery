@@ -120,7 +120,7 @@
                     <td class="py-4 px-6">
                         <div class="text-slate-900 dark:text-white font-bold opacity-80 flex items-center gap-2 whitespace-nowrap">
                              <span class="w-1.5 h-1.5 rounded-full {{ $item['type'] == 'wage' ? 'bg-emerald-500' : ($item['type'] == 'deduction' ? 'bg-amber-500' : 'bg-sky-500') }}"></span>
-                             {{ $item['date'] ? $item['date']->format('Y-m-d H:i') : '-' }}
+                             {{ $item['date'] ? $item['date']->translatedFormat('Y-m-d H:i') : '-' }}
                         </div>
                         <div class="text-[10px] text-slate-400 uppercase mt-0.5">{{ $item['date'] ? $item['date']->translatedFormat('l') : '' }}</div>
                     </td>

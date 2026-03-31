@@ -9,7 +9,7 @@
         </a>
         <div>
             <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ __('Activity Detail') }} #{{ $activity->id }}</h1>
-            <p class="text-sm text-slate-500 mt-1">{{ $activity->created_at->format('Y-m-d h:i:s A') }} — {{ $activity->created_at->diffForHumans() }}</p>
+            <p class="text-sm text-slate-500 mt-1">{{ $activity->created_at->translatedFormat('Y-m-d h:i:s A') }} — {{ $activity->created_at->diffForHumans() }}</p>
         </div>
     </div>
 

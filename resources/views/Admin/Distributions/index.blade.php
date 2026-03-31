@@ -8,7 +8,7 @@
         <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Sales &') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">{{ __('Distributions') }}</span></h1>
         <p class="text-sm text-slate-400">
             {{ __('Managing outbound supply for Active Work Day:') }} 
-            <span class="font-bold text-amber-500">{{ $activeWorkDay->start_time->format('Y-m-d h:i A') }}</span>
+            <span class="font-bold text-amber-500">{{ $activeWorkDay->start_time->translatedFormat('Y-m-d h:i A') }}</span>
         </p>
     </div>
 </div>

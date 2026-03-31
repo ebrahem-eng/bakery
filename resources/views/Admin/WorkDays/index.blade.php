@@ -84,8 +84,8 @@
                     data-status="{{ $day->status }}"
                     x-show="isVisible($el, {{ $i }})" x-transition>
                     <td class="py-3 px-4 font-medium text-slate-900 dark:text-white">{{ $day->id }}</td>
-                    <td class="py-3 px-4">{{ $day->start_time->format('Y-m-d H:i') }}</td>
-                    <td class="py-3 px-4">{{ $day->end_time ? $day->end_time->format('Y-m-d H:i') : '--' }}</td>
+                    <td class="py-3 px-4">{{ $day->start_time->translatedFormat('Y-m-d H:i') }}</td>
+                    <td class="py-3 px-4">{{ $day->end_time ? $day->end_time->translatedFormat('Y-m-d H:i') : '--' }}</td>
                     <td class="py-3 px-4">
                         @if($day->status == 'active')
                             <span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded-md border border-emerald-500/20 animate-pulse">{{ __('Active') }}</span>

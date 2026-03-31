@@ -4,7 +4,7 @@
 <div class="mb-8 flex items-center justify-between">
     <div>
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-1">{{ __('Supply Invoice Details') }} <span class="text-emerald-500 dark:text-emerald-400">#{{ $supply->id }}</span></h1>
-        <p class="text-sm text-slate-500">{{ __('Work Day:') }} {{ $supply->work_day_id }} | {{ $supply->created_at->format('M d, Y h:i A') }}</p>
+        <p class="text-sm text-slate-500">{{ __('Work Day:') }} {{ $supply->work_day_id }} | {{ $supply->created_at->translatedFormat('M d, Y h:i A') }}</p>
     </div>
     <a href="{{ route('admin.supplies.index') }}" class="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors text-sm font-medium flex items-center">
         <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'ml-1 rotate-180' : 'mr-1' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">

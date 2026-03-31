@@ -73,7 +73,7 @@
                     data-paid="{{ $supply->paid_amount >= $supply->total_cost ? 'paid' : 'unpaid' }}"
                     x-show="isVisible($el, {{ $i }})" x-transition>
                     <td class="py-3 px-4">
-                        <div class="font-medium text-slate-900 dark:text-white">{{ $supply->created_at->format('M d, Y h:i A') }}</div>
+                        <div class="font-medium text-slate-900 dark:text-white">{{ $supply->created_at->translatedFormat('M d, Y h:i A') }}</div>
                         <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold tracking-wider uppercase mt-1">{{ __('Day ID:') }} {{ $supply->work_day_id }}</div>
                     </td>
                     <td class="py-3 px-4">

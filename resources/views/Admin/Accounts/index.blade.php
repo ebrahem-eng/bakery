@@ -257,7 +257,7 @@
             <tbody class="divide-y divide-slate-100 dark:divide-white/5">
                 @forelse($paginatedTransactions as $txn)
                 <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                    <td class="p-4 text-xs text-slate-500 whitespace-nowrap">{{ $txn['date'] ? $txn['date']->format('m/d H:i') : '-' }}</td>
+                    <td class="p-4 text-xs text-slate-500 whitespace-nowrap">{{ $txn['date'] ? $txn['date']->translatedFormat('m/d H:i') : '-' }}</td>
                     <td class="p-4">
                         @if($txn['type'] === 'income')
                             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase">↑ {{ __('Income') }}</span>

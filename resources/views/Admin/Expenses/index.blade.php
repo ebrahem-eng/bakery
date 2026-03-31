@@ -6,7 +6,7 @@
         <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Daily Expenses') }}</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400">
             {{ __('Track operational outgoings for Active Work Day:') }} 
-            <span class="font-bold text-amber-600 dark:text-amber-500">{{ $activeWorkDay->start_time->format('Y-m-d h:i A') }}</span>
+            <span class="font-bold text-amber-600 dark:text-amber-500">{{ $activeWorkDay->start_time->translatedFormat('Y-m-d h:i A') }}</span>
         </p>
     </div>
     @can('create expenses')

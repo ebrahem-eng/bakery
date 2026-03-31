@@ -127,8 +127,8 @@
                     <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                         <td class="p-4 text-xs text-slate-400 font-mono">{{ $activity->id }}</td>
                         <td class="p-4 whitespace-nowrap">
-                            <div class="text-xs font-medium text-slate-900 dark:text-white">{{ $activity->created_at->format('Y-m-d') }}</div>
-                            <div class="text-[10px] text-slate-500 mt-0.5">{{ $activity->created_at->format('h:i:s A') }}</div>
+                            <div class="text-xs font-medium text-slate-900 dark:text-white">{{ $activity->created_at->translatedFormat('Y-m-d') }}</div>
+                            <div class="text-[10px] text-slate-500 mt-0.5">{{ $activity->created_at->translatedFormat('h:i:s A') }}</div>
                         </td>
                         <td class="p-4">
                             @php

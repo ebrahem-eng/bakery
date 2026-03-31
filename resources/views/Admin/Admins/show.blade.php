@@ -116,7 +116,7 @@
             <div class="space-y-4">
                 <div class="flex justify-between items-center text-xs">
                     <span class="text-slate-500">{{ __('Created At') }}</span>
-                    <span class="text-slate-900 dark:text-white font-medium">{{ $admin->created_at->format('Y-m-d') }}</span>
+                    <span class="text-slate-900 dark:text-white font-medium">{{ $admin->created_at->translatedFormat('Y-m-d') }}</span>
                 </div>
                 <div class="flex justify-between items-center text-xs">
                     <span class="text-slate-500">{{ __('Last Updated') }}</span>
