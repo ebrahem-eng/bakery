@@ -266,23 +266,65 @@
                 </h3>
             </div>
             
-            <div class="p-5">
-                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-                    @foreach($materialCategories as $cat)
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center px-1">
-                            <label class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">{{ $cat->name }}</label>
-                            <span class="px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-500 border border-amber-500/20 rounded-full text-[8px] font-black uppercase whitespace-nowrap">
-                                {{ __('Available') }}: {{ number_format($cat->available, 1) }}
-                            </span>
-                        </div>
-                        <input type="number" step="0.01" name="consumptions[{{ $cat->id }}]" 
-                            class="w-full px-4 py-3 bg-slate-100/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all font-bold placeholder-slate-400/50"
-                            placeholder="0.00">
+            <div class="p-5 space-y-6">
+                @foreach($materialCategories as $cat)
+                <div class="p-4 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/5">
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="text-sm text-slate-700 dark:text-slate-300 font-bold">{{ $cat->name }}</label>
+                        <span class="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-500 border border-amber-500/20 rounded-full text-[10px] font-black uppercase whitespace-nowrap">
+                            {{ __('Available') }}: {{ number_format($cat->available, ($cat->unit === 'molds' ? 0 : 1)) }} {{ __($cat->unit ?? 'units') }}
+                        </span>
                     </div>
-                    @endforeach
+
+                    @if($cat->input_mode === 'bags_weight')
+                        {{-- FLOUR: bags × weight --}}
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3" x-data="{
+                            bags: 0, weight: 50,
+                            get total() { return this.bags * this.weight; }
+                        }">
+                            <div>
+                                <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">{{ __('Bags Used') }}</label>
+                                <input type="number" step="1" min="0" x-model.number="bags"
+                                    class="w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all font-bold placeholder-slate-400/50"
+                                    placeholder="0">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">{{ __('Weight per Bag (kg)') }}</label>
+                                <input type="number" step="0.01" min="0" x-model.number="weight"
+                                    class="w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all font-bold placeholder-slate-400/50"
+                                    placeholder="50">
+                            </div>
+                            <div class="flex flex-col justify-end">
+                                <div class="text-[10px] text-emerald-500 uppercase font-bold mb-1">{{ __('Total kg') }}</div>
+                                <div class="text-lg font-black text-emerald-500 font-mono" x-text="total.toFixed(2) + ' kg'"></div>
+                            </div>
+                            <input type="hidden" name="consumptions[{{ $cat->id }}]" :value="total">
+                        </div>
+
+                    @elseif($cat->input_mode === 'cartons_molds')
+                        {{-- YEAST: molds dispensed --}}
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">{{ __('Molds Dispensed') }}</label>
+                            <input type="number" step="1" min="0" name="consumptions[{{ $cat->id }}]"
+                                class="w-full md:w-1/2 px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all font-bold placeholder-slate-400/50"
+                                placeholder="0">
+                        </div>
+
+                    @else
+                        {{-- SALT / DIESEL: simple quantity --}}
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">
+                                {{ $cat->unit === 'liters' ? __('Liters Dispensed') : __('kg Dispensed') }}
+                            </label>
+                            <input type="number" step="0.01" min="0" name="consumptions[{{ $cat->id }}]"
+                                class="w-full md:w-1/2 px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all font-bold placeholder-slate-400/50"
+                                placeholder="0.00">
+                        </div>
+                    @endif
                 </div>
-                <p class="mt-4 text-[10px] text-slate-400 italic flex items-center gap-2">
+                @endforeach
+
+                <p class="mt-2 text-[10px] text-slate-400 italic flex items-center gap-2">
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     {{ __('Material usage will be subtracted from current stock levels.') }}
                 </p>

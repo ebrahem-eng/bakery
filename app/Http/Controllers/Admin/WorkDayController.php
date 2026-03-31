@@ -65,6 +65,7 @@ class WorkDayController extends Controller
 
         $workDay->load([
             'supplies.currency',
+            'supplies.category',
             'workerShifts.worker',
             'workerShifts.currency',
             'workerTransactions.currency',
@@ -93,10 +94,15 @@ class WorkDayController extends Controller
         $netSales = $totalSales - $totalRefunds;
 
         // ── Expense Breakdown ─────────────────────────────────────────
-        $suppliesCost = $workDay->supplies->sum(fn($s) => Currency::convertAmount($s->total_cost, $s->exchange_rate));
-        $unloadingFees = $workDay->supplies->where('unloading_fee_payer', 'bakery')->reduce(function ($carry, $s) {
-            return $carry + Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate);
-        }, 0);
+        $suppliesCost = $workDay->supplies
+            ->filter(fn($s) => $s->category?->track_in_daily_close ?? true)
+            ->sum(fn($s) => Currency::convertAmount($s->total_cost, $s->exchange_rate));
+            
+        $unloadingFees = $workDay->supplies
+            ->filter(fn($s) => ($s->category?->track_in_daily_close ?? true) && $s->unloading_fee_payer === 'bakery')
+            ->reduce(function ($carry, $s) {
+                return $carry + Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate);
+            }, 0);
         
         // Use actual recorded transactions instead of theoretical shift wages
         $workerPayments = $workDay->workerTransactions
@@ -144,10 +150,10 @@ class WorkDayController extends Controller
         });
 
         // ── Raw Material Categories for Consumption ──────────────────
-        $materialNames = ['طحين', 'مازوت', 'خميرة', 'ملح'];
-        $materialCategories = Category::whereIn('name', $materialNames)
+        $materialCategories = Category::where('track_in_daily_close', true)
+            ->where('is_active', true)
             ->withSum(['supplies as total_in' => function ($query) {
-                // Future: filter supplies by work_day_id if needed, but categories usually track global stock
+                // Global stock tracking
             }], 'quantity')
             ->withSum('consumptions as total_out', 'quantity')
             ->get()
