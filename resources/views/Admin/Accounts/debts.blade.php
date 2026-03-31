@@ -1,6 +1,7 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+@extends('layouts.Admin.App')
+
+@section('content')
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-black bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent flex items-center gap-3">
                     <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -18,7 +19,7 @@
                 </a>
             </div>
         </div>
-    </x-slot>
+    </div>
 
     <div class="space-y-6" x-data="debtManager()">
         {{-- Summaries --}}
@@ -252,4 +253,4 @@
             }))
         })
     </script>
-</x-app-layout>
+@endsection
