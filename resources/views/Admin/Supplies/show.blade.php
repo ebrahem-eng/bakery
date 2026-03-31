@@ -81,18 +81,30 @@
             
             <div class="flex justify-between items-end mb-4">
                 <div class="text-xs text-slate-500 dark:text-slate-400">{{ __('Unit Price') }}</div>
-                <div class="text-sm font-bold text-slate-900 dark:text-white font-mono">{{ number_format($supply->unit_price, 2) }} {{ $currencyCode }}</div>
+                <div class="text-right">
+                    <div class="text-sm font-bold text-slate-900 dark:text-white font-mono">{{ number_format($supply->unit_price, 2) }} {{ $supply->currency->code }}</div>
+                </div>
             </div>
             
             <div class="flex justify-between items-end mb-4">
                 <div class="text-xs text-slate-500 dark:text-slate-400">{{ __('Total Invoice Cost') }}</div>
-                <div class="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">{{ number_format($supply->total_cost, 2) }} {{ $currencyCode }}</div>
+                <div class="text-right">
+                    <div class="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">{{ number_format($supply->total_cost, 2) }} {{ $supply->currency->code }}</div>
+                    @if($supply->currency->code !== $currencyCode)
+                        <div class="text-[10px] text-slate-400 font-mono">&approx; {{ number_format(\App\Models\Currency::convertAmount($supply->total_cost, $supply->exchange_rate), 0) }} {{ $currencyCode }}</div>
+                    @endif
+                </div>
             </div>
 
             <div class="flex justify-between items-end mb-6 pb-6 border-b border-slate-200 dark:border-white/5">
                 <div class="text-xs text-slate-500 dark:text-slate-400">{{ __('Amount Paid') }}</div>
-                <div class="text-sm font-bold {{ $supply->paid_amount < $supply->total_cost ? 'text-red-500 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400' }} font-mono">
-                    {{ number_format($supply->paid_amount, 2) }} {{ $currencyCode }}
+                <div class="text-right">
+                    <div class="text-sm font-bold {{ !$supply->is_fully_paid ? 'text-red-500 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400' }} font-mono">
+                        {{ number_format($supply->paid_amount, 2) }} {{ $supply->paidCurrency->code ?? $supply->currency->code }}
+                    </div>
+                    @if(($supply->paidCurrency->code ?? $supply->currency->code) !== $currencyCode)
+                        <div class="text-[10px] text-slate-400 font-mono">&approx; {{ number_format(\App\Models\Currency::convertAmount($supply->paid_amount, $supply->paid_exchange_rate), 0) }} {{ $currencyCode }}</div>
+                    @endif
                 </div>
             </div>
 

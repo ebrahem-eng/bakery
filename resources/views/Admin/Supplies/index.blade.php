@@ -70,7 +70,7 @@
                 @forelse($supplies as $i => $supply)
                 <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors table-row-item"
                     data-search="{{ mb_strtolower($supply->supplier->first_name . ' ' . $supply->supplier->last_name . ' ' . ($supply->category->name ?? '')) }}"
-                    data-paid="{{ $supply->paid_amount >= $supply->total_cost ? 'paid' : 'unpaid' }}"
+                    data-paid="{{ $supply->is_fully_paid ? 'paid' : 'unpaid' }}"
                     x-show="isVisible($el, {{ $i }})" x-transition>
                     <td class="py-3 px-4">
                         <div class="font-medium text-slate-900 dark:text-white">{{ $supply->created_at->translatedFormat('M d, Y h:i A') }}</div>
@@ -102,16 +102,30 @@
                                 <div class="text-[10px] text-amber-500 mt-1 font-bold">{{ $supply->bag_type }}</div>
                             @endif
                         @endif
-                        <div class="text-[11px] text-slate-500 mt-1">{{ __('At') }} {{ number_format($supply->unit_price, 2) }} {{ $currencyCode }} / {{ __($supply->category->input_mode === 'bags_weight' ? 'ton' : ($supply->category->input_mode === 'cartons_molds' ? 'carton' : ($supply->category->unit ?? 'unit'))) }}</div>
+                        <div class="text-[11px] text-slate-500 mt-1">
+                            {{ __('At') }} <span class="font-bold text-slate-700 dark:text-slate-300">{{ number_format($supply->unit_price, 2) }} {{ $supply->currency->code }}</span> / {{ __($supply->category->input_mode === 'bags_weight' ? 'ton' : ($supply->category->input_mode === 'cartons_molds' ? 'carton' : ($supply->category->unit ?? 'unit'))) }}
+                        </div>
                     </td>
                     <td class="py-3 px-4 text-right">
+                        {{-- Supply Native Total --}}
                         <div class="text-sm font-bold text-slate-900 dark:text-white font-mono">
-                            {{ number_format($supply->total_cost, 2) }} {{ $currencyCode }}
+                            {{ number_format($supply->total_cost, 2) }} {{ $supply->currency->code }}
                         </div>
-                        @if($supply->paid_amount < $supply->total_cost)
-                            <div class="text-[10px] text-red-500 mt-1 font-bold tracking-wider">{{ __('Unpaid:') }} {{ number_format($supply->total_cost - $supply->paid_amount, 2) }} {{ $currencyCode }}</div>
+                        
+                        {{-- System Currency Conversion (if different) --}}
+                        @if($supply->currency->code !== $currencyCode)
+                        <div class="text-[10px] text-slate-400 mt-0.5 font-mono">
+                            (&approx; {{ number_format(\App\Models\Currency::convertAmount($supply->total_cost, $supply->exchange_rate), 0) }} {{ $currencyCode }})
+                        </div>
+                        @endif
+
+                        {{-- Paid Status --}}
+                        @if(!$supply->is_fully_paid)
+                            <div class="text-[10px] text-red-500 mt-2 font-bold tracking-wider">
+                                {{ __('Unpaid:') }} {{ number_format($supply->unpaid_amount, 2) }} {{ $supply->currency->code }}
+                            </div>
                         @else
-                            <div class="text-[10px] text-emerald-500 mt-1 font-bold tracking-wider">{{ __('Fully Paid') }}</div>
+                            <div class="text-[10px] text-emerald-500 mt-2 font-bold tracking-wider">{{ __('Fully Paid') }}</div>
                         @endif
                         @if($supply->unloading_fee > 0)
                             <div class="text-[10px] text-amber-600 dark:text-amber-500 mt-1">{{ __('+ Unloading:') }} {{ number_format($supply->unloading_fee, 2) }} {{ $supply->unloadingFeeCurrency->code ?? '' }}</div>
