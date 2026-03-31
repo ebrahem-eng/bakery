@@ -179,6 +179,10 @@
                     <span class="font-bold text-slate-900 dark:text-white">{{ number_format($cashToSuppliers, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
                 </div>
                 <div class="flex justify-between text-xs">
+                    <span class="text-slate-500">{{ __('Supplier Debts Settled') }}</span>
+                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($cashToSupplierDebts, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
+                </div>
+                <div class="flex justify-between text-xs">
                     <span class="text-slate-500">{{ __('Freight & Unloading') }}</span>
                     <span class="font-bold text-slate-900 dark:text-white">{{ number_format($cashToFreight, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
                 </div>

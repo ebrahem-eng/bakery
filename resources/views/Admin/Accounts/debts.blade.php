@@ -2,26 +2,25 @@
 
 @section('content')
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h2 class="text-2xl font-black bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent flex items-center gap-3">
-                    <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {{ __('Outstanding Debts (Payables)') }}
-                </h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ __('Monitor & manage unpaid supplier balances') }}</p>
-            </div>
-            
-            <div>
-                <a href="{{ route('admin.accounts.index') }}" class="glass-btn px-4 py-2 rounded-xl text-sm font-medium flex items-center text-slate-700 dark:text-slate-300 hover:text-red-500 transition-colors">
-                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                    {{ __('Back to Accounts Dashboard') }}
-                </a>
-            </div>
+        <div>
+            <h2 class="text-2xl font-black bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent flex items-center gap-3">
+                <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {{ __('Outstanding Debts (Payables)') }}
+            </h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ __('Monitor & manage unpaid supplier balances') }}</p>
+        </div>
+        
+        <div>
+            <a href="{{ route('admin.accounts.index') }}" class="glass-btn px-4 py-2 rounded-xl text-sm font-medium flex items-center text-slate-700 dark:text-slate-300 hover:text-red-500 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                {{ __('Back to Accounts Dashboard') }}
+            </a>
         </div>
     </div>
 
-    <div class="space-y-6" x-data="debtManager()">
+    <div class="space-y-6">
         {{-- Summaries --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="glass-panel rounded-2xl border border-red-500/30 p-5 relative overflow-hidden flex flex-col justify-center">
@@ -53,7 +52,7 @@
         </div>
 
         {{-- Table --}}
-        <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
+        <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5">
             <div class="overflow-x-auto">
                 <table class="w-full text-left whitespace-nowrap">
                     <thead>
@@ -113,9 +112,9 @@
                                     @endif
                                 </td>
                                 <td class="py-3 px-4 text-center">
-                                    <button @click="openPaymentModal({{ $supply->id }}, '{{ number_format($supply->unpaid_amount, 2, '.', '') }}', {{ $supply->currency_id }})" class="inline-flex items-center justify-center p-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg transition-colors border border-emerald-500/20" title="{{ __('Make Payment') }}">
+                                    <a href="{{ route('admin.supplies.pay', $supply->id) }}" class="inline-flex items-center justify-center p-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg transition-colors border border-emerald-500/20" title="{{ __('Settle Invoice') }}">
                                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    </button>
+                                    </a>
                                 </td>
                             </tr>
                         @empty
@@ -131,126 +130,12 @@
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        {{-- Payment Modal --}}
-        <div x-show="isPaymentModalOpen" 
-            class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-black/50 backdrop-blur-sm"
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            x-cloak>
-            
-            <div class="relative w-full max-w-md p-4" @click.away="closePaymentModal()">
-                <div class="relative bg-white dark:bg-[#0f172a] rounded-2xl shadow-xl border border-slate-200 dark:border-white/10" 
-                    x-transition:enter="transition ease-out duration-300"
-                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave="transition ease-in duration-200"
-                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-                    
-                    <div class="flex items-center justify-between p-5 border-b border-slate-200 dark:border-white/5">
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <span class="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            </span>
-                            {{ __('Register Debt Payment') }}
-                        </h3>
-                        <button type="button" @click="closePaymentModal()" class="text-slate-400 hover:text-slate-500 dark:hover:text-white transition-colors">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
-                    </div>
-
-                    <form :action="paymentUrl" method="POST" class="p-5">
-                        @csrf
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Payment Amount') }}</label>
-                                <div class="flex gap-2">
-                                    <input type="number" step="0.01" name="payment_amount" x-model="paymentAmount" required class="glass-input block w-full px-4 py-2.5 rounded-xl text-lg font-black text-slate-900 dark:text-emerald-400 border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-black/40 focus:ring-emerald-500">
-                                    <select name="payment_currency_id" x-model="paymentCurrencyId" @change="updateExchangeRate()" class="glass-input w-1/3 px-3 py-2.5 rounded-xl text-sm font-bold border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-black/40">
-                                        <template x-for="c in currencies" :key="c.id">
-                                            <option :value="c.id" x-text="c.code"></option>
-                                        </template>
-                                    </select>
-                                </div>
-                                <div class="text-[10px] text-slate-400 mt-1 flex justify-between">
-                                    <span>{{ __('Remaining Debt:') }} <span class="font-bold text-slate-500 dark:text-slate-300" x-text="targetDebtAmount"></span></span>
-                                    <button type="button" @click="payFullAmount" class="font-bold text-emerald-500 hover:underline">{{ __('Pay Full') }}</button>
-                                </div>
-                            </div>
-
-                            <div x-show="!sypIds.includes(parseInt(paymentCurrencyId))" x-transition>
-                                <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Exchange Rate') }}</label>
-                                <input type="number" step="0.01" name="payment_exchange_rate" x-model="paymentExchangeRate" class="glass-input block w-full px-4 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-black/40">
-                            </div>
-                        </div>
-
-                        <div class="mt-6 flex justify-end gap-3">
-                            <button type="button" @click="closePaymentModal()" class="px-5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl transition-colors">{{ __('Cancel') }}</button>
-                            <button type="submit" class="px-5 py-2.5 text-sm font-bold text-emerald-900 bg-emerald-400 hover:bg-emerald-300 rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                                {{ __('Confirm Payment') }}
-                            </button>
-                        </div>
-                    </form>
+            @if($supplies->hasPages())
+                <div class="p-4 border-t border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-black/20">
+                    {{ $supplies->links() }}
                 </div>
-            </div>
+            @endif
         </div>
     </div>
-
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('debtManager', () => ({
-                isPaymentModalOpen: false,
-                paymentUrl: '',
-                paymentAmount: '',
-                paymentCurrencyId: '',
-                paymentExchangeRate: 1,
-                targetDebtAmount: 0,
-                targetCurrencyId: null,
-                
-                currencies: @json($currencies),
-                sypIds: [],
-
-                init() {
-                    this.sypIds = this.currencies.filter(c => c.code.includes('SYP')).map(c => c.id);
-                },
-
-                openPaymentModal(supplyId, unpaidAmount, supplyCurrencyId) {
-                    this.paymentUrl = `{{ url('admin/supplies') }}/${supplyId}/pay`;
-                    this.targetDebtAmount = unpaidAmount;
-                    this.targetCurrencyId = supplyCurrencyId;
-                    
-                    // Default payment to the supply's native currency
-                    this.paymentCurrencyId = supplyCurrencyId;
-                    this.updateExchangeRate();
-                    this.paymentAmount = '';
-                    
-                    this.isPaymentModalOpen = true;
-                },
-
-                closePaymentModal() {
-                    this.isPaymentModalOpen = false;
-                },
-
-                updateExchangeRate() {
-                    let cur = this.currencies.find(c => c.id == this.paymentCurrencyId);
-                    if (cur) {
-                        this.paymentExchangeRate = cur.exchange_rate;
-                    }
-                },
-
-                payFullAmount() {
-                    this.paymentCurrencyId = this.targetCurrencyId;
-                    this.updateExchangeRate();
-                    this.paymentAmount = this.targetDebtAmount;
-                }
-            }))
-        })
-    </script>
 @endsection

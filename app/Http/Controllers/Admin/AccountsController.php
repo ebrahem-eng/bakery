@@ -85,13 +85,14 @@ class AccountsController extends Controller
 
         // Cash Out
         $cashToSuppliers = Supply::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('paid_amount'));
+        $cashToSupplierDebts = \App\Models\SupplierPayment::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('amount', 'exchange_rate'));
         $cashToFreight = Supply::whereIn('work_day_id', $workDayIds)->where('unloading_fee_payer', 'bakery')->sum(Currency::getSelectRaw('unloading_fee', 'unloading_fee_exchange_rate'));
         
         $cashToWages = $workerWages;
         $cashToAdvances = $workerAdvances;
         $cashToAllowances = $workerAllowances;
         $cashToExpenses = $operationalExpenses;
-        $totalCashOut = $cashToSuppliers + $cashToFreight + $cashToWages + $cashToAdvances + $cashToAllowances + $cashToExpenses;
+        $totalCashOut = $cashToSuppliers + $cashToSupplierDebts + $cashToFreight + $cashToWages + $cashToAdvances + $cashToAllowances + $cashToExpenses;
 
         $netCashFlow = $totalCashIn - $totalCashOut;
 
@@ -179,12 +180,26 @@ class AccountsController extends Controller
                 'work_day_id' => $t->work_day_id,
             ]);
 
+        // Debt Settlement entries (Cash Out)
+        $debtPaymentEntries = \App\Models\SupplierPayment::whereIn('work_day_id', $workDayIds)
+            ->with(['supply.supplier', 'workDay'])
+            ->get()
+            ->map(fn ($sp) => [
+                'date' => $sp->created_at,
+                'type' => 'expense',
+                'category' => __('Debt Settlement'),
+                'description' => ($sp->supply->supplier->first_name ?? '').' '.($sp->supply->supplier->last_name ?? '').' - '.__('Invoice #').$sp->supply_id,
+                'amount' => Currency::convertAmount($sp->amount, $sp->exchange_rate),
+                'work_day_id' => $sp->work_day_id,
+            ]);
+
         $transactions = $distributions
             ->concat($supplyEntries)
             ->concat($wageEntries)
             ->concat($expenseEntries)
             ->concat($refundEntries)
-            ->concat($paymentEntries);
+            ->concat($paymentEntries)
+            ->concat($debtPaymentEntries);
 
         // Apply type filter
         if ($typeFilter !== 'all') {
@@ -285,7 +300,7 @@ class AccountsController extends Controller
             'netProfit', 'netMargin',
             // Cash Flow
             'cashFromDistributors', 'cashFromShifts', 'totalCashIn',
-            'cashToSuppliers', 'cashToFreight', 'cashToWages', 'cashToAdvances', 'cashToAllowances', 'cashToExpenses', 'totalCashOut',
+            'cashToSuppliers', 'cashToSupplierDebts', 'cashToFreight', 'cashToWages', 'cashToAdvances', 'cashToAllowances', 'cashToExpenses', 'totalCashOut',
             'netCashFlow', 'carriedOverCash',
             // Ledger
             'paginatedTransactions', 'typeFilter',
@@ -300,8 +315,7 @@ class AccountsController extends Controller
         $currencyCode = $defaultCurrency->code ?? 'SYP';
 
         // Load all supplies that aren't fully paid. We sort so older debts or those with closest due dates appear first.
-        // For performance in typical bakeries, loading and filtering unpaid supplies is perfectly efficient.
-        $supplies = Supply::with(['supplier', 'category', 'currency', 'paidCurrency'])
+        $allUnpaidSupplies = Supply::with(['supplier', 'category', 'currency', 'paidCurrency'])
             ->orderByRaw('due_date IS NULL ASC, due_date ASC')
             ->orderBy('id', 'desc')
             ->get()
@@ -311,7 +325,7 @@ class AccountsController extends Controller
         $overdueAmount = 0;
         $dueSoonAmount = 0;
 
-        foreach ($supplies as $s) {
+        foreach ($allUnpaidSupplies as $s) {
             $costInBase = Currency::convertAmount($s->total_cost, $s->exchange_rate);
             $paidInBase = Currency::convertAmount($s->paid_amount, $s->paid_exchange_rate);
             $unpaid = max(0, $costInBase - $paidInBase);
@@ -327,9 +341,18 @@ class AccountsController extends Controller
             }
         }
 
-        $currencies = Currency::all();
+        // Paginate the collection manually
+        $perPage = 15;
+        $page = $request->get('page', 1);
+        $supplies = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allUnpaidSupplies->forPage($page, $perPage),
+            $allUnpaidSupplies->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
-        return view('Admin.Accounts.debts', compact('supplies', 'currencyCode', 'totalOutstanding', 'overdueAmount', 'dueSoonAmount', 'currencies'));
+        return view('Admin.Accounts.debts', compact('supplies', 'currencyCode', 'totalOutstanding', 'overdueAmount', 'dueSoonAmount'));
     }
 
     private function getDateRange(string $period): array

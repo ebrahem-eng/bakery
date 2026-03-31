@@ -57,7 +57,12 @@ class Supply extends Model
         $paidInBase = Currency::convertAmount($this->paid_amount ?? 0, $this->paid_exchange_rate ?? 1);
         $costInBase = Currency::convertAmount($this->total_cost ?? 0, $this->exchange_rate ?? 1);
 
-        $unpaidInBase = max(0, $costInBase - $paidInBase);
+        $laterPaymentsBase = 0;
+        foreach ($this->payments as $payment) {
+            $laterPaymentsBase += Currency::convertAmount($payment->amount, $payment->exchange_rate);
+        }
+
+        $unpaidInBase = max(0, $costInBase - ($paidInBase + $laterPaymentsBase));
         
         // Convert difference back to native supply currency for standardized display tracking
         $baseToNativeRate = Currency::convertAmount(1, $this->exchange_rate ?? 1);
@@ -106,5 +111,10 @@ class Supply extends Model
     public function currency()
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(SupplierPayment::class, 'supply_id');
     }
 }

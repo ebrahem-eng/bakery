@@ -128,6 +128,16 @@ class SupplyController extends Controller
         return redirect()->route('admin.supplies.index')->with('success', __('Supply registered and mapped securely into the Active Work Day ledger.'));
     }
 
+    public function showPaymentForm(Supply $supply)
+    {
+        $supply->load(['supplier', 'category', 'currency', 'paidCurrency']);
+        $currencies = \App\Models\Currency::all();
+        $defaultCurrency = \App\Models\Currency::where('is_default', true)->first();
+        $currencyCode = $defaultCurrency->code ?? 'SYP';
+
+        return view('Admin.Supplies.pay', compact('supply', 'currencies', 'currencyCode'));
+    }
+
     public function registerPayment(Request $request, Supply $supply)
     {
         $request->validate([
@@ -136,22 +146,26 @@ class SupplyController extends Controller
             'payment_exchange_rate' => 'required|numeric|min:0.01',
         ]);
 
-        // Convert the incoming payment into the system's base currency standard
-        $paymentAmountInBase = \App\Models\Currency::convertAmount($request->payment_amount, $request->payment_exchange_rate);
-        
-        // Convert that base back into the supply's inherently tracked `paid_currency_id` scale
-        $paymentInSupplyPaidCurrency = $paymentAmountInBase / \App\Models\Currency::convertAmount(1, $supply->paid_exchange_rate);
-
-        $supply->paid_amount += $paymentInSupplyPaidCurrency;
-        
-        // If the entire debt is essentially paid within a 1 currency unit rounding error
-        if ($supply->unpaid_amount <= 1) {
-            $supply->paid_amount = \App\Models\Currency::convertAmount($supply->total_cost, $supply->exchange_rate) / \App\Models\Currency::convertAmount(1, $supply->paid_exchange_rate);
-            $supply->due_date = null; // Cleared if fully paid
+        $activeWorkDay = \App\Models\WorkDay::where('status', 'active')->first();
+        if (!$activeWorkDay) {
+            return redirect()->back()->with('error_message', __('No active work day to log payment.'));
         }
 
-        $supply->save();
+        \App\Models\SupplierPayment::create([
+            'supply_id' => $supply->id,
+            'work_day_id' => $activeWorkDay->id,
+            'admin_id' => auth()->id(),
+            'amount' => $request->payment_amount,
+            'currency_id' => $request->payment_currency_id,
+            'exchange_rate' => $request->payment_exchange_rate,
+        ]);
 
-        return redirect()->back()->with('success', __('Payment logged and linked to the supplier balance.'));
+        // If the entire debt is essentially paid within a 1 currency unit rounding error
+        if ($supply->unpaid_amount <= 1) {
+            $supply->due_date = null; // Cleared if fully paid
+            $supply->save();
+        }
+
+        return redirect()->route('admin.accounts.debts')->with('success', __('Payment logged and linked to the supplier balance.'));
     }
 }

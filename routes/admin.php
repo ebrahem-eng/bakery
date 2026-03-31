@@ -63,7 +63,8 @@ Route::group(['middleware' => ['admin.auth']], function () {
     // ── Supplies (Purchases) ───────────────────────────────────────────
     Route::group(['middleware' => ['permission:view supplies,admin']], function () {
         Route::resource('supplies', SupplyController::class)->except(['edit', 'update', 'destroy']);
-        Route::post('supplies/{supply}/pay', [SupplyController::class, 'registerPayment'])->name('supplies.pay');
+        Route::get('supplies/{supply}/pay', [SupplyController::class, 'showPaymentForm'])->name('supplies.pay');
+        Route::post('supplies/{supply}/pay', [SupplyController::class, 'registerPayment'])->name('supplies.pay.submit');
     });
 
     // ── Warehouse ──────────────────────────────────────────────────────
