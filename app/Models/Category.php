@@ -27,4 +27,9 @@ class Category extends Model
     {
         return $this->hasMany(Consumption::class);
     }
+
+    public function inventoryItems()
+    {
+        return $this->hasMany(InventoryItem::class);
+    }
 }

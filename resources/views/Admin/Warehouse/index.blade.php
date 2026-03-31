@@ -6,9 +6,28 @@
 <div class="space-y-6">
     {{-- Header --}}
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{{ __('Warehouse Management') }}</h1>
-            <p class="text-sm text-slate-500 dark:text-slate-400">{{ __('Monitor raw material inventory and stock levels.') }}</p>
+        <div class="flex items-center gap-4">
+            <div class="hidden sm:flex w-12 h-12 bg-emerald-500/10 rounded-2xl items-center justify-center border border-emerald-500/20">
+                <i class="fas fa-boxes text-xl text-emerald-500"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{{ __('Warehouse & Inventory') }}</h1>
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    {{ __('Monitor raw material inventory and stock levels.') }}
+                    @if($totalWarehouseValue > 0)
+                        <span class="ml-2 px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded text-xs font-bold border border-emerald-500/20">
+                            {{ __('Est. Value:') }} {{ number_format($totalWarehouseValue, 2) }} {{ $currencyCode }}
+                        </span>
+                    @endif
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.warehouse.inventory.create') }}" class="glass-btn px-4 py-2.5 rounded-xl text-sm font-bold bg-amber-500 text-amber-950 hover:bg-amber-400 border border-amber-600 transition-all shadow-lg shadow-amber-500/20 flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                {{ __('Take Inventory') }}
+            </a>
         </div>
     </div>
 

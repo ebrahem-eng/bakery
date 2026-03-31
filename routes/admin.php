@@ -68,8 +68,11 @@ Route::group(['middleware' => ['admin.auth']], function () {
     });
 
     // ── Warehouse ──────────────────────────────────────────────────────
-    Route::get('warehouse', [WarehouseController::class, 'index'])
-        ->middleware('permission:view warehouse,admin')->name('warehouse.index');
+    Route::group(['prefix' => 'warehouse', 'as' => 'warehouse.', 'middleware' => ['permission:view warehouse,admin']], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\WarehouseController::class, 'index'])->name('index');
+        Route::get('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'create'])->name('inventory.create');
+        Route::post('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'store'])->name('inventory.store');
+    });
 
     // ── Distributions (Sales) ──────────────────────────────────────────
     Route::resource('distributors', DistributorController::class)->middleware('permission:view distributors,admin');
