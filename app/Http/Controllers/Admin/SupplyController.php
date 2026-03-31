@@ -56,7 +56,7 @@ class SupplyController extends Controller
             'supplies.*.category_id' => 'required|exists:categories,id',
             'supplies.*.currency_id' => 'required|exists:currencies,id',
             'supplies.*.exchange_rate' => 'required|numeric|min:0.01',
-            'supplies.*.quantity' => 'required|numeric|min:0.001',
+            'supplies.*.quantity' => 'required|numeric|min:0',
             'supplies.*.unit_price' => 'required|numeric|min:0',
             'supplies.*.paid_amount' => 'required|numeric|min:0',
             'supplies.*.unloading_fee' => 'required|numeric|min:0',
@@ -66,13 +66,31 @@ class SupplyController extends Controller
             'supplies.*.material_type_name' => 'nullable|string',
             'supplies.*.boxes_count' => 'nullable|numeric|min:1',
             'supplies.*.box_weight' => 'nullable|numeric|min:0.01',
+            'supplies.*.bags_count' => 'nullable|integer|min:1',
+            'supplies.*.bag_weight' => 'nullable|numeric|min:0.01',
+            'supplies.*.molds_per_carton' => 'nullable|integer|min:1',
+            'supplies.*.bag_type' => 'nullable|string',
             'supplies.*.notes' => 'nullable|string',
         ]);
 
         foreach ($request->supplies as $item) {
-            $total_cost = $item['quantity'] * $item['unit_price'];
-            $paid = min($item['paid_amount'], $total_cost);
+            $category = Category::find($item['category_id']);
+            $inputMode = $category->input_mode ?? 'simple_quantity';
 
+            // Calculate total_cost based on material type
+            if ($inputMode === 'bags_weight') {
+                // Flour: (total_kg / 1000) * price_per_ton
+                $totalKg = ($item['bags_count'] ?? 0) * ($item['bag_weight'] ?? 50);
+                $total_cost = ($totalKg / 1000) * ($item['unit_price'] ?? 0);
+            } elseif ($inputMode === 'cartons_molds') {
+                // Yeast: cartons * price_per_carton
+                $total_cost = ($item['boxes_count'] ?? 0) * ($item['unit_price'] ?? 0);
+            } else {
+                // Salt, Diesel, Bags: quantity * unit_price
+                $total_cost = ($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0);
+            }
+
+            $paid = min($item['paid_amount'], $total_cost);
             $fee_currency = ! empty($item['unloading_fee_currency_id']) ? $item['unloading_fee_currency_id'] : $item['currency_id'];
 
             Supply::create([
@@ -93,6 +111,10 @@ class SupplyController extends Controller
                 'material_type_name' => $item['material_type_name'] ?? null,
                 'boxes_count' => $item['boxes_count'] ?? null,
                 'box_weight' => $item['box_weight'] ?? null,
+                'bags_count' => $item['bags_count'] ?? null,
+                'bag_weight' => $item['bag_weight'] ?? null,
+                'molds_per_carton' => $item['molds_per_carton'] ?? null,
+                'bag_type' => $item['bag_type'] ?? null,
                 'notes' => $item['notes'] ?? null,
             ]);
         }

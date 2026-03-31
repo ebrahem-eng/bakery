@@ -56,56 +56,78 @@
                         <input type="number" step="0.01" x-bind:name="`supplies[${index}][exchange_rate]`" x-model="item.exchange_rate" required class="glass-input w-full px-3 py-2 rounded-lg text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs text-emerald-400 mb-1">{{ __('Unit Price') }}</label>
+                        <label class="block text-xs text-emerald-400 mb-1" x-text="getPriceLabel(item)"></label>
                         <input type="number" step="0.01" x-bind:name="`supplies[${index}][unit_price]`" x-model="item.unit_price" required class="glass-input w-full px-3 py-2 rounded-lg text-sm">
                     </div>
                 </div>
 
                 <!-- Dynamic Polymorphic Fields -->
                 <div class="p-4 bg-slate-100/50 dark:bg-black/20 rounded-xl mb-4 border border-slate-200 dark:border-white/5">
-                    <!-- FLOUR LOGIC -->
-                    <template x-if="item.category_name === 'طحين'">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Weight in Tons (1000kg)') }}</label>
-                                <input type="number" step="0.001" x-bind:name="`supplies[${index}][quantity]`" x-model="item.quantity" class="glass-input w-full px-3 py-2 rounded-lg text-sm">
+                    
+                    <!-- FLOUR LOGIC (bags_weight) -->
+                    <template x-if="item.input_mode === 'bags_weight'">
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Number of Bags') }}</label>
+                                    <input type="number" step="1" min="1" x-bind:name="`supplies[${index}][bags_count]`" x-model="item.bags_count" class="glass-input w-full px-3 py-2 rounded-lg text-sm" placeholder="0">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Weight per Bag (kg)') }}</label>
+                                    <input type="number" step="0.01" x-bind:name="`supplies[${index}][bag_weight]`" x-model="item.bag_weight" class="glass-input w-full px-3 py-2 rounded-lg text-sm" placeholder="50">
+                                </div>
+                                <div class="flex flex-col justify-end">
+                                    <span class="text-xs text-slate-500 mb-1">{{ __('Total Weight') }}</span>
+                                    <div class="font-mono text-amber-400 font-bold text-lg" x-text="((item.bags_count || 0) * (item.bag_weight || 0)).toFixed(2) + ' kg'"></div>
+                                    <input type="hidden" x-bind:name="`supplies[${index}][quantity]`" :value="(item.bags_count || 0) * (item.bag_weight || 0)">
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Flour Type (e.g Zero, Number 1)') }}</label>
-                                <input type="text" x-bind:name="`supplies[${index}][material_type_name]`" x-model="item.material_type_name" class="glass-input w-full px-3 py-2 rounded-lg text-sm">
+                                <input type="text" x-bind:name="`supplies[${index}][material_type_name]`" x-model="item.material_type_name" class="glass-input w-full md:w-1/2 px-3 py-2 rounded-lg text-sm">
+                            </div>
+                            <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                                <div class="text-[10px] text-emerald-500 uppercase font-bold tracking-wider mb-1">{{ __('Calculated Cost') }}</div>
+                                <div class="text-sm font-bold text-emerald-400 font-mono" x-text="'(' + ((item.bags_count || 0) * (item.bag_weight || 0)).toFixed(2) + ' kg ÷ 1000) × ' + (item.unit_price || 0) + ' = ' + calcFlourCost(item).toLocaleString(undefined, {minimumFractionDigits: 2})"></div>
                             </div>
                         </div>
                     </template>
 
-                    <!-- YEAST LOGIC -->
-                    <template x-if="item.category_name === 'خميرة'">
+                    <!-- YEAST LOGIC (cartons_molds) -->
+                    <template x-if="item.input_mode === 'cartons_molds'">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Boxes Count') }}</label>
-                                <input type="number" step="1" x-bind:name="`supplies[${index}][boxes_count]`" x-model="item.boxes_count" class="glass-input w-full px-3 py-2 rounded-lg text-sm">
+                                <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Number of Cartons') }}</label>
+                                <input type="number" step="1" min="1" x-bind:name="`supplies[${index}][boxes_count]`" x-model="item.boxes_count" class="glass-input w-full px-3 py-2 rounded-lg text-sm" placeholder="0">
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Weight per Box (kg)') }}</label>
-                                <input type="number" step="0.01" x-bind:name="`supplies[${index}][box_weight]`" x-model="item.box_weight" class="glass-input w-full px-3 py-2 rounded-lg text-sm">
+                                <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Molds per Carton') }}</label>
+                                <input type="number" step="1" min="1" x-bind:name="`supplies[${index}][molds_per_carton]`" x-model="item.molds_per_carton" class="glass-input w-full px-3 py-2 rounded-lg text-sm" placeholder="0">
                             </div>
                             <div class="flex flex-col justify-end">
-                                <span class="text-xs text-slate-500 mb-1">{{ __('Computed Native Weight') }}</span>
-                                <div class="font-mono text-amber-400 font-bold" x-text="(item.boxes_count * item.box_weight).toFixed(2) + ' kg'"></div>
-                                <input type="hidden" x-bind:name="`supplies[${index}][quantity]`" x-bind:value="item.boxes_count * item.box_weight">
+                                <span class="text-xs text-slate-500 mb-1">{{ __('Total Molds') }}</span>
+                                <div class="font-mono text-amber-400 font-bold text-lg" x-text="((item.boxes_count || 0) * (item.molds_per_carton || 0)) + ' {{ __('molds') }}'"></div>
+                                <input type="hidden" x-bind:name="`supplies[${index}][quantity]`" :value="(item.boxes_count || 0) * (item.molds_per_carton || 0)">
                             </div>
                         </div>
                     </template>
 
-                    <!-- DIESEL / SALT LOGIC -->
-                    <!-- DIESEL / SALT LOGIC -->
-                    <template x-if="item.category_name === 'مازوت' || item.category_name === 'ملح'">
-                        <div>
-                            <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1" x-text="item.category_name === 'مازوت' ? '{{ __('Total Liters') }}' : '{{ __('Total Kilos') }}'"></label>
-                            <input type="number" step="0.01" x-bind:name="`supplies[${index}][quantity]`" x-model="item.quantity" class="glass-input w-full md:w-1/2 px-3 py-2 rounded-lg text-sm">
+                    <!-- SALT / DIESEL / BAGS LOGIC (simple_quantity) -->
+                    <template x-if="item.input_mode === 'simple_quantity'">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1" x-text="getQuantityLabel(item)"></label>
+                                <input type="number" step="0.01" x-bind:name="`supplies[${index}][quantity]`" x-model="item.quantity" class="glass-input w-full px-3 py-2 rounded-lg text-sm">
+                            </div>
+                            <!-- Bag type field (only for أكياس) -->
+                            <div x-show="item.category_name === 'أكياس'" x-transition>
+                                <label class="block text-xs text-slate-600 dark:text-slate-300 mb-1">{{ __('Bag Type') }}</label>
+                                <input type="text" x-bind:name="`supplies[${index}][bag_type]`" x-model="item.bag_type" class="glass-input w-full px-3 py-2 rounded-lg text-sm" placeholder="{{ __('e.g. Large, Small, Custom...') }}">
+                            </div>
                         </div>
                     </template>
                     
-                    <template x-if="item.category_name === ''">
+                    <template x-if="!item.input_mode">
                         <div class="text-xs text-slate-500 italic">{{ __('Select a category to map explicit variables.') }}</div>
                     </template>
                 </div>
@@ -148,7 +170,7 @@
                     <div class="lg:col-span-4 flex flex-col justify-between h-full">
                         <div class="text-right">
                             <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Total Native Cost') }}</div>
-                            <div class="text-xl font-bold font-mono text-slate-900 dark:text-white" x-text="item.total_cost.toLocaleString(undefined, {minimumFractionDigits: 2})"></div>
+                            <div class="text-xl font-bold font-mono text-slate-900 dark:text-white" x-text="calcTotalCost(item).toLocaleString(undefined, {minimumFractionDigits: 2})"></div>
                         </div>
                         <div class="mt-2">
                             <label class="block text-[10px] text-emerald-400 mb-1 {{ app()->getLocale() == 'ar' ? 'text-right' : 'text-left' }}">{{ __('Amount Paid From Register') }}</label>
@@ -197,12 +219,17 @@ document.addEventListener('alpine:init', () => {
                 id: Date.now() + Math.random(),
                 category_id: '',
                 category_name: '',
+                input_mode: '',
+                unit: '',
                 currency_id: this.items.length > 0 ? this.items[this.items.length-1].currency_id : '',
                 exchange_rate: this.items.length > 0 ? this.items[this.items.length-1].exchange_rate : 1,
                 material_type_name: '',
                 quantity: null,
+                bags_count: null,
+                bag_weight: 50,
                 boxes_count: null,
-                box_weight: null,
+                molds_per_carton: null,
+                bag_type: '',
                 unit_price: null,
                 paid_amount: 0,
                 unloading_fee: 0,
@@ -210,10 +237,6 @@ document.addEventListener('alpine:init', () => {
                 unloading_fee_currency_id: this.currencies.length > 0 ? this.currencies[0].id : '',
                 unloading_fee_exchange_rate: this.currencies.length > 0 ? this.currencies[0].exchange_rate : 1,
                 notes: '',
-                get total_cost() {
-                    const q = this.category_name === 'خميرة' ? (this.boxes_count * this.box_weight) : this.quantity;
-                    return (q || 0) * (this.unit_price || 0);
-                }
             });
         },
         removeItem(index) {
@@ -225,6 +248,8 @@ document.addEventListener('alpine:init', () => {
         updateCategory(item) {
             let cat = this.categories.find(c => c.id == item.category_id);
             item.category_name = cat ? cat.name : '';
+            item.input_mode = cat ? (cat.input_mode || '') : '';
+            item.unit = cat ? (cat.unit || '') : '';
         },
         updateExchangeRate(item) {
             let cur = this.currencies.find(c => c.id == item.currency_id);
@@ -233,6 +258,29 @@ document.addEventListener('alpine:init', () => {
         updateFeeExchangeRate(item) {
             let cur = this.currencies.find(c => c.id == item.unloading_fee_currency_id);
             if(cur) item.unloading_fee_exchange_rate = cur.exchange_rate;
+        },
+        getPriceLabel(item) {
+            if (item.input_mode === 'bags_weight') return '{{ __('Price per Ton (1000 kg)') }}';
+            if (item.input_mode === 'cartons_molds') return '{{ __('Price per Carton') }}';
+            if (item.category_name === 'مازوت') return '{{ __('Price per Liter') }}';
+            return '{{ __('Price per kg') }}';
+        },
+        getQuantityLabel(item) {
+            if (item.category_name === 'مازوت') return '{{ __('Total Liters') }}';
+            return '{{ __('Total Kilos (kg)') }}';
+        },
+        calcFlourCost(item) {
+            const totalKg = (item.bags_count || 0) * (item.bag_weight || 0);
+            return (totalKg / 1000) * (item.unit_price || 0);
+        },
+        calcTotalCost(item) {
+            if (item.input_mode === 'bags_weight') {
+                return this.calcFlourCost(item);
+            }
+            if (item.input_mode === 'cartons_molds') {
+                return (item.boxes_count || 0) * (item.unit_price || 0);
+            }
+            return (item.quantity || 0) * (item.unit_price || 0);
         }
     }))
 })
