@@ -67,9 +67,9 @@
                                 </td>
                                 <td class="py-4 px-5">
                                     <div class="relative max-w-[150px]">
-                                        <input type="number" step="0.01" name="items[{{ $index }}][actual_quantity]" id="actual_{{ $index }}" required
+                                        <input type="number" step="0.01" name="items[{{ $index }}][actual_quantity]" id="actual_{{ $index }}"
                                             class="glass-input block w-full pl-4 pr-10 py-2 rounded-lg text-sm font-bold text-emerald-900 dark:text-emerald-400 border border-slate-200 dark:border-white/20 bg-emerald-50/50 dark:bg-emerald-900/10 focus:ring-emerald-500 focus:border-emerald-500"
-                                            placeholder="0.00">
+                                            placeholder="{{ __('Skip') }}">
                                         <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'left-0 pl-3' : 'right-0 pr-3' }} flex items-center pointer-events-none">
                                             <span class="text-[10px] font-bold text-slate-400">{{ $category->unit ?? '' }}</span>
                                         </div>
@@ -77,7 +77,7 @@
                                 </td>
                                 <td class="py-4 px-5">
                                     <div class="relative max-w-[150px]">
-                                        <input type="number" step="0.01" name="items[{{ $index }}][unit_price]" value="{{ $category->latest_price }}" required
+                                        <input type="number" step="0.01" name="items[{{ $index }}][unit_price]" value="{{ $category->latest_price }}"
                                             class="glass-input block w-full pl-4 pr-10 py-2 rounded-lg text-sm font-bold border border-slate-200 dark:border-white/10 dark:bg-black/40 focus:ring-emerald-500 focus:border-emerald-500"
                                             placeholder="0.00">
                                         <div class="absolute inset-y-0 {{ app()->getLocale() == 'ar' ? 'left-0 pl-3' : 'right-0 pr-3' }} flex items-center pointer-events-none">

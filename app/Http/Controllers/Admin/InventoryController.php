@@ -38,13 +38,25 @@ class InventoryController extends Controller
 
     public function store(Request $request)
     {
+        // Filter out items where the user didn't enter an actual quantity
+        $inputs = $request->all();
+        if (isset($inputs['items']) && is_array($inputs['items'])) {
+            $inputs['items'] = array_filter($inputs['items'], function ($item) {
+                return isset($item['actual_quantity']) && $item['actual_quantity'] !== '';
+            });
+        }
+        $request->replace($inputs);
+
         $request->validate([
             'notes' => 'nullable|string',
-            'items' => 'required|array',
+            'items' => 'required|array|min:1',
             'items.*.category_id' => 'required|exists:categories,id',
             'items.*.system_quantity' => 'required|numeric',
             'items.*.actual_quantity' => 'required|numeric|min:0',
             'items.*.unit_price' => 'required|numeric|min:0',
+        ], [
+            'items.required' => __('You must inventory at least one category.'),
+            'items.min' => __('You must inventory at least one category.'),
         ]);
 
         $activeWorkDay = WorkDay::where('status', 'active')->first();
