@@ -299,26 +299,38 @@
                                 <div class="text-lg font-black text-emerald-500 font-mono" x-text="total.toFixed(2) + ' kg'"></div>
                             </div>
                             <input type="hidden" name="consumptions[{{ $cat->id }}]" :value="total">
+                            <div x-show="total > {{ $cat->available }}" class="col-span-1 md:col-span-3 text-xs font-bold text-red-500 bg-red-500/10 p-2.5 rounded-lg flex items-center gap-2 mt-1" x-cloak>
+                                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                {{ __('Consumption exceeds available warehouse stock!') }}
+                            </div>
                         </div>
 
                     @elseif($cat->input_mode === 'cartons_molds')
                         {{-- YEAST: molds dispensed --}}
-                        <div>
+                        <div x-data="{ dispensed: '' }">
                             <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">{{ __('Molds Dispensed') }}</label>
-                            <input type="number" step="1" min="0" name="consumptions[{{ $cat->id }}]"
+                            <input type="number" step="1" min="0" max="{{ floor($cat->available) }}" name="consumptions[{{ $cat->id }}]" x-model.number="dispensed"
                                 class="w-full md:w-1/2 px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all font-bold placeholder-slate-400/50"
                                 placeholder="0">
+                            <div x-show="dispensed > {{ $cat->available }}" class="w-full md:w-1/2 text-xs font-bold text-red-500 bg-red-500/10 p-2.5 rounded-lg flex items-center gap-2 mt-3" x-cloak>
+                                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                {{ __('Consumption exceeds available warehouse stock!') }}
+                            </div>
                         </div>
 
                     @else
                         {{-- SALT / DIESEL: simple quantity --}}
-                        <div>
+                        <div x-data="{ dispensed: '' }">
                             <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">
                                 {{ $cat->unit === 'liters' ? __('Liters Dispensed') : __('kg Dispensed') }}
                             </label>
-                            <input type="number" step="0.01" min="0" name="consumptions[{{ $cat->id }}]"
+                            <input type="number" step="0.01" min="0" max="{{ $cat->available }}" name="consumptions[{{ $cat->id }}]" x-model.number="dispensed"
                                 class="w-full md:w-1/2 px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all font-bold placeholder-slate-400/50"
                                 placeholder="0.00">
+                            <div x-show="dispensed > {{ $cat->available }}" class="w-full md:w-1/2 text-xs font-bold text-red-500 bg-red-500/10 p-2.5 rounded-lg flex items-center gap-2 mt-3" x-cloak>
+                                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                {{ __('Consumption exceeds available warehouse stock!') }}
+                            </div>
                         </div>
                     @endif
                 </div>

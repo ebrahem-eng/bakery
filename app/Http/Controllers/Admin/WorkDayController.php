@@ -204,6 +204,29 @@ class WorkDayController extends Controller
             'consumptions.*' => 'nullable|numeric|min:0',
         ]);
 
+        // Validate consumptions against available stock
+        if ($request->consumptions) {
+            foreach ($request->consumptions as $categoryId => $quantity) {
+                if ($quantity > 0) {
+                    $cat = Category::withSum('supplies', 'quantity')
+                        ->withSum('consumptions', 'quantity')
+                        ->find($categoryId);
+                        
+                    if ($cat) {
+                        $available = ($cat->supplies_sum_quantity ?? 0) - ($cat->consumptions_sum_quantity ?? 0);
+                        // Using a small tolerance to handle floating point errors
+                        if ($quantity > ($available + 0.05)) {
+                            return back()->withInput()->with('error_message', __("Recorded consumption for category :name (:quantity) exceeds strictly available stock (:available).", [
+                                'name' => __($cat->name),
+                                'quantity' => round($quantity, 2),
+                                'available' => round($available, 2)
+                            ]));
+                        }
+                    }
+                }
+            }
+        }
+
         // Auto-calculate bundles from shift data
         $workDay->load(['workerShifts', 'distributions', 'distributorReturns']);
 
