@@ -1139,5 +1139,10 @@
     "manage roles": "إدارة أدوار النظام",
     "view logs": "عرض سجل النشاطات",
     "clear logs": "مسح سجل النشاطات",
-    "filter logs": "تصفية سجل النشاطات"
+    "filter logs": "تصفية سجل النشاطات",
+    "Access Denied": "الوصول مرفوض",
+    "Page Not Found": "الصفحة غير موجودة",
+    "You do not have the required permissions to access this page. Please contact your system administrator if you believe this is an error.": "ليس لديك الصلاحيات المطلوبة للوصول إلى هذه الصفحة. يرجى التواصل مع مسؤول النظام إذا كنت تعتقد أن هذا خطأ.",
+    "The page you are looking for does not exist or has been moved. Please check the URL or navigate back to the dashboard.": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها. يرجى التحقق من الرابط أو العودة إلى لوحة التحكم.",
+    "User does not have the right permissions.": "المستخدم لا يملك الصلاحيات المطلوبة."
 }
