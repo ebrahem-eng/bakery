@@ -35,6 +35,17 @@ class DashboardController extends Controller
         $defaultCurrency = Currency::where('is_default', true)->first();
         $currencyCode = $defaultCurrency->code ?? 'SYP';
 
+        // ── Previous carry-over (Starting balance for active/next day)
+        $previousWorkDay = WorkDay::where('status', 'closed')
+            ->orderBy('id', 'desc')
+            ->first();
+        
+        $startingCash = $previousWorkDay ? $previousWorkDay->carried_over_money : 0;
+        $startingBundles = $previousWorkDay ? $previousWorkDay->carried_over_bundles : 0;
+        $startingCurrency = $previousWorkDay && $previousWorkDay->carried_over_currency_id 
+            ? Currency::find($previousWorkDay->carried_over_currency_id) 
+            : $defaultCurrency;
+
         // ── Period-filtered work day IDs ──────────────────────────────
         $periodWorkDayIds = WorkDay::where('status', 'closed')
             ->when($start, fn ($q) => $q->where('start_time', '>=', $start))
@@ -172,7 +183,9 @@ class DashboardController extends Controller
             'expenseBreakdown', 'distributorBalances', 'supplierBalances',
             'topDistributors', 'trendData', 'lastDays',
             // Live stats
-            'todaySales', 'todayExpenses', 'todayBundlesSold'
+            'todaySales', 'todayExpenses', 'todayBundlesSold',
+            // Starting balances
+            'startingCash', 'startingBundles', 'startingCurrency'
         ));
     }
 

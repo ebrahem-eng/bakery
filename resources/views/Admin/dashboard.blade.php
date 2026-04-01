@@ -38,45 +38,126 @@
 @if($activeWorkDay)
     <div class="glass-panel rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6 mb-8 relative overflow-hidden">
         <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0 -translate-x-1/4' : 'right-0 translate-x-1/4' }} w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2"></div>
-        <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div>
+        <div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div class="flex-1">
                 <div class="flex items-center gap-3 mb-2">
                     <span class="relative flex h-3 w-3">
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                     </span>
-                    <h2 class="text-xl font-bold text-emerald-900 dark:text-white tracking-wide">{{ __('ACTIVE WORK DAY') }}</h2>
+                    <h2 class="text-xl font-bold text-emerald-900 dark:text-white tracking-wide uppercase">{{ __('Active Work Day') }}</h2>
                 </div>
-                <p class="text-emerald-400/80 text-sm font-medium tracking-widest uppercase">
+                <p class="text-emerald-400/80 text-sm font-medium tracking-widest uppercase mb-4">
                     {{ __('Commenced At: ') }} {{ $activeWorkDay->start_time->translatedFormat('Y-m-d h:i A') }}
                     <span class="text-slate-500 {{ app()->getLocale() == 'ar' ? 'mr-2' : 'ml-2' }}">({{ $activeWorkDay->start_time->diffForHumans() }})</span>
                 </p>
-                <div class="mt-3 flex gap-4 text-xs">
-                    <span class="text-emerald-600 dark:text-emerald-400 font-bold">{{ __('Live Sales') }}: {{ number_format($todaySales, 2) }} {{ $currencyCode }}</span>
-                    <span class="text-red-500 dark:text-red-400 font-bold">{{ __('Live Expenses') }}: {{ number_format($todayExpenses, 2) }} {{ $currencyCode }}</span>
-                    <span class="text-blue-500 dark:text-blue-400 font-bold">{{ __('Bundles') }}: {{ $todayBundlesSold }}</span>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Starting Cash') }}</span>
+                        <span class="text-sm font-black text-emerald-600 dark:text-emerald-400">{{ number_format($startingCash, 2) }} <span class="text-[10px]">{{ $startingCurrency->code ?? $currencyCode }}</span></span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Starting Bundles') }}</span>
+                        <span class="text-sm font-black text-blue-500 dark:text-blue-400">{{ number_format($startingBundles) }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Live Sales') }}</span>
+                        <span class="text-sm font-black text-amber-600">{{ number_format($todaySales, 2) }} <span class="text-[10px]">{{ $currencyCode }}</span></span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Live Expenses') }}</span>
+                        <span class="text-sm font-black text-red-500">{{ number_format($todayExpenses, 2) }} <span class="text-[10px]">{{ $currencyCode }}</span></span>
+                    </div>
                 </div>
             </div>
             <div class="flex gap-3">
-                <a href="{{ route('admin.work_days.showCloseForm', $activeWorkDay) }}" class="px-6 py-3 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white font-bold rounded-xl text-sm shadow-[0_0_15px_rgba(239,68,68,0.3)] transition-all">
+                <a href="{{ route('admin.work_days.showCloseForm', $activeWorkDay) }}" class="px-6 py-4 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white font-bold rounded-xl text-sm shadow-[0_10px_20px_rgba(239,68,68,0.2)] transition-all uppercase tracking-widest">
                     {{ __('Settle & Close Shift') }}
                 </a>
             </div>
         </div>
     </div>
 @else
-    <div class="glass-panel rounded-2xl border border-slate-200 dark:border-slate-500/20 bg-slate-100/50 dark:bg-black/20 p-6 mb-8 text-center">
-        <div class="w-16 h-16 mx-auto bg-slate-200 dark:bg-slate-800/50 text-slate-500 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4M12 20V4"/></svg>
+    <div x-data="{ showCustomModal: false }" class="glass-panel rounded-2xl border border-slate-200 dark:border-slate-500/20 bg-slate-100/50 dark:bg-black/20 p-6 mb-8 text-center relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative z-10">
+            <div class="w-16 h-16 mx-auto bg-slate-200 dark:bg-slate-800/50 text-slate-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4M12 20V4"/></svg>
+            </div>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-wide">{{ __('System is Idle') }}</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-md mx-auto">{{ __('No active work day is running. Accounting and operations are locked.') }}</p>
+            
+            @if($startingCash > 0 || $startingBundles > 0)
+            <div class="flex justify-center gap-8 mb-8">
+                <div class="text-center">
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Allocated Cash (Ready)') }}</p>
+                    <p class="text-xl font-black text-amber-600">{{ number_format($startingCash, 2) }} <span class="text-xs">{{ $startingCurrency->code ?? $currencyCode }}</span></p>
+                </div>
+                <div class="text-center">
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Allocated Bundles (Ready)') }}</p>
+                    <p class="text-xl font-black text-blue-500">{{ number_format($startingBundles) }}</p>
+                </div>
+            </div>
+            @endif
+
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <form action="{{ route('admin.work_days.store') }}" method="POST" class="inline-block">
+                    @csrf
+                    <button type="submit" class="px-10 py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-[#121419] font-black rounded-xl text-sm shadow-[0_10px_25px_rgba(245,158,11,0.3)] transition-all uppercase tracking-widest scale-100 hover:scale-105">
+                        {{ __('Initialize New Day') }}
+                    </button>
+                </form>
+
+                @can('create work days')
+                <button type="button" @click="showCustomModal = true" class="px-8 py-4 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white border border-indigo-500/30 font-black rounded-xl text-sm shadow-[0_10px_25px_rgba(99,102,241,0.15)] transition-all uppercase tracking-widest">
+                    {{ __('Start Custom Work Day') }}
+                </button>
+                @endcan
+            </div>
+
+            <!-- Custom Workday Modal -->
+            @can('create work days')
+            <div x-show="showCustomModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <!-- Background overlay -->
+                    <div x-show="showCustomModal" x-transition.opacity class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" @click="showCustomModal = false"></div>
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+                    <!-- Modal panel -->
+                    <div x-show="showCustomModal" x-transition.scale.origin.bottom class="inline-block align-bottom glass-panel rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full border border-slate-200 dark:border-white/10">
+                        <form action="{{ route('admin.work_days.store') }}" method="POST">
+                            @csrf
+                            <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <div class="sm:flex sm:items-start">
+                                    <div class="mx-auto shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-500/20 sm:mx-0 sm:h-10 sm:w-10">
+                                        <svg class="h-6 w-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                    </div>
+                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                        <h3 class="text-lg leading-6 font-medium text-slate-900 dark:text-white" id="modal-title">{{ __('Start Custom Work Day') }}</h3>
+                                        <div class="mt-2 text-left">
+                                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">{{ __('Create a retroactive accounting period. Ensure the selected date does not already have an existing workday.') }}</p>
+                                            
+                                            <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Historical Start Details') }} <span class="text-red-500">*</span></label>
+                                            <input type="datetime-local" name="custom_start_time" required
+                                                class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-black/20 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-200 dark:border-white/5">
+                                <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                    {{ __('Start Custom Work Day') }}
+                                </button>
+                                <button type="button" @click="showCustomModal = false" class="mt-3 w-full inline-flex justify-center rounded-xl border border-slate-300 dark:border-white/10 shadow-sm px-4 py-2 bg-white dark:bg-black/40 text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                    {{ __('Cancel') }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @endcan
+
         </div>
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">{{ __('System is Idle') }}</h2>
-        <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">{{ __('No active work day is running. Accounting and operations are locked.') }}</p>
-        <form action="{{ route('admin.work_days.store') }}" method="POST" class="inline-block">
-            @csrf
-            <button type="submit" class="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-[#121419] font-bold rounded-xl text-sm shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all uppercase tracking-widest">
-                {{ __('Initialize New Day') }}
-            </button>
-        </form>
     </div>
 @endif
 

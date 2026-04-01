@@ -1075,5 +1075,17 @@
     "Molds Dispensed": "القوالب المُصرفة",
     "Liters Dispensed": "اللترات المُصرفة",
     "kg Dispensed": "الكيلوغرامات المُصرفة",
-    "units": "وحدات"
+    "units": "وحدات",
+    "Active Work Day": "يوم عمل نشط",
+    "Commenced At: ": "بدأ في: ",
+    "Starting Cash": "نقداً عند البدء",
+    "Starting Bundles": "ربطات الخبز عند البدء",
+    "Live Sales": "المبيعات الحالية",
+    "Live Expenses": "المصاريف الحالية",
+    "Settle & Close Shift": "تسوية وإغلاق الوردية",
+    "System is Idle": "النظام في حالة سكون",
+    "No active work day is running. Accounting and operations are locked.": "لا يوجد يوم عمل نشط حالياً. العمليات المحاسبية والتشغيلية مقفلة.",
+    "Allocated Cash (Ready)": "النقد المخصص (جاهز)",
+    "Allocated Bundles (Ready)": "الربطات المخصصة (جاهزة)",
+    "Initialize New Day": "بدء يوم عمل جديد"
 }
