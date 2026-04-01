@@ -45,13 +45,25 @@ class WorkDayController extends Controller
         if ($active) {
             return redirect()->back()->with('error', __('You must close the currently active work day before starting a new one.'));
         }
+        
+        $startTime = now();
+        
+        if ($request->filled('custom_start_time')) {
+            $startTime = \Carbon\Carbon::parse($request->custom_start_time);
+            
+            // Check if there is already a workday on this exact date
+            $exists = WorkDay::whereDate('start_time', $startTime->toDateString())->exists();
+            if ($exists) {
+                return redirect()->back()->with('error', __('A work day already exists for the selected date. Please choose another date.'));
+            }
+        }
 
         $workDay = WorkDay::create([
             'opened_by' => auth()->guard('admin')->id(),
             'status' => 'active',
             'is_holiday' => $request->has('is_holiday'),
             'holiday_reason' => $request->holiday_reason,
-            'start_time' => now(),
+            'start_time' => $startTime,
         ]);
 
         return redirect()->route('admin.work_days.index')->with('success', __('New Work Day started successfully.'));
@@ -255,6 +267,13 @@ class WorkDayController extends Controller
         }
 
         $endTime = now();
+        if ($request->filled('custom_end_time')) {
+            $parsedEndTime = \Carbon\Carbon::parse($request->custom_end_time);
+            if ($parsedEndTime->lt($workDay->start_time)) {
+                return back()->withInput()->with('error_message', __('The end time cannot be before the start time.'));
+            }
+            $endTime = $parsedEndTime;
+        }
 
         $workDay->update([
             'status' => 'closed',

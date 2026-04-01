@@ -429,6 +429,18 @@
                             class="block w-full px-4 py-4 bg-slate-50 dark:bg-[#0f1115] border border-amber-500/30 rounded-xl text-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 transition-all font-bold"
                             placeholder="1.00">
                     </div>
+
+                    {{-- Custom End Time (Optional) --}}
+                    <div class="md:col-span-3 mt-2">
+                        <label class="block text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2 px-1">
+                            {{ __('Historical End Time (Optional)') }}
+                        </label>
+                        <div class="relative">
+                            <input type="datetime-local" name="custom_end_time"
+                                class="block w-full px-4 py-4 bg-slate-50 dark:bg-[#0f1115] border border-slate-200 dark:border-white/10 border-amber-500/30 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 transition-all font-medium">
+                            <p class="mt-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest">{{ __('Leave blank to use current time.') }}</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="pt-4">
