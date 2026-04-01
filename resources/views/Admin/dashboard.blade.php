@@ -147,6 +147,95 @@
     </div>
 @endif
 
+{{-- ── Quick Access Actions ───────────────────────────────────── --}}
+<div class="mb-8">
+    <h3 class="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+        <span class="w-8 h-px bg-slate-200 dark:bg-white/10"></span>
+        {{ __('Quick Access') }}
+    </h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
+        {{-- 1. Receive Payment --}}
+        <a href="{{ route('admin.distributors.index') }}" class="glass-panel p-4 rounded-xl border border-slate-200 dark:border-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/5 group transition-all text-center">
+            <div class="w-10 h-10 mx-auto bg-emerald-500/10 text-emerald-500 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
+            <p class="text-[10px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-tight">
+                {{ __('Receive Payment') }}
+            </p>
+        </a>
+
+        {{-- 2. New Supply --}}
+        <a href="{{ route('admin.supplies.create') }}" class="glass-panel p-4 rounded-xl border border-slate-200 dark:border-white/5 hover:border-amber-500/50 hover:bg-amber-500/5 group transition-all text-center">
+            <div class="w-10 h-10 mx-auto bg-amber-500/10 text-amber-500 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            </div>
+            <p class="text-[10px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-tight">
+                {{ __('Record Supply') }}
+            </p>
+        </a>
+
+        {{-- 3. Pay Supplier --}}
+        <a href="{{ route('admin.accounts.debts') }}" class="glass-panel p-4 rounded-xl border border-slate-200 dark:border-white/5 hover:border-blue-500/50 hover:bg-blue-500/5 group transition-all text-center">
+            <div class="w-10 h-10 mx-auto bg-blue-500/10 text-blue-500 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            </div>
+            <p class="text-[10px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-tight">
+                {{ __('Pay Supplier') }}
+            </p>
+        </a>
+
+        {{-- 4. Worker Clock In --}}
+        <a href="{{ route('admin.attendance.index') }}" class="glass-panel p-4 rounded-xl border border-slate-200 dark:border-white/5 hover:border-indigo-500/50 hover:bg-indigo-500/5 group transition-all text-center">
+            <div class="w-10 h-10 mx-auto bg-indigo-500/10 text-indigo-500 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <p class="text-[10px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-tight">
+                {{ __('Worker Clock In') }}
+            </p>
+        </a>
+
+        {{-- 5. Record Expense --}}
+        <a href="{{ route('admin.expenses.index') }}" class="glass-panel p-4 rounded-xl border border-slate-200 dark:border-white/5 hover:border-red-500/50 hover:bg-red-500/5 group transition-all text-center">
+            <div class="w-10 h-10 mx-auto bg-red-500/10 text-red-500 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <p class="text-[10px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-tight">
+                {{ __('Record Expense') }}
+            </p>
+        </a>
+
+        {{-- 6. New Distribution --}}
+        <a href="{{ route('admin.distributions.index') }}" class="glass-panel p-4 rounded-xl border border-slate-200 dark:border-white/5 hover:border-cyan-500/50 hover:bg-cyan-500/5 group transition-all text-center">
+            <div class="w-10 h-10 mx-auto bg-cyan-500/10 text-cyan-500 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+            </div>
+            <p class="text-[10px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-tight">
+                {{ __('New Distribution') }}
+            </p>
+        </a>
+
+        {{-- 7. Inventory Stocktake --}}
+        <a href="{{ route('admin.warehouse.inventory.create') }}" class="glass-panel p-4 rounded-xl border border-slate-200 dark:border-white/5 hover:border-violet-500/50 hover:bg-violet-500/5 group transition-all text-center">
+            <div class="w-10 h-10 mx-auto bg-violet-500/10 text-violet-500 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+            </div>
+            <p class="text-[10px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-tight">
+                {{ __('Inventory Stocktake') }}
+            </p>
+        </a>
+
+        {{-- 8. System Settings --}}
+        <a href="{{ route('admin.settings.index') }}" class="glass-panel p-4 rounded-xl border border-slate-200 dark:border-white/5 hover:border-slate-400 group transition-all text-center">
+            <div class="w-10 h-10 mx-auto bg-slate-500/10 text-slate-500 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <p class="text-[10px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-tight">
+                {{ __('System Settings') }}
+            </p>
+        </a>
+    </div>
+</div>
+
 {{-- ── KPI Cards ─────────────────────────────────────────────── --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5 mb-8">
     {{-- Revenue --}}

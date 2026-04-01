@@ -636,7 +636,7 @@
     "Raw Materials": "المواد الخام",
     "Raw materials, HR deductions & logistics": "مواد خام، خصومات موظفين واللوجستيات",
     "Receive Pay": "استلام دفعة",
-    "Receive Payment": "استلام مبلغ نقدي",
+    "Receive Payment": "استلام دفعة",
     "Received": "مُستلم",
     "Payments Released Today": "المدفوعات الصادرة اليوم",
     "Payment Type": "نوع الدفعة",
@@ -1107,5 +1107,13 @@
     "Starting Cash": "نقداً عند البدء",
     "Starting Bundles": "ربطات الخبز عند البدء",
     "Allocated Cash (Ready)": "النقد المخصص (جاهز)",
-    "Allocated Bundles (Ready)": "الربطات المخصصة (جاهزة)"
+    "Allocated Bundles (Ready)": "الربطات المخصصة (جاهزة)",
+    "Quick Access": "الوصول السريع",
+    "Record Supply": "تسجيل توريد",
+    "Pay Supplier": "دفع لمورد",
+    "Worker Clock In": "تسجيل دخول كادر",
+    "Record Expense": "تسجيل مصروف",
+    "New Distribution": "توزيع جديد",
+    "Inventory Stocktake": "جرد مخزني",
+    "System Settings": "إعدادات النظام"
 }
