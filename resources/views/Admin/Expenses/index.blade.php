@@ -47,12 +47,13 @@
 @endif
 
 <!-- Stats Row -->
-<div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+<div class="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
     @php
         $stats = [
             'operating' => $expenses->where('category', 'operating')->sum('amount'),
             'logistics' => $expenses->where('category', 'logistics')->sum('amount'),
             'personal' => $expenses->where('category', 'personal')->sum('amount'),
+            'bread' => $expenses->where('category', 'bread')->sum('amount'),
             'other' => $expenses->where('category', 'other')->sum('amount'),
             'worker_payments' => $workerPaymentsLocal ?? 0,
         ];
@@ -60,6 +61,7 @@
             'operating' => __('Operating Costs'),
             'logistics' => __('Logistics / Patrols'),
             'personal' => __('Personal Drawings'),
+            'bread' => __('Bread Expense'),
             'other' => __('Other Expenses'),
             'worker_payments' => __('Employee Wages'),
         ];
@@ -67,6 +69,7 @@
             'operating' => 'blue',
             'logistics' => 'emerald',
             'personal' => 'amber',
+            'bread' => 'orange',
             'other' => 'slate',
             'worker_payments' => 'emerald',
         ];
@@ -120,6 +123,7 @@
                 <option value="operating">{{ __('Operating Costs') }}</option>
                 <option value="logistics">{{ __('Logistics / Patrols') }}</option>
                 <option value="personal">{{ __('Personal Drawings') }}</option>
+                <option value="bread">{{ __('Bread Expense') }}</option>
                 <option value="other">{{ __('Other Expenses') }}</option>
             </select>
         </div>
@@ -258,10 +262,19 @@ function expenseFilter() {
 <!-- Add Expense Modal -->
 <div x-data="{ 
          open: false, 
+         selectedCategory: 'operating',
          selectedCurrencyId: '{{ $defaultCurrency->id ?? '' }}',
-         sypIds: @json($currencies->filter(fn($c) => str_contains($c->code, 'SYP'))->pluck('id'))
+         sypIds: @json($currencies->filter(fn($c) => str_contains($c->code, 'SYP'))->pluck('id')),
+         quantity: '',
+         unitPrice: '',
+         get calculatedTotal() {
+             const q = parseFloat(this.quantity) || 0;
+             const p = parseFloat(this.unitPrice) || 0;
+             return (q * p).toFixed(2);
+         },
+         get isBread() { return this.selectedCategory === 'bread'; }
      }"
-     @open-expense-modal.window="open = true" 
+     @open-expense-modal.window="open = true; selectedCategory = 'operating'; quantity = ''; unitPrice = '';" 
      x-show="open" 
      class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
     
@@ -284,29 +297,63 @@ function expenseFilter() {
                 
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Category') }}</label>
-                    <select name="category" required class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium appearance-none">
+                    <select name="category" x-model="selectedCategory" required class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium appearance-none">
                         <option value="operating">{{ __('Operating Costs') }}</option>
                         <option value="logistics">{{ __('Logistics / Patrols') }}</option>
                         <option value="personal">{{ __('Personal Drawings') }}</option>
+                        <option value="bread">{{ __('Bread Expense') }}</option>
                         <option value="other">{{ __('Other Expenses') }}</option>
                     </select>
                 </div>
 
-                <div>
+                <!-- Regular expense fields (hidden when bread) -->
+                <div x-show="!isBread" x-transition>
                     <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Title / Description') }}</label>
-                    <input type="text" name="title" required 
+                    <input type="text" name="title" :required="!isBread"
                         class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm placeholder-slate-400 dark:placeholder-slate-600 text-slate-900 dark:text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium" 
                         placeholder="{{ __('e.g. Fixing Generator') }}">
                 </div>
 
+                <!-- Bread-specific fields -->
+                <template x-if="isBread">
+                    <div class="space-y-4">
+                        <div class="p-4 bg-orange-500/5 border border-orange-500/15 rounded-xl space-y-4">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg class="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                <span class="text-sm font-bold text-orange-600 dark:text-orange-400">{{ __('Bread Details') }}</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-2">{{ __('Number of Bundles') }}</label>
+                                    <input type="number" name="quantity" x-model="quantity" min="1" step="1" required
+                                        class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-orange-500/20 rounded-xl text-sm placeholder-slate-400 text-slate-900 dark:text-white focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all font-medium" 
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-2">{{ __('Price per Bundle') }}</label>
+                                    <input type="number" name="unit_price" x-model="unitPrice" min="0.01" step="0.01" required
+                                        class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-orange-500/20 rounded-xl text-sm placeholder-slate-400 text-slate-900 dark:text-white focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all font-medium" 
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+                            <!-- Auto-calculated total -->
+                            <div x-show="quantity && unitPrice" x-transition class="flex items-center justify-between p-3 bg-orange-500/10 rounded-lg border border-orange-500/20">
+                                <span class="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider">{{ __('Calculated Total') }}</span>
+                                <span class="text-lg font-black text-orange-600 dark:text-orange-400" x-text="calculatedTotal"></span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Amount + Currency row (amount hidden for bread since it's auto-calculated) -->
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
+                    <div x-show="!isBread" x-transition>
                         <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Amount') }}</label>
-                        <input type="number" step="0.01" name="amount" required 
+                        <input type="number" step="0.01" name="amount" :required="!isBread"
                             class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm placeholder-slate-400 dark:placeholder-slate-600 text-slate-900 dark:text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium" 
                             placeholder="0.00">
                     </div>
-                    <div>
+                    <div :class="isBread ? 'col-span-2' : ''">
                         <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{{ __('Currency') }}</label>
                         <select name="currency_id" x-model="selectedCurrencyId" required class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-medium appearance-none">
                             @foreach($currencies as $currency)

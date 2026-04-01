@@ -1,4 +1,9 @@
 {
+    "Bread Expense": "مصروف خبز",
+    "Bread Details": "تفاصيل الخبز",
+    "Number of Bundles": "عدد الربطات",
+    "Price per Bundle": "سعر الربطة",
+    "Calculated Total": "الإجمالي المحسوب",
     "Warehouse & Inventory": "إدارة المستودع والجرد",
     "Est. Value:": "القيمة التقديرية:",
     "Take Inventory": "جرد المستودع",

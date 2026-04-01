@@ -148,6 +148,7 @@ class WorkDayController extends Controller
         $bundlesReturnedByDistributors = $workDay->distributorReturns->sum('bundle_count');
         $bundlesReceivedByShifts = $workDay->workerShifts->sum('bundles_received');
         $bundlesReturnedByShifts = $workDay->workerShifts->sum('bundles_returned');
+        $breadExpenses = $workDay->expenses->where('category', 'bread')->sum('quantity');
 
         // Previous day carry-over
         $previousDay = WorkDay::where('status', 'closed')
@@ -156,8 +157,8 @@ class WorkDayController extends Controller
             ->first();
         $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
 
-        // Calculated remaining = previous carry-over + returned by shifts - distributed + returned by distributors
-        $calculatedRemainingBundles = $previousCarryOverBundles + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors;
+        // Calculated remaining = previous carry-over + returned by shifts - distributed + returned by distributors - bread expenses
+        $calculatedRemainingBundles = $previousCarryOverBundles + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses;
         if ($calculatedRemainingBundles < 0) {
             $calculatedRemainingBundles = 0;
         }
@@ -250,11 +251,12 @@ class WorkDayController extends Controller
         }
 
         // Auto-calculate bundles from shift data
-        $workDay->load(['workerShifts', 'distributions', 'distributorReturns']);
+        $workDay->load(['workerShifts', 'distributions', 'distributorReturns', 'expenses']);
 
         $bundlesReturnedByShifts = $workDay->workerShifts->sum('bundles_returned');
         $bundlesDistributed = $workDay->distributions->sum('bundle_count');
         $bundlesReturnedByDistributors = $workDay->distributorReturns->sum('bundle_count');
+        $breadExpenses = $workDay->expenses->where('category', 'bread')->sum('quantity');
 
         $previousDay = WorkDay::where('status', 'closed')
             ->where('id', '<', $workDay->id)
@@ -262,7 +264,7 @@ class WorkDayController extends Controller
             ->first();
         $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
 
-        $calculatedBundles = $previousCarryOverBundles + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors;
+        $calculatedBundles = $previousCarryOverBundles + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses;
         if ($calculatedBundles < 0) {
             $calculatedBundles = 0;
         }

@@ -12,7 +12,7 @@ class Expense extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'work_day_id', 'admin_id', 'category', 'title', 'amount',
+        'work_day_id', 'admin_id', 'category', 'quantity', 'unit_price', 'title', 'amount',
         'currency_id', 'exchange_rate', 'notes',
     ];
 

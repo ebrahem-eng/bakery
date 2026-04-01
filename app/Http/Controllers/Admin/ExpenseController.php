@@ -36,9 +36,11 @@ class ExpenseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'category' => 'required|in:personal,operating,logistics,other',
-            'title' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0.01',
+            'category' => 'required|in:personal,operating,logistics,other,bread',
+            'quantity' => 'nullable|required_if:category,bread|integer|min:1',
+            'unit_price' => 'nullable|required_if:category,bread|numeric|min:0.01',
+            'title' => 'nullable|required_unless:category,bread|string|max:255',
+            'amount' => 'nullable|required_unless:category,bread|numeric|min:0.01',
             'currency_id' => 'required|exists:currencies,id',
             'exchange_rate' => 'nullable|numeric|min:0.000001',
             'notes' => 'nullable|string',
@@ -61,15 +63,27 @@ class ExpenseController extends Controller
             }
         }
 
+        $amount = $request->amount;
+        $title = $request->title;
+        $notes = $request->notes;
+
+        if ($request->category === 'bread') {
+            $amount = $request->quantity * $request->unit_price;
+            $title = __('Bread Expense') . ' - ' . $request->quantity . ' ' . __('bundles');
+            $notes = $request->notes ?: ($request->quantity . ' ' . __('bundles') . ' @ ' . number_format($request->unit_price, 2) . ' ' . $currency->code);
+        }
+
         Expense::create([
             'work_day_id' => $activeWorkDay->id,
             'admin_id' => auth()->id(),
             'category' => $request->category,
-            'title' => $request->title,
-            'amount' => $request->amount,
+            'quantity' => $request->category === 'bread' ? $request->quantity : null,
+            'unit_price' => $request->category === 'bread' ? $request->unit_price : null,
+            'title' => $title,
+            'amount' => $amount,
             'currency_id' => $currency->id,
             'exchange_rate' => $rate,
-            'notes' => $request->notes,
+            'notes' => $notes,
         ]);
 
         return back()->with('success_message', __('Expense registered successfully.'));
