@@ -46,10 +46,7 @@
     </div>
 
 @php 
-    $pendingWorkers = $workers->filter(function($w) use ($activeWorkDay) {
-        return $w->attendances->isNotEmpty() && 
-               !$w->shifts->where('work_day_id', $activeWorkDay->id)->whereNull('check_out')->first();
-    });
+    $pendingWorkers = $pendingWorkersOverall;
 @endphp
 <br>
 @if($pendingWorkers->isNotEmpty())
@@ -315,6 +312,7 @@
         </div>
     @endforeach
 </div>
-
-
+<div class="mt-8">
+    {{ $workers->links() }}
+</div>
 @endsection

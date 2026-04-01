@@ -32,9 +32,18 @@ class WorkerAttendanceController extends Controller
                 $query->where('work_day_id', $activeWorkDay->id);
             },
             'currency',
-        ])->get();
+        ])->paginate(12)->withQueryString();
 
         $currencies = Currency::all();
+
+        // Calculate total pending workers (present but no active shift) across ALL pages
+        $allWorkersToday = Worker::whereHas('attendances', function($q) use ($activeWorkDay) {
+            $q->where('work_day_id', $activeWorkDay->id);
+        })->with(['shifts' => function($q) use ($activeWorkDay) {
+            $q->where('work_day_id', $activeWorkDay->id)->whereNull('check_out');
+        }])->get();
+
+        $pendingWorkersOverall = $allWorkersToday->filter(fn($w) => $w->shifts->isEmpty());
 
         // Get the last closed shift's returned bundles for hand-off
         $lastShift = WorkerShift::where('work_day_id', $activeWorkDay->id)
@@ -45,7 +54,7 @@ class WorkerAttendanceController extends Controller
         $defaultBundles = $lastShift ? $lastShift->bundles_returned : 0;
         $defaultPricePerBundle = Setting::get('default_price_per_bundle', '0');
 
-        return view('Admin.Attendance.index', compact('workers', 'activeWorkDay', 'currencies', 'defaultBundles', 'defaultPricePerBundle'));
+        return view('Admin.Attendance.index', compact('workers', 'activeWorkDay', 'currencies', 'defaultBundles', 'defaultPricePerBundle', 'pendingWorkersOverall'));
     }
 
     public function presence()
