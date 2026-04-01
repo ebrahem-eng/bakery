@@ -17,47 +17,44 @@ class RolesAndPermissionsSeeder extends Seeder
         // ── List of All Permissions ─────────────────────────────────────────
         $permissions = [
             // ── System Access ──────────────────────────────────────────
-            'access admin panel', 
-            'view dashboard', 
-            'view analytics', 
-            'view quick access',
+            'access admin panel', 'view dashboard', 'view analytics', 'view quick access',
 
             // ── Work Days ──────────────────────────────────────────────
             'view work days', 'create work days', 'edit work days', 'delete work days', 'filter work days',
 
             // ── Warehouse & Materials ──────────────────────────────────
-            'view warehouse', 'manage inventory', 'manage categories', 'filter warehouse',
+            'view warehouse', 'create warehouse', 'edit warehouse', 'delete warehouse', 'filter warehouse',
 
             // ── Suppliers ──────────────────────────────────────────────
             'view suppliers', 'create suppliers', 'edit suppliers', 'delete suppliers', 'filter suppliers',
 
             // ── Supplies (Purchases) ───────────────────────────────────
-            'view supplies', 'create supplies', 'pay supplies', 'filter supplies',
+            'view supplies', 'create supplies', 'edit supplies', 'delete supplies', 'filter supplies', 'pay supplies',
 
             // ── Distributors ───────────────────────────────────────────
             'view distributors', 'create distributors', 'edit distributors', 'delete distributors', 'filter distributors',
 
             // ── Sales / Distributions ──────────────────────────────────
-            'view distributions', 'create distributions', 'return distributions', 'filter distributions',
+            'view distributions', 'create distributions', 'edit distributions', 'delete distributions', 'filter distributions', 'return distributions',
 
             // ── Accounts & Ledger ───────────────────────────────────────
-            'view accounts', 'view ledger', 'view debts', 'pay debts', 'filter accounts',
+            'view accounts', 'view ledger', 'view debts', 'filter accounts', 'filter ledger', 'pay debts',
 
             // ── Expenses ───────────────────────────────────────────────
-            'view expenses', 'create expenses', 'delete expenses', 'filter expenses',
+            'view expenses', 'create expenses', 'edit expenses', 'delete expenses', 'filter expenses',
 
             // ── Personnel (HR) ─────────────────────────────────────────
             'view workers', 'create workers', 'edit workers', 'delete workers', 'filter workers',
 
             // ── Attendance & Shifts ────────────────────────────────────
-            'view attendance', 'manage attendance', 'view presence', 'manage presence', 'filter attendance',
+            'view attendance', 'create attendance', 'edit attendance', 'delete attendance', 'view presence', 'create presence', 'filter attendance',
 
             // ── Wages & Payments ───────────────────────────────────────
-            'view wages', 'manage wages', 'filter wages',
+            'view wages', 'create wages', 'edit wages', 'delete wages', 'filter wages',
 
             // ── Administration ─────────────────────────────────────────
             'view admins', 'create admins', 'edit admins', 'delete admins',
-            'view roles', 'create roles', 'edit roles', 'delete roles',
+            'view roles', 'create roles', 'edit roles', 'delete roles', 'manage roles',
 
             // ── Logs & Settings ────────────────────────────────────────
             'view logs', 'clear logs', 'filter logs',
@@ -84,7 +81,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view warehouse', 'filter warehouse',
             'view distributions', 'create distributions', 'filter distributions',
             'view expenses', 'create expenses', 'filter expenses',
-            'view workers', 'view attendance', 'filter attendance',
+            'view workers', 'view attendance', 'filter attendance', 'view presence',
         ]);
     }
 }

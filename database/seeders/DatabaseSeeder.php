@@ -24,6 +24,6 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminSeeder::class);
 
         // 3. Realistic Application Data for Testing
-        $this->call(SystemTestingSeeder::class);
+        // $this->call(SystemTestingSeeder::class);
     }
 }

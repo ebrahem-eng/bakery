@@ -525,6 +525,7 @@
         </table>
     </div>
 </div>
+@endcan
 
 @endsection
 
