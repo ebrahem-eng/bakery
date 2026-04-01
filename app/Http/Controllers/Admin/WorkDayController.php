@@ -19,6 +19,16 @@ class WorkDayController extends Controller
         return view('Admin.WorkDays.index', compact('workDays', 'activeWorkDay'));
     }
 
+    public function create()
+    {
+        $active = WorkDay::where('status', 'active')->first();
+        if ($active) {
+            return redirect()->route('admin.work_days.index')->with('error', __('You must close the currently active work day before starting a new one.'));
+        }
+
+        return view('Admin.WorkDays.create');
+    }
+
     public function show($id)
     {
         $workDay = WorkDay::with([

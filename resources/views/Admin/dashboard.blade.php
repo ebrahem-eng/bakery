@@ -78,7 +78,7 @@
         </div>
     </div>
 @else
-    <div x-data="{ showCustomModal: false }" class="glass-panel rounded-2xl border border-slate-200 dark:border-slate-500/20 bg-slate-100/50 dark:bg-black/20 p-6 mb-8 text-center relative overflow-hidden group">
+    <div class="glass-panel rounded-2xl border border-slate-200 dark:border-slate-500/20 bg-slate-100/50 dark:bg-black/20 p-6 mb-8 text-center relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <div class="relative z-10">
             <div class="w-16 h-16 mx-auto bg-slate-200 dark:bg-slate-800/50 text-slate-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -109,54 +109,11 @@
                 </form>
 
                 @can('create work days')
-                <button type="button" @click="showCustomModal = true" class="px-8 py-4 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white border border-indigo-500/30 font-black rounded-xl text-sm shadow-[0_10px_25px_rgba(99,102,241,0.15)] transition-all uppercase tracking-widest">
+                <a href="{{ route('admin.work_days.create') }}" class="px-8 py-4 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white border border-indigo-500/30 font-black rounded-xl text-sm shadow-[0_10px_25px_rgba(99,102,241,0.15)] transition-all uppercase tracking-widest">
                     {{ __('Start Custom Work Day') }}
-                </button>
+                </a>
                 @endcan
             </div>
-
-            <!-- Custom Workday Modal -->
-            @can('create work days')
-            <div x-show="showCustomModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                    <!-- Background overlay -->
-                    <div x-show="showCustomModal" x-transition.opacity class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" @click="showCustomModal = false"></div>
-                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-                    <!-- Modal panel -->
-                    <div x-show="showCustomModal" x-transition.scale.origin.bottom class="inline-block align-bottom glass-panel rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full border border-slate-200 dark:border-white/10">
-                        <form action="{{ route('admin.work_days.store') }}" method="POST">
-                            @csrf
-                            <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                <div class="sm:flex sm:items-start">
-                                    <div class="mx-auto shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-500/20 sm:mx-0 sm:h-10 sm:w-10">
-                                        <svg class="h-6 w-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                    </div>
-                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                        <h3 class="text-lg leading-6 font-medium text-slate-900 dark:text-white" id="modal-title">{{ __('Start Custom Work Day') }}</h3>
-                                        <div class="mt-2 text-left">
-                                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">{{ __('Create a retroactive accounting period. Ensure the selected date does not already have an existing workday.') }}</p>
-                                            
-                                            <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Historical Start Details') }} <span class="text-red-500">*</span></label>
-                                            <input type="datetime-local" name="custom_start_time" required
-                                                class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-slate-50 dark:bg-black/20 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-200 dark:border-white/5">
-                                <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
-                                    {{ __('Start Custom Work Day') }}
-                                </button>
-                                <button type="button" @click="showCustomModal = false" class="mt-3 w-full inline-flex justify-center rounded-xl border border-slate-300 dark:border-white/10 shadow-sm px-4 py-2 bg-white dark:bg-black/40 text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                                    {{ __('Cancel') }}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            @endcan
-
         </div>
     </div>
 @endif
