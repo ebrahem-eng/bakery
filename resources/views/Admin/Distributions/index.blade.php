@@ -40,6 +40,7 @@
     </div>
 @endif
 
+@can('filter distributions')
 <!-- ═══════════════ PROFESSIONAL FILTER BAR ═══════════════ -->
 <div class="mb-8 glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
     <div class="p-4 sm:p-5 bg-slate-50 dark:bg-black/20 border-b border-slate-200 dark:border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -132,6 +133,7 @@
         </template>
     </div>
 </div>
+@endcan
 
 <!-- ═══════════════ CARDS GRID ═══════════════ -->
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

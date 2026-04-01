@@ -27,6 +27,13 @@ class AuthController extends Controller
         ]);
 
         if (auth()->guard('admin')->attempt($credentials)) {
+            $admin = auth()->guard('admin')->user();
+            
+            if ($admin->status !== 'active' || !$admin->can('access admin panel')) {
+                auth()->guard('admin')->logout();
+                return back()->with('error_message', 'You do not have permission to access the admin panel.');
+            }
+
             $request->session()->regenerate();
 
             return redirect()->route('admin.dashboard');

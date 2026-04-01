@@ -22,6 +22,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Log Payment Form -->
     <div class="lg:col-span-1">
+        @can('create wages')
         <div class="glass-panel p-6 rounded-3xl border border-white/5 sticky top-8"
              x-data="{ 
                 selectedWorkerId: '',
@@ -99,11 +100,19 @@
                 </button>
             </form>
         </div>
+        @else
+        <div class="p-6 bg-amber-500/10 border border-amber-500/20 rounded-3xl text-center">
+            <svg class="w-12 h-12 mx-auto text-amber-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+            <p class="text-sm font-bold text-amber-500 uppercase tracking-widest">{{ __('Restricted Access') }}</p>
+            <p class="text-[11px] text-slate-400 mt-2">{{ __('You do not have permission to record payments.') }}</p>
+        </div>
+        @endcan
     </div>
 
     <!-- Payment History Table -->
     <div class="lg:col-span-2">
         <div class="glass-panel overflow-hidden rounded-3xl border border-white/5 shadow-xl">
+            @can('filter wages')
             <div class="p-6 bg-white/5 border-b border-white/5 space-y-4">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <h3 class="text-sm font-bold text-white flex items-center gap-2">
@@ -132,6 +141,7 @@
                     </div>
                 </form>
             </div>
+            @endcan
             
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }} text-slate-300">

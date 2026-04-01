@@ -9,10 +9,12 @@
                 <span class="font-bold text-emerald-500">{{ $activeWorkDay->start_time->translatedFormat('Y-m-d h:i A') }}</span>
             </p>
         </div>
+        @can('create attendance')
         <a href="{{ route('admin.attendance.presence') }}" class="bg-emerald-500 hover:bg-emerald-400 text-black px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center shadow-lg shadow-emerald-500/20">
             <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
             {{ __('Manage Daily Presence') }}
         </a>
+        @endcan
     </div>
 
     <br>
@@ -151,6 +153,7 @@
 
             <!-- Actions Footer -->
             <div class="p-4 border-t border-white/5 bg-black/20 flex gap-2">
+                @can('create attendance')
                 @if(!$activeShift)
                         @if(!$isPresent)
                             <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
@@ -202,17 +205,17 @@
                                   const found = curr.find(c => c.id == id);
                                   this.isLocal = found ? found.is_default : true;
                                   this.exchangeRate = found ? found.exchange_rate : 1;
-                              },
-                              confirmSubmit(e) {
-                                  if (this.hasMismatch) {
-                                      const diff = parseFloat(this.cashDiff);
-                                      const type = diff > 0 ? '{{ __("Surplus") }}' : '{{ __("Deficit") }}';
-                                      const msg = '{{ __("The cash collected does not match the expected amount.") }}\n' + type + ': ' + Math.abs(diff).toFixed(2) + '\n\n{{ __("Do you want to proceed?") }}';
-                                      if (!confirm(msg)) {
-                                          e.preventDefault();
-                                      }
-                                  }
-                              }
+                               },
+                               confirmSubmit(e) {
+                                   if (this.hasMismatch) {
+                                       const diff = parseFloat(this.cashDiff);
+                                       const type = diff > 0 ? '{{ __("Surplus") }}' : '{{ __("Deficit") }}';
+                                       const msg = '{{ __("The cash collected does not match the expected amount.") }}\n' + type + ': ' + Math.abs(diff).toFixed(2) + '\n\n{{ __("Do you want to proceed?") }}';
+                                       if (!confirm(msg)) {
+                                           e.preventDefault();
+                                       }
+                                   }
+                               }
                           }"
                           @submit="confirmSubmit($event)">
                         @csrf
@@ -307,6 +310,8 @@
                         </button>
                     </form>
                 @endif
+                @endcan
+            </div>
             </div>
 
         </div>

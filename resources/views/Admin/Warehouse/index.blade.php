@@ -23,12 +23,14 @@
             </div>
         </div>
 
+        @can('manage inventory')
         <div class="flex items-center gap-3">
             <a href="{{ route('admin.warehouse.inventory.create') }}" class="glass-btn px-4 py-2.5 rounded-xl text-sm font-bold bg-amber-500 text-amber-950 hover:bg-amber-400 border border-amber-600 transition-all shadow-lg shadow-amber-500/20 flex items-center">
                 <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
                 {{ __('Take Inventory') }}
             </a>
         </div>
+        @endcan
     </div>
 
     {{-- Stock Overview Cards --}}
@@ -62,6 +64,7 @@
             </div>
     </div>
 
+    @can('filter warehouse')
     {{-- History Filters --}}
     <div class="glass-panel p-4 rounded-2xl border border-slate-200 dark:border-white/5 mb-6">
         <form action="{{ route('admin.warehouse.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
@@ -85,6 +88,7 @@
             </div>
         </form>
     </div>
+    @endcan
 
     {{-- History Tabs --}}
     <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden" x-data="{ tab: 'supplies' }">

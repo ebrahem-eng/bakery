@@ -22,6 +22,7 @@
 </div>
 @endif
 
+@can('filter workers')
 <!-- Filter Bar -->
 <div class="mb-6 glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
     <div class="p-4 bg-slate-50 dark:bg-black/20 border-b border-slate-200 dark:border-white/5 flex justify-between items-center">
@@ -54,6 +55,7 @@
         </div>
     </div>
 </div>
+@endcan
 
 <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
     <div class="overflow-x-auto custom-scrollbar">

@@ -77,17 +77,24 @@
 
     @foreach($stats as $key => $total)
         @if($key === 'worker_payments')
-        <a href="{{ route('admin.wages.index') }}" class="glass-panel p-4 rounded-2xl border border-emerald-500/30 dark:border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/20 transition-all group relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-2 opacity-10 group-hover:scale-110 transition-transform">
-                <svg class="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            @can('view wages')
+            <a href="{{ route('admin.wages.index') }}" class="glass-panel p-4 rounded-2xl border border-emerald-500/30 dark:border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/20 transition-all group relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-2 opacity-10 group-hover:scale-110 transition-transform">
+                    <svg class="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                </div>
+                <p class="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1 font-black">{{ $labels[$key] }}</p>
+                <p class="text-xl font-bold text-slate-900 dark:text-white">{{ number_format($total, 0) }} <span class="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase ml-1">{{ $defaultCurrency->code ?? '' }}</span></p>
+                <div class="mt-2 text-[9px] text-emerald-500 font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                    {{ __('Manage Payments') }}
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </div>
+            </a>
+            @else
+            <div class="glass-panel p-4 rounded-2xl border border-emerald-500/20 dark:border-emerald-500/10 bg-emerald-500/5 transition-colors">
+                <p class="text-xs text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-semibold">{{ $labels[$key] }}</p>
+                <p class="text-xl font-bold text-slate-900 dark:text-white">{{ number_format($total, 2) }} <span class="text-sm text-emerald-600 dark:text-emerald-400">{{ $defaultCurrency->code ?? '' }}</span></p>
             </div>
-            <p class="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1 font-black">{{ $labels[$key] }}</p>
-            <p class="text-xl font-bold text-slate-900 dark:text-white">{{ number_format($total, 0) }} <span class="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase ml-1">{{ $defaultCurrency->code ?? '' }}</span></p>
-            <div class="mt-2 text-[9px] text-emerald-500 font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
-                {{ __('Manage Payments') }}
-                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-            </div>
-        </a>
+            @endcan
         @else
         <div class="glass-panel p-4 rounded-2xl border border-{{ $colors[$key] }}-500/20 dark:border-{{ $colors[$key] }}-500/10 bg-{{ $colors[$key] }}-500/5 transition-colors">
             <p class="text-xs text-{{ $colors[$key] }}-600 dark:text-{{ $colors[$key] }}-400 uppercase tracking-wider mb-1 font-semibold">{{ $labels[$key] }}</p>
@@ -99,6 +106,7 @@
 
 <!-- Table with Filters -->
 <div x-data="expenseFilter()" x-cloak>
+@can('filter expenses')
 <!-- Filter Bar -->
 <div class="mb-6 glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
     <div class="p-4 bg-slate-50 dark:bg-black/20 border-b border-slate-200 dark:border-white/5 flex justify-between items-center">
@@ -142,6 +150,7 @@
         </div>
     </div>
 </div>
+@endcan
 
 <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
     <div class="overflow-x-auto">
@@ -279,6 +288,7 @@ function expenseFilter() {
 }
 </script>
 
+@can('create expenses')
 <!-- Add Expense Modal -->
 <div x-data="{ 
          open: false, 
@@ -409,4 +419,5 @@ function expenseFilter() {
         </div>
     </div>
 </div>
+@endcan
 @endsection

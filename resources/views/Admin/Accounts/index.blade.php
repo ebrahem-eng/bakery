@@ -1,6 +1,7 @@
 @extends('layouts.Admin.App')
 
 @section('content')
+@can('filter ledger')
 {{-- ── Header + Period Filter ─────────────────────────────── --}}
 <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
     <div>
@@ -70,6 +71,7 @@
         </div>
     </form>
 </div>
+@endcan
 
 
 {{-- ═══════════════════════════════════════════════════════════ --}}

@@ -29,14 +29,14 @@
                 @endcan
 
                 <!-- Accounts -->
-                @can('view accounts')
+                @if(auth('admin')->user() && (auth('admin')->user()->can('view ledger') || auth('admin')->user()->can('view debts')))
                 <a href="{{ route('admin.accounts.index') }}" class="{{ request()->routeIs('admin.accounts.*') ? 'sidebar-item-active text-amber-600 dark:text-[#fde047]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
                     <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.accounts.*') ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                     {{ __('Accounts') }}
                 </a>
-                @endcan
+                @endif
 
                 <!-- Work Days -->
                 @can('view work days')
@@ -49,7 +49,7 @@
                 @endcan
 
                 <!-- Supplies & Suppliers -->
-                @if(auth('admin')->user() && (auth('admin')->user()->can('view supplies') || auth('admin')->user()->can('view suppliers')))
+                @if(auth('admin')->user() && (auth('admin')->user()->can('view supplies') || auth('admin')->user()->can('view suppliers') || auth('admin')->user()->can('filter supplies') || auth('admin')->user()->can('filter suppliers')))
                 <div x-data="{ open: {{ request()->routeIs('admin.suppliers.*') || request()->routeIs('admin.supplies.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="{{ request()->routeIs('admin.suppliers.*') || request()->routeIs('admin.supplies.*') ? 'sidebar-item-active text-amber-500' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} w-full flex justify-between items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
                         <div class="flex items-center">
@@ -92,7 +92,7 @@
                 @endcan
 
                 <!-- Distributors -->
-                @if(auth('admin')->user() && (auth('admin')->user()->can('view distributions') || auth('admin')->user()->can('view distributors')))
+                @if(auth('admin')->user() && (auth('admin')->user()->can('view distributions') || auth('admin')->user()->can('view distributors') || auth('admin')->user()->can('filter distributions') || auth('admin')->user()->can('filter distributors')))
                 <div x-data="{ open: {{ request()->routeIs('admin.distributors.*') || request()->routeIs('admin.distributions.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="{{ request()->routeIs('admin.distributors.*') || request()->routeIs('admin.distributions.*') ? 'sidebar-item-active text-amber-500' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} w-full flex justify-between items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
                         <div class="flex items-center">
@@ -115,7 +115,7 @@
                 @endif
 
                 <!-- Workers (HR) -->
-                @if(auth('admin')->user() && (auth('admin')->user()->can('view workers') || auth('admin')->user()->can('view attendance')))
+                @if(auth('admin')->user() && (auth('admin')->user()->can('view workers') || auth('admin')->user()->can('view attendance') || auth('admin')->user()->can('view presence') || auth('admin')->user()->can('view wages')))
                 <div x-data="{ open: {{ request()->routeIs('admin.workers.*') || request()->routeIs('admin.attendance.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="{{ request()->routeIs('admin.workers.*') || request()->routeIs('admin.attendance.*') ? 'sidebar-item-active text-amber-500' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} w-full flex justify-between items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors">
                         <div class="flex items-center">
@@ -156,7 +156,7 @@
                 @endcan
 
                 <!-- Activity Log -->
-                @if(auth('admin')->user() && auth('admin')->user()->can('view activity log'))
+                @if(auth('admin')->user() && auth('admin')->user()->can('view logs'))
                 <a href="{{ route('admin.activity-log.index') }}" class="{{ request()->routeIs('admin.activity-log.*') ? 'sidebar-item-active text-amber-600 dark:text-[#fde047]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
                     <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.activity-log.*') ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />

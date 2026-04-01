@@ -40,9 +40,9 @@ Route::group(['middleware' => ['admin.auth']], function () {
 
     // ── Accounts ──────────────────────────────────────────────────────
     Route::get('/accounts', [AccountsController::class, 'index'])
-        ->middleware('permission:view accounts,admin')->name('accounts.index');
+        ->middleware('permission:view ledger,admin')->name('accounts.index');
     Route::get('/accounts/debts', [AccountsController::class, 'debts'])
-        ->middleware('permission:view accounts,admin')->name('accounts.debts');
+        ->middleware('permission:view debts,admin')->name('accounts.debts');
 
     // ── Roles & Permissions ────────────────────────────────────────────
     Route::resource('roles', RoleController::class)->middleware('permission:view roles,admin');
@@ -52,9 +52,18 @@ Route::group(['middleware' => ['admin.auth']], function () {
 
     // ── Work Days ──────────────────────────────────────────────────────
     Route::group(['middleware' => ['permission:view work days,admin']], function () {
-        Route::resource('work_days', WorkDayController::class);
-        Route::get('/work_days/{workDay}/close', [WorkDayController::class, 'showCloseForm'])->name('work_days.showCloseForm');
-        Route::post('/work_days/{workDay}/close', [WorkDayController::class, 'close'])->name('work_days.close');
+        Route::get('work_days', [WorkDayController::class, 'index'])->name('work_days.index');
+        Route::get('work_days/create', [WorkDayController::class, 'create'])->name('work_days.create')->middleware('permission:create work days,admin');
+        Route::post('work_days', [WorkDayController::class, 'store'])->name('work_days.store')->middleware('permission:create work days,admin');
+        Route::get('work_days/{work_day}', [WorkDayController::class, 'show'])->name('work_days.show');
+        Route::get('work_days/{work_day}/edit', [WorkDayController::class, 'edit'])->name('work_days.edit')->middleware('permission:edit work days,admin');
+        Route::put('work_days/{work_day}', [WorkDayController::class, 'update'])->name('work_days.update')->middleware('permission:edit work days,admin');
+        Route::delete('work_days/{work_day}', [WorkDayController::class, 'destroy'])->name('work_days.destroy')->middleware('permission:delete work days,admin');
+        
+        Route::get('/work_days/{workDay}/close', [WorkDayController::class, 'showCloseForm'])
+            ->middleware('permission:edit work days,admin')->name('work_days.showCloseForm');
+        Route::post('/work_days/{workDay}/close', [WorkDayController::class, 'close'])
+            ->middleware('permission:edit work days,admin')->name('work_days.close');
     });
 
     // ── Suppliers ──────────────────────────────────────────────────────
@@ -62,16 +71,22 @@ Route::group(['middleware' => ['admin.auth']], function () {
 
     // ── Supplies (Purchases) ───────────────────────────────────────────
     Route::group(['middleware' => ['permission:view supplies,admin']], function () {
-        Route::resource('supplies', SupplyController::class)->except(['edit', 'update', 'destroy']);
-        Route::get('supplies/{supply}/pay', [SupplyController::class, 'showPaymentForm'])->name('supplies.pay');
-        Route::post('supplies/{supply}/pay', [SupplyController::class, 'registerPayment'])->name('supplies.pay.submit');
+        Route::get('supplies', [SupplyController::class, 'index'])->name('supplies.index');
+        Route::get('supplies/create', [SupplyController::class, 'create'])->name('supplies.create')->middleware('permission:create supplies,admin');
+        Route::post('supplies', [SupplyController::class, 'store'])->name('supplies.store')->middleware('permission:create supplies,admin');
+        Route::get('supplies/{supply}', [SupplyController::class, 'show'])->name('supplies.show');
+        
+        Route::get('supplies/{supply}/pay', [SupplyController::class, 'showPaymentForm'])
+            ->middleware('permission:pay supplies,admin')->name('supplies.pay');
+        Route::post('supplies/{supply}/pay', [SupplyController::class, 'registerPayment'])
+            ->middleware('permission:pay supplies,admin')->name('supplies.pay.submit');
     });
 
     // ── Warehouse ──────────────────────────────────────────────────────
     Route::group(['prefix' => 'warehouse', 'as' => 'warehouse.', 'middleware' => ['permission:view warehouse,admin']], function () {
         Route::get('/', [\App\Http\Controllers\Admin\WarehouseController::class, 'index'])->name('index');
-        Route::get('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'create'])->name('inventory.create');
-        Route::post('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'store'])->name('inventory.store');
+        Route::get('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'create'])->middleware('permission:manage inventory,admin')->name('inventory.create');
+        Route::post('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'store'])->middleware('permission:manage inventory,admin')->name('inventory.store');
     });
 
     // ── Distributions (Sales) ──────────────────────────────────────────
@@ -81,17 +96,17 @@ Route::group(['middleware' => ['admin.auth']], function () {
 
     Route::group(['middleware' => ['permission:view distributions,admin']], function () {
         Route::get('distributions', [DistributionController::class, 'index'])->name('distributions.index');
-        Route::post('distributions/store', [DistributionController::class, 'storeDistribution'])->name('distributions.store');
-        Route::post('distributions/return', [DistributionController::class, 'storeReturn'])->name('distributions.return');
-        Route::post('distributions/transaction', [DistributionController::class, 'storeTransaction'])->name('distributions.transaction');
+        Route::post('distributions/store', [DistributionController::class, 'storeDistribution'])->middleware('permission:create distributions,admin')->name('distributions.store');
+        Route::post('distributions/return', [DistributionController::class, 'storeReturn'])->middleware('permission:return distributions,admin')->name('distributions.return');
+        Route::post('distributions/transaction', [DistributionController::class, 'storeTransaction'])->middleware('permission:create distributions,admin')->name('distributions.transaction');
     });
 
     // ── Expenses ───────────────────────────────────────────────────────
     Route::group(['middleware' => ['permission:view expenses,admin']], function () {
         Route::get('expenses', [ExpenseController::class, 'index'])->name('expenses.index');
-        Route::post('expenses/store', [ExpenseController::class, 'store'])->name('expenses.store');
+        Route::post('expenses/store', [ExpenseController::class, 'store'])->middleware('permission:create expenses,admin')->name('expenses.store');
         Route::get('expenses/{expense}', [ExpenseController::class, 'show'])->name('expenses.show');
-        Route::delete('expenses/{expense}', [ExpenseController::class, 'destroy'])->name('expenses.destroy');
+        Route::delete('expenses/{expense}', [ExpenseController::class, 'destroy'])->middleware('permission:delete expenses,admin')->name('expenses.destroy');
     });
 
     // ── Workers (HR & Attendance) ────────────────────────────────────────
@@ -118,11 +133,11 @@ Route::group(['middleware' => ['admin.auth']], function () {
     });
 
     // ── Activity Log (Monitoring) ─────────────────────────────────────
-    Route::middleware('permission:view activity log,admin')->group(function () {
+    Route::middleware('permission:view logs,admin')->group(function () {
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::get('activity-log/{activity}', [ActivityLogController::class, 'show'])->name('activity-log.show');
-        Route::delete('activity-log/{activity}', [ActivityLogController::class, 'destroy'])->name('activity-log.destroy');
-        Route::delete('activity-log-clear/all', [ActivityLogController::class, 'clear'])->name('activity-log.clear');
+        Route::delete('activity-log/{activity}', [ActivityLogController::class, 'destroy'])->middleware('permission:clear logs,admin')->name('activity-log.destroy');
+        Route::delete('activity-log-clear/all', [ActivityLogController::class, 'clear'])->middleware('permission:clear logs,admin')->name('activity-log.clear');
     });
 
     // ── Settings ──────────────────────────────────────────────────────
