@@ -62,6 +62,7 @@
                     </div>
                 </div>
             </div>
+        @endforeach
     </div>
 
     @can('filter warehouse')
