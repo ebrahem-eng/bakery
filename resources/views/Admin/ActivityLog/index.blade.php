@@ -63,7 +63,7 @@
             </h3>
             <a href="{{ route('admin.activity-log.index') }}" class="text-[10px] uppercase tracking-widest font-bold text-slate-500 hover:text-violet-500 transition-colors">{{ __('Reset All') }}</a>
         </div>
-        <form method="GET" action="{{ route('admin.activity-log.index') }}" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <form method="GET" action="{{ route('admin.activity-log.index') }}" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
             <div>
                 <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Search Description') }}</label>
                 <div class="relative">
@@ -97,6 +97,14 @@
                     <option value="{{ $admin->id }}" {{ request('causer_id') == $admin->id ? 'selected' : '' }}>{{ $admin->first_name }} {{ $admin->last_name }}</option>
                     @endforeach
                 </select>
+            </div>
+            <div>
+                <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Date From') }}</label>
+                <input type="date" name="date_from" value="{{ request('date_from') }}" class="block w-full px-4 py-2 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-violet-500/50 transition-all">
+            </div>
+            <div>
+                <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Date To') }}</label>
+                <input type="date" name="date_to" value="{{ request('date_to') }}" class="block w-full px-4 py-2 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-violet-500/50 transition-all">
             </div>
             <div class="flex items-end">
                 <button type="submit" class="w-full bg-violet-500/10 text-violet-500 border border-violet-500/30 hover:bg-violet-500 hover:text-white transition-all px-4 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2">

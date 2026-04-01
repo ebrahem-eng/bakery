@@ -23,9 +23,16 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $period = $request->get('period', 'today');
-        $dateRange = $this->getDateRange($period);
-        $start = $dateRange['start'];
-        $end = $dateRange['end'];
+        
+        if ($request->filled('date_from') && $request->filled('date_to')) {
+            $start = \Carbon\Carbon::parse($request->date_from)->startOfDay();
+            $end = \Carbon\Carbon::parse($request->date_to)->endOfDay();
+            $period = 'custom';
+        } else {
+            $dateRange = $this->getDateRange($period);
+            $start = $dateRange['start'];
+            $end = $dateRange['end'];
+        }
 
         // ── Active work day (always shown) ────────────────────────────
         $activeWorkDay = WorkDay::where('status', 'active')

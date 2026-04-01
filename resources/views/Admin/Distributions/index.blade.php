@@ -51,7 +51,7 @@
         </h3>
         <button @click="resetFilters()" class="text-[10px] uppercase tracking-widest font-bold text-slate-500 hover:text-amber-500 transition-colors">{{ __('Reset All') }}</button>
     </div>
-    <div class="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         <!-- Search by Name -->
         <div>
             <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Search Name') }}</label>
@@ -73,6 +73,16 @@
                     <option value="{{ $code }}">{{ $code }}</option>
                 @endforeach
             </select>
+        </div>
+
+        <!-- Date Range -->
+        <div>
+            <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Date Range') }}</label>
+            <div class="flex items-center gap-2">
+                <input type="date" x-model="date_from" class="block w-full px-3 py-2 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500/50 transition-all">
+                <span class="text-slate-400 text-xs">-</span>
+                <input type="date" x-model="date_to" class="block w-full px-3 py-2 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500/50 transition-all">
+            </div>
         </div>
 
         <!-- Balance Status -->
@@ -141,6 +151,7 @@
              data-currency="{{ $distributor->currency->code }}"
              data-debt="{{ $netDebt }}"
              data-today-sales="{{ $todaySales }}"
+             data-date="{{ $distributor->created_at->format('Y-m-d') }}"
              x-show="shouldShow($el)"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 scale-95"
@@ -240,6 +251,8 @@ function distributionFilters() {
         searchName: '',
         filterCurrency: '',
         filterBalance: '',
+        date_from: '',
+        date_to: '',
         sortBy: 'name_asc',
         totalCount: document.querySelectorAll('.distributor-card').length,
         
@@ -252,6 +265,7 @@ function distributionFilters() {
             const name = el.dataset.name || '';
             const currency = el.dataset.currency || '';
             const debt = parseFloat(el.dataset.debt || 0);
+            const date = el.dataset.date || '';
 
             // Name filter
             if (this.searchName && !name.includes(this.searchName.toLowerCase())) return false;
@@ -263,6 +277,10 @@ function distributionFilters() {
             if (this.filterBalance === 'has_debt' && debt <= 0) return false;
             if (this.filterBalance === 'clear' && debt > 0) return false;
 
+            // Date filter
+            if (this.date_from && date < this.date_from) return false;
+            if (this.date_to && date > this.date_to) return false;
+
             return true;
         },
 
@@ -270,6 +288,8 @@ function distributionFilters() {
             this.searchName = '';
             this.filterCurrency = '';
             this.filterBalance = '';
+            this.date_from = '';
+            this.date_to = '';
             this.sortBy = 'name_asc';
         }
     }

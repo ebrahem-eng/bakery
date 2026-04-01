@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class WorkerWageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $activeWorkDay = WorkDay::where('status', 'active')->first();
         if (!$activeWorkDay) {
@@ -21,13 +21,27 @@ class WorkerWageController extends Controller
         $workers = Worker::with('currency')->get();
         $currencies = Currency::all();
         
-        $transactions = WorkerTransaction::with(['worker', 'currency', 'admin'])
-            ->where('work_day_id', $activeWorkDay->id)
-            ->whereIn('type', ['salary', 'wage', 'bonus'])
-            ->latest()
-            ->get();
+        $query = WorkerTransaction::with(['worker', 'currency', 'admin'])
+            ->whereIn('type', ['salary', 'wage', 'bonus', 'advance', 'allowance']);
 
-        return view('Admin.Workers.Wages.index', compact('activeWorkDay', 'workers', 'currencies', 'transactions'));
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // If no date filters, default to active work day
+        if (!$request->filled('date_from') && !$request->filled('date_to')) {
+            $query->where('work_day_id', $activeWorkDay->id);
+            $listTitle = __('Payments Released Today');
+        } else {
+            $listTitle = __('Payment History');
+        }
+
+        $transactions = $query->latest()->paginate(20)->withQueryString();
+
+        return view('Admin.Workers.Wages.index', compact('activeWorkDay', 'workers', 'currencies', 'transactions', 'listTitle'));
     }
 
     public function store(Request $request)

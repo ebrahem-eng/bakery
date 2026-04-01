@@ -104,11 +104,33 @@
     <!-- Payment History Table -->
     <div class="lg:col-span-2">
         <div class="glass-panel overflow-hidden rounded-3xl border border-white/5 shadow-xl">
-            <div class="p-6 bg-white/5 border-b border-white/5">
-                <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                    <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {{ __('Payments Released Today') }}
-                </h3>
+            <div class="p-6 bg-white/5 border-b border-white/5 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {{ $listTitle }}
+                    </h3>
+                    <a href="{{ route('admin.wages.index') }}" class="text-[10px] uppercase font-bold text-slate-500 hover:text-emerald-500 transition-all">{{ __('Show Today Only') }}</a>
+                </div>
+
+                <!-- Date Filter -->
+                <form action="{{ route('admin.wages.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <div class="relative group">
+                        <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1 tracking-widest">{{ __('From Date') }}</label>
+                        <input type="date" name="date_from" value="{{ request('date_from') }}" 
+                            class="w-full px-3 py-2 bg-[#0f1115] border border-white/10 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-emerald-500/50 transition-all">
+                    </div>
+                    <div class="relative group">
+                        <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1 tracking-widest">{{ __('To Date') }}</label>
+                        <div class="flex gap-2">
+                            <input type="date" name="date_to" value="{{ request('date_to') }}" 
+                                class="flex-1 w-full px-3 py-2 bg-[#0f1115] border border-white/10 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-emerald-500/50 transition-all">
+                            <button type="submit" class="p-2 bg-emerald-500 hover:bg-emerald-400 text-black rounded-xl transition-all shadow-lg shadow-emerald-500/20">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
             
             <div class="overflow-x-auto">
@@ -170,6 +192,12 @@
                     </tbody>
                 </table>
             </div>
+            
+            @if($transactions->hasPages())
+                <div class="p-4 border-t border-white/5">
+                    {{ $transactions->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </div>

@@ -27,9 +27,9 @@
             <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
             {{ __('Filter') }}
         </h3>
-        <button @click="search = ''; currentPage = 1" class="text-[10px] uppercase tracking-widest font-bold text-slate-500 hover:text-amber-500 transition-colors">{{ __('Reset All') }}</button>
+        <button @click="search = ''; date_from = ''; date_to = ''; currentPage = 1" class="text-[10px] uppercase tracking-widest font-bold text-slate-500 hover:text-amber-500 transition-colors">{{ __('Reset All') }}</button>
     </div>
-    <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="p-4 grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div>
             <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Search Role Name') }}</label>
             <div class="relative">
@@ -37,7 +37,15 @@
                 <input type="text" x-model="search" @input="currentPage = 1" placeholder="{{ __('e.g. Super Admin...') }}" class="block w-full {{ app()->getLocale() == 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4' }} py-2.5 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm placeholder-slate-400 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all">
             </div>
         </div>
-        <div class="flex items-end">
+        <div class="sm:col-span-2">
+            <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Date Range') }}</label>
+            <div class="flex items-center gap-2">
+                <input type="date" x-model="date_from" @change="currentPage = 1" class="block w-full px-3 py-2 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 transition-all">
+                <span class="text-slate-400 text-xs">-</span>
+                <input type="date" x-model="date_to" @change="currentPage = 1" class="block w-full px-3 py-2 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 transition-all">
+            </div>
+        </div>
+        <div class="flex items-end justify-end">
             <div class="text-[10px] uppercase tracking-widest font-bold text-slate-500">
                 {{ __('Results:') }} <span class="text-amber-500" x-text="filteredRows().length"></span> / {{ count($roles) }}
             </div>
@@ -59,6 +67,7 @@
                 @forelse($roles as $i => $role)
                 <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors table-row-item"
                     data-search="{{ mb_strtolower($role->name) }}"
+                    data-date="{{ $role->created_at->format('Y-m-d') }}"
                     x-show="isVisible($el, {{ $i }})" x-transition>
                     <td class="py-3 px-4 font-medium text-slate-900 dark:text-white">{{ __($role->name) }}</td>
                     <td class="py-3 px-4">
@@ -108,14 +117,35 @@
 <script>
 function tableFilter() {
     return {
-        search: '', currentPage: 1, perPage: 10,
+        search: '',
+        date_from: '',
+        date_to: '',
+        currentPage: 1,
+        perPage: 10,
         filteredRows() {
-            return [...document.querySelectorAll('.table-row-item')].filter(el => !this.search || (el.dataset.search || '').includes(this.search.toLowerCase()));
+            const rows = document.querySelectorAll('.table-row-item');
+            return [...rows].filter(el => {
+                const s = el.dataset.search || '';
+                const date = el.dataset.date || '';
+
+                if (this.search && !s.includes(this.search.toLowerCase())) return false;
+                if (this.date_from && date < this.date_from) return false;
+                if (this.date_to && date > this.date_to) return false;
+                return true;
+            });
         },
         totalPages() { return Math.max(1, Math.ceil(this.filteredRows().length / this.perPage)); },
         isVisible(el, index) {
-            if (this.search && !(el.dataset.search || '').includes(this.search.toLowerCase())) return false;
-            const idx = this.filteredRows().indexOf(el);
+            const s = el.dataset.search || '';
+            const date = el.dataset.date || '';
+
+            if (this.search && !s.includes(this.search.toLowerCase())) return false;
+            if (this.date_from && date < this.date_from) return false;
+            if (this.date_to && date > this.date_to) return false;
+
+            const filtered = this.filteredRows();
+            const idx = filtered.indexOf(el);
+            if (idx === -1) return false;
             const start = (this.currentPage - 1) * this.perPage;
             return idx >= start && idx < start + this.perPage;
         },

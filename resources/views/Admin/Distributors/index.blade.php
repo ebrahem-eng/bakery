@@ -1,7 +1,8 @@
 @extends('layouts.Admin.App')
 
 @section('content')
-<div class="mb-8 flex justify-between items-end">
+<div x-data="distributorFilter()" x-cloak>
+<div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end w-full gap-4">
     <div>
         <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Manage') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">{{ __('Distributors') }}</span></h1>
         <p class="text-sm text-slate-500 dark:text-slate-400">{{ __('Register and monitor all external sales distribution contacts.') }}</p>
@@ -14,6 +15,34 @@
         {{ __('Add Distributor') }}
     </a>
     @endcan
+</div>
+
+<!-- Filter Bar -->
+<div class="mb-6 glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
+    <div class="p-4 bg-slate-50 dark:bg-black/20 border-b border-slate-200 dark:border-white/5 flex justify-between items-center">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+            {{ __('Filter') }}
+        </h3>
+        <button @click="search = ''; date_from = ''; date_to = '';" class="text-[10px] uppercase tracking-widest font-bold text-slate-500 hover:text-amber-500 transition-colors">{{ __('Reset All') }}</button>
+    </div>
+    <div class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div>
+            <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Search Name') }}</label>
+            <div class="relative">
+                <svg class="w-4 h-4 text-slate-400 absolute top-1/2 -translate-y-1/2 {{ app()->getLocale() == 'ar' ? 'right-3' : 'left-3' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <input type="text" x-model="search" placeholder="{{ __('e.g. Ahmad, Ali...') }}" class="block w-full {{ app()->getLocale() == 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4' }} py-2.5 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm placeholder-slate-400 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium">
+            </div>
+        </div>
+        <div class="lg:col-span-2">
+            <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Date Range') }}</label>
+            <div class="flex items-center gap-2">
+                <input type="date" x-model="date_from" class="block w-full px-3 py-2 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 transition-all font-medium">
+                <span class="text-slate-400 text-xs">-</span>
+                <input type="date" x-model="date_to" class="block w-full px-3 py-2 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500/50 transition-all font-medium">
+            </div>
+        </div>
+    </div>
 </div>
 
 @if(session('success_message'))
@@ -39,7 +68,10 @@
             </thead>
             <tbody class="divide-y divide-slate-200 dark:divide-white/5">
                 @forelse($distributors as $distributor)
-                <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors table-row-item"
+                    data-search="{{ mb_strtolower($distributor->first_name . ' ' . $distributor->last_name . ' ' . $distributor->title) }}"
+                    data-date="{{ $distributor->created_at->format('Y-m-d') }}"
+                    x-show="isVisible($el)" x-transition>
                     <td class="p-4">
                         <div class="font-bold text-slate-900 dark:text-white">{{ $distributor->first_name }} {{ $distributor->last_name }}</div>
                     </td>
@@ -107,4 +139,26 @@
         </table>
     </div>
 </div>
+
+</div>
+
+<script>
+function distributorFilter() {
+    return {
+        search: '',
+        date_from: '',
+        date_to: '',
+        isVisible(el) {
+            const s = el.dataset.search || '';
+            const date = el.dataset.date || '';
+
+            if (this.search && !s.includes(this.search.toLowerCase())) return false;
+            if (this.date_from && date < this.date_from) return false;
+            if (this.date_to && date > this.date_to) return false;
+
+            return true;
+        }
+    }
+}
+</script>
 @endsection

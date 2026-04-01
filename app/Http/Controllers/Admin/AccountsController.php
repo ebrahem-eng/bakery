@@ -24,9 +24,16 @@ class AccountsController extends Controller
     public function index(Request $request)
     {
         $period = $request->get('period', 'all');
-        $dateRange = $this->getDateRange($period);
-        $start = $dateRange['start'];
-        $end = $dateRange['end'];
+        
+        if ($request->filled('date_from') && $request->filled('date_to')) {
+            $start = Carbon::parse($request->date_from)->startOfDay();
+            $end = Carbon::parse($request->date_to)->endOfDay();
+            $period = 'custom';
+        } else {
+            $dateRange = $this->getDateRange($period);
+            $start = $dateRange['start'];
+            $end = $dateRange['end'];
+        }
 
         $defaultCurrency = Currency::where('is_default', true)->first();
         $currencyCode = $defaultCurrency->code ?? 'SYP';

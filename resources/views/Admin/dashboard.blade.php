@@ -11,7 +11,7 @@
         </p>
     </div>
     {{-- Period Filter --}}
-    <div class="flex flex-wrap gap-2" id="period-filter">
+    <div class="flex flex-wrap items-center gap-3" id="period-filter">
         @php
             $filters = [
                 'today' => __('Today'),
@@ -22,15 +22,44 @@
                 'all' => __('All Time'),
             ];
         @endphp
-        @foreach($filters as $key => $label)
-            <a href="{{ route('admin.dashboard', ['period' => $key]) }}"
-               class="{{ $period === $key
-                   ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-[0_0_12px_rgba(245,158,11,0.3)]'
-                   : 'bg-white dark:bg-[#0f1115] text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10 hover:border-amber-400 hover:text-amber-600 dark:hover:text-amber-400' }}
-               px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all">
-                {{ $label }}
-            </a>
-        @endforeach
+        
+        <div class="flex flex-wrap gap-2">
+            @foreach($filters as $key => $label)
+                <a href="{{ route('admin.dashboard', ['period' => $key]) }}"
+                   class="{{ $period === $key
+                       ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-[0_0_12px_rgba(245,158,11,0.3)]'
+                       : 'bg-white dark:bg-[#0f1115] text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10 hover:border-amber-400 hover:text-amber-600 dark:hover:text-amber-400' }}
+                   px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all">
+                    {{ $label }}
+                </a>
+            @endforeach
+        </div>
+
+        {{-- Custom Date Range Vertical Separator (desktop) --}}
+        <div class="hidden md:block w-px h-8 bg-slate-200 dark:bg-white/10 mx-2"></div>
+
+        {{-- Standardized Custom Date Range Form --}}
+        <form action="{{ route('admin.dashboard') }}" method="GET" class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center gap-2 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/10 rounded-xl px-3 py-1.5 shadow-sm">
+                <input type="date" name="date_from" value="{{ request('date_from') }}" 
+                    class="bg-transparent border-none text-xs text-slate-700 dark:text-slate-300 focus:ring-0 p-0 w-28 font-medium"
+                    placeholder="{{ __('From') }}">
+                <span class="text-slate-400 text-[10px] font-black mx-1">→</span>
+                <input type="date" name="date_to" value="{{ request('date_to') }}" 
+                    class="bg-transparent border-none text-xs text-slate-700 dark:text-slate-300 focus:ring-0 p-0 w-28 font-medium"
+                    placeholder="{{ __('To') }}">
+                
+                <button type="submit" class="ml-2 p-1.5 bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white rounded-lg transition-all">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </button>
+            </div>
+            
+            @if($period === 'custom')
+                <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-red-500 uppercase tracking-tighter hover:underline">
+                    {{ __('Clear Range') }}
+                </a>
+            @endif
+        </form>
     </div>
 </div>
 

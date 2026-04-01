@@ -35,13 +35,23 @@ class WarehouseController extends Controller
         $currencyCode = \App\Models\Currency::where('is_default', true)->first()->code ?? 'SYP';
 
         // Recent supplies and consumptions for history
-        $recentSupplies = Supply::with(['category', 'supplier', 'workDay'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10, ['*'], 'supplies_page');
+        $suppliesQuery = Supply::with(['category', 'supplier', 'workDay'])
+            ->orderBy('created_at', 'desc');
 
-        $recentConsumptions = Consumption::with(['category', 'workDay'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10, ['*'], 'consumptions_page');
+        $consumptionsQuery = Consumption::with(['category', 'workDay'])
+            ->orderBy('created_at', 'desc');
+
+        if ($request->filled('date_from')) {
+            $suppliesQuery->whereDate('created_at', '>=', $request->date_from);
+            $consumptionsQuery->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $suppliesQuery->whereDate('created_at', '<=', $request->date_to);
+            $consumptionsQuery->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $recentSupplies = $suppliesQuery->paginate(10, ['*'], 'supplies_page')->withQueryString();
+        $recentConsumptions = $consumptionsQuery->paginate(10, ['*'], 'consumptions_page')->withQueryString();
 
         return view('Admin.Warehouse.index', compact('categories', 'recentSupplies', 'recentConsumptions', 'totalWarehouseValue', 'currencyCode'));
     }

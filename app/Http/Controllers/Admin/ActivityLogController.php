@@ -34,6 +34,14 @@ class ActivityLogController extends Controller
             $query->where('causer_id', $request->causer_id);
         }
 
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
         $activities = $query->paginate(25);
 
         // Get unique values for filter selects
