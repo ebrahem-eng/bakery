@@ -444,8 +444,14 @@
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit" 
-                        onclick="return confirm('{{ __('WARNING: Closing a work day freezes all sales, expenses, and HR shifts permanently. Proceed?') }}');"
+                    <button type="button" 
+                        @click="$dispatch('confirm-action', { 
+                            title: '{{ __('Close Work Day') }}', 
+                            message: '{{ __('WARNING: Closing a work day freezes all sales, expenses, and HR shifts permanently. Proceed?') }}', 
+                            type: 'danger', 
+                            confirmText: '{{ __('Close Permanently') }}',
+                            onConfirm: () => $el.closest('form').submit()
+                        })"
                         class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white py-5 rounded-2xl text-base font-black shadow-[0_10px_30px_rgba(239,68,68,0.3)] hover:shadow-[0_15px_40px_rgba(239,68,68,0.4)] transition-all uppercase tracking-[0.2em]">
                         {{ __('Close Work Day Permanently') }}
                     </button>

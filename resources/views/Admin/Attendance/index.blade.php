@@ -211,9 +211,17 @@
                                        const diff = parseFloat(this.cashDiff);
                                        const type = diff > 0 ? '{{ __("Surplus") }}' : '{{ __("Deficit") }}';
                                        const msg = '{{ __("The cash collected does not match the expected amount.") }}\n' + type + ': ' + Math.abs(diff).toFixed(2) + '\n\n{{ __("Do you want to proceed?") }}';
-                                       if (!confirm(msg)) {
-                                           e.preventDefault();
-                                       }
+                                       e.preventDefault();
+                                       const form = e.target;
+                                       window.dispatchEvent(new CustomEvent('confirm-action', {
+                                           detail: {
+                                               title: '{{ __("Cash Mismatch") }}',
+                                               message: msg,
+                                               type: 'warning',
+                                               confirmText: '{{ __("Proceed Anyway") }}',
+                                               onConfirm: () => form.submit()
+                                           }
+                                       }));
                                    }
                                }
                           }"

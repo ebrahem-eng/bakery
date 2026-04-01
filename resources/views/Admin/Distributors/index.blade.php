@@ -111,7 +111,7 @@
                         </a>
                         @endcan
                         @can('delete distributors')
-                        <form action="{{ route('admin.distributors.destroy', $distributor) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Are you sure you want to delete this distributor entirely?') }}');">
+                        <form action="{{ route('admin.distributors.destroy', $distributor) }}" method="POST" class="inline-block" data-confirm data-confirm-title="{{ __('Delete Distributor') }}" data-confirm-message="{{ __('Are you sure you want to delete this distributor entirely?') }}">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">

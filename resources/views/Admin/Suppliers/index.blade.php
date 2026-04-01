@@ -94,7 +94,7 @@
                         <a href="{{ route('admin.suppliers.edit', $supplier->id) }}" class="text-[#eab308] hover:text-white transition-colors {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('Edit') }}</a>
                         @endcan
                         @can('delete suppliers')
-                        <form action="{{ route('admin.suppliers.destroy', $supplier->id) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Delete Supplier completely?') }}');">
+                        <form action="{{ route('admin.suppliers.destroy', $supplier->id) }}" method="POST" class="inline-block" data-confirm data-confirm-title="{{ __('Delete Supplier') }}" data-confirm-message="{{ __('Are you sure you want to delete this supplier completely?') }}">
                             @csrf @method('DELETE')
                             <button type="submit" class="text-red-400 hover:text-white transition-colors">{{ __('Delete') }}</button>
                         </form>

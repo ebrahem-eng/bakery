@@ -49,6 +49,7 @@
             @include('layouts.Admin.Footer')
         </main>
     </div>
+    @include('layouts.Admin.ConfirmModal')
     @stack('scripts')
 </body>
 </html>

@@ -192,7 +192,7 @@
                             <td class="py-3 px-4 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">
                                 <button @click="editing = true" class="text-[#38bdf8] hover:text-blue-300 transition-colors text-xs font-bold {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('Edit') }}</button>
                                 @if(!$currency->is_default)
-                                <form action="{{ route('admin.settings.currencies.destroy', $currency->id) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Are you sure?') }}');">
+                                <form action="{{ route('admin.settings.currencies.destroy', $currency->id) }}" method="POST" class="inline-block" data-confirm data-confirm-title="{{ __('Delete Currency') }}" data-confirm-message="{{ __('Are you sure you want to delete this currency?') }}">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="text-red-400 hover:text-red-300 transition-colors text-xs font-bold">{{ __('Delete') }}</button>
                                 </form>
@@ -303,7 +303,7 @@
                         <template x-if="!editing">
                             <td class="py-3 px-4 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">
                                 <button @click="editing = true" class="text-[#38bdf8] hover:text-blue-300 transition-colors text-xs font-bold {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('Edit') }}</button>
-                                <form action="{{ route('admin.settings.categories.destroy', $category->id) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Are you sure?') }}');">
+                                <form action="{{ route('admin.settings.categories.destroy', $category->id) }}" method="POST" class="inline-block" data-confirm data-confirm-title="{{ __('Delete Category') }}" data-confirm-message="{{ __('Are you sure you want to delete this category?') }}">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="text-red-400 hover:text-red-300 transition-colors text-xs font-bold">{{ __('Delete') }}</button>
                                 </form>

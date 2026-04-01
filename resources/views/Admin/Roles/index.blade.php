@@ -82,7 +82,7 @@
                     </td>
                     <td class="py-3 px-4 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }} w-32">
                         <a href="{{ route('admin.roles.edit', $role->id) }}" class="text-[#38bdf8] hover:text-white transition-colors {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('Edit') }}</a>
-                        <form action="{{ route('admin.roles.destroy', $role->id) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ __('Are you sure?') }}');">
+                        <form action="{{ route('admin.roles.destroy', $role->id) }}" method="POST" class="inline-block" data-confirm data-confirm-title="{{ __('Delete Role') }}" data-confirm-message="{{ __('Are you sure you want to delete this role?') }}">
                             @csrf @method('DELETE')
                             <button type="submit" class="text-red-400 hover:text-white transition-colors">{{ __('Delete') }}</button>
                         </form>
