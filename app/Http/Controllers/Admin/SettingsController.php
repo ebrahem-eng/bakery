@@ -22,10 +22,11 @@ class SettingsController extends Controller
         $bakeryPhone = Setting::get('bakery_phone', '');
         $bakeryAddress = Setting::get('bakery_address', '');
         $defaultLang = Setting::get('default_language', 'ar');
+        $defaultPricePerBundle = Setting::get('default_price_per_bundle', '0');
 
         return view('Admin.Settings.index', compact(
             'currencies', 'categories',
-            'bakeryName', 'bakeryPhone', 'bakeryAddress', 'defaultLang'
+            'bakeryName', 'bakeryPhone', 'bakeryAddress', 'defaultLang', 'defaultPricePerBundle'
         ));
     }
 
@@ -38,12 +39,14 @@ class SettingsController extends Controller
             'bakery_phone' => 'nullable|string|max:50',
             'bakery_address' => 'nullable|string|max:500',
             'default_language' => 'nullable|in:ar,en',
+            'default_price_per_bundle' => 'nullable|numeric|min:0',
         ]);
 
         Setting::set('bakery_name', $request->bakery_name);
         Setting::set('bakery_phone', $request->bakery_phone);
         Setting::set('bakery_address', $request->bakery_address);
         Setting::set('default_language', $request->default_language);
+        Setting::set('default_price_per_bundle', $request->default_price_per_bundle);
 
         return redirect()->route('admin.settings.index')
             ->with('success', __('Settings saved successfully.'));

@@ -188,18 +188,44 @@
                     
                     <form action="{{ route('admin.attendance.clock_out', $activeShift->id) }}" method="POST" class="flex-1 space-y-2"
                           x-data="{ 
+                              bundlesReceived: {{ $activeShift->bundles_received }},
+                              bundlesReturned: 0,
+                              pricePerBundle: {{ $defaultPricePerBundle ?? 0 }},
+                              cashCollected: 0,
                               cashCurrencyId: '', 
                               isLocal: true,
                               exchangeRate: 1,
+                              get bundlesSold() { return Math.max(0, this.bundlesReceived - (parseInt(this.bundlesReturned) || 0)); },
+                              get expectedCash() { return (this.bundlesSold * (parseFloat(this.pricePerBundle) || 0)).toFixed(2); },
+                              get cashDiff() { return ((parseFloat(this.cashCollected) || 0) - parseFloat(this.expectedCash)).toFixed(2); },
+                              get hasMismatch() { return parseFloat(this.pricePerBundle) > 0 && Math.abs(parseFloat(this.cashDiff)) > 0.01; },
                               setCurrency(id) {
                                   this.cashCurrencyId = id;
                                   const curr = @js($currencies->map(fn($c) => ['id' => $c->id, 'is_default' => $c->is_default, 'exchange_rate' => $c->exchange_rate]));
                                   const found = curr.find(c => c.id == id);
                                   this.isLocal = found ? found.is_default : true;
                                   this.exchangeRate = found ? found.exchange_rate : 1;
+                              },
+                              confirmSubmit(e) {
+                                  if (this.hasMismatch) {
+                                      const diff = parseFloat(this.cashDiff);
+                                      const type = diff > 0 ? '{{ __("Surplus") }}' : '{{ __("Deficit") }}';
+                                      const msg = '{{ __("The cash collected does not match the expected amount.") }}\n' + type + ': ' + Math.abs(diff).toFixed(2) + '\n\n{{ __("Do you want to proceed?") }}';
+                                      if (!confirm(msg)) {
+                                          e.preventDefault();
+                                      }
+                                  }
                               }
-                          }">
+                          }"
+                          @submit="confirmSubmit($event)">
                         @csrf
+
+                        {{-- Bundles received (read-only info) --}}
+                        <div class="p-3 bg-blue-500/5 border border-blue-500/10 rounded-xl flex justify-between items-center">
+                            <span class="text-[10px] text-blue-500 uppercase font-bold tracking-wider">{{ __('Bundles Delivered') }}</span>
+                            <span class="text-sm font-black text-blue-400">{{ $activeShift->bundles_received }}</span>
+                        </div>
+
                         <div>
                             <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Shift End Time') }}</label>
                             <input type="datetime-local" name="check_out" value="{{ now()->translatedFormat('Y-m-d\TH:i') }}" 
@@ -208,17 +234,17 @@
 
                         <div>
                             <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Bundles Returned') }}</label>
-                            <input type="number" name="bundles_returned" value="0" min="0" 
+                            <input type="number" name="bundles_returned" x-model="bundlesReturned" value="0" min="0" :max="bundlesReceived"
                                 class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium"
                                 placeholder="0">
                         </div>
 
-                        {{-- Cash Collected --}}
                         <div>
-                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Cash Collected') }}</label>
-                            <input type="number" step="0.01" name="cash_collected" value="0" min="0" 
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Price per Bundle') }}</label>
+                            <input type="number" step="0.01" name="price_per_bundle" x-model="pricePerBundle" min="0"
                                 class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium"
                                 placeholder="0.00">
+                            <p class="text-[9px] text-slate-500 mt-0.5 {{ app()->getLocale() == 'ar' ? 'mr-1' : 'ml-1' }}">{{ __('From settings. Adjustable per shift.') }}</p>
                         </div>
 
                         {{-- Cash Currency --}}
@@ -239,6 +265,44 @@
                             <input type="number" step="0.01" name="cash_exchange_rate" :value="exchangeRate" min="0"
                                 class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium"
                                 placeholder="1.00">
+                        </div>
+
+                        {{-- Auto-calculated summary --}}
+                        <div x-show="pricePerBundle > 0" x-transition class="p-3 rounded-xl space-y-2 border"
+                             :class="hasMismatch ? 'bg-red-500/5 border-red-500/15' : 'bg-emerald-500/5 border-emerald-500/15'">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] uppercase font-bold tracking-wider" :class="hasMismatch ? 'text-red-400' : 'text-emerald-400'">{{ __('Bundles Sold') }}</span>
+                                <span class="text-sm font-black" :class="hasMismatch ? 'text-red-400' : 'text-emerald-400'" x-text="bundlesSold"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] uppercase font-bold tracking-wider" :class="hasMismatch ? 'text-red-400' : 'text-emerald-400'">{{ __('Expected Cash') }}</span>
+                                <span class="text-sm font-black" :class="hasMismatch ? 'text-red-400' : 'text-emerald-400'" x-text="expectedCash"></span>
+                            </div>
+                            {{-- Mismatch warning --}}
+                            <template x-if="hasMismatch">
+                                <div class="pt-2 border-t border-red-500/20">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-[10px] uppercase font-bold tracking-wider text-red-400" x-text="parseFloat(cashDiff) > 0 ? '{{ __("Surplus") }}' : '{{ __("Deficit") }}'"></span>
+                                        <span class="text-sm font-black text-red-400" x-text="Math.abs(parseFloat(cashDiff)).toFixed(2)"></span>
+                                    </div>
+                                    <p class="text-[9px] text-red-400/70 mt-1">{{ __('Cash does not match expected. You will be asked to confirm.') }}</p>
+                                </div>
+                            </template>
+                            {{-- Match indicator --}}
+                            <template x-if="!hasMismatch && parseFloat(cashCollected) > 0">
+                                <div class="pt-2 border-t border-emerald-500/20 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">{{ __('Cash Matches') }}</span>
+                                </div>
+                            </template>
+                        </div>
+
+                        {{-- Cash Collected --}}
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Cash Collected') }}</label>
+                            <input type="number" step="0.01" name="cash_collected" x-model="cashCollected" value="0" min="0" 
+                                class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium"
+                                placeholder="0.00">
                         </div>
 
                         <button type="submit" class="w-full py-2.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-600 dark:text-amber-500 border border-amber-500/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors focus:ring-2 focus:ring-amber-500">

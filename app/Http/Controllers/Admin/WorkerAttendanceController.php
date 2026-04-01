@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Currency;
+use App\Models\Setting;
 use App\Models\WorkDay;
 use App\Models\Worker;
 use App\Models\WorkerAttendance;
@@ -42,8 +43,9 @@ class WorkerAttendanceController extends Controller
             ->first();
         
         $defaultBundles = $lastShift ? $lastShift->bundles_returned : 0;
+        $defaultPricePerBundle = Setting::get('default_price_per_bundle', '0');
 
-        return view('Admin.Attendance.index', compact('workers', 'activeWorkDay', 'currencies', 'defaultBundles'));
+        return view('Admin.Attendance.index', compact('workers', 'activeWorkDay', 'currencies', 'defaultBundles', 'defaultPricePerBundle'));
     }
 
     public function presence()
@@ -130,6 +132,7 @@ class WorkerAttendanceController extends Controller
 
         $request->validate([
             'bundles_returned' => 'nullable|integer|min:0',
+            'price_per_bundle' => 'nullable|numeric|min:0',
             'cash_collected' => 'nullable|numeric|min:0',
             'cash_currency_id' => 'nullable|exists:currencies,id',
             'cash_exchange_rate' => 'nullable|numeric|min:0',
@@ -147,6 +150,7 @@ class WorkerAttendanceController extends Controller
         $shift->update([
             'check_out' => $request->check_out ?? now(),
             'bundles_returned' => $request->bundles_returned ?? 0,
+            'price_per_bundle' => $request->price_per_bundle,
             'cash_collected' => $request->cash_collected ?? 0,
             'cash_currency_id' => $request->cash_currency_id,
             'cash_exchange_rate' => $cashExchangeRate,

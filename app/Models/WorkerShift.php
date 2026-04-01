@@ -21,6 +21,7 @@ class WorkerShift extends Model
         'snapshot_exchange_rate',
         'bundles_received',
         'bundles_returned',
+        'price_per_bundle',
         'cash_collected',
         'cash_currency_id',
         'cash_exchange_rate',

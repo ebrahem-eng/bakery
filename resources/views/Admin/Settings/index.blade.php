@@ -89,6 +89,15 @@
                     <option value="en" {{ old('default_language', $defaultLang) == 'en' ? 'selected' : '' }}>English</option>
                 </select>
             </div>
+            {{-- Default Price per Bundle --}}
+            <div>
+                <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Default Price per Bundle') }}</label>
+                <input type="number" step="0.01" name="default_price_per_bundle" value="{{ old('default_price_per_bundle', $defaultPricePerBundle) }}"
+                    placeholder="0.00"
+                    class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all">
+                <p class="text-[10px] text-slate-400 mt-1">{{ __('This value will be used as default when clocking out workers.') }}</p>
+                @error('default_price_per_bundle') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
+            </div>
         </div>
         <div class="p-4 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20 flex justify-end">
             <button type="submit" class="bg-[#eab308]/10 text-[#eab308] border border-[#eab308]/30 hover:bg-[#eab308] hover:text-[#451a03] transition-all px-6 py-2.5 rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(234,179,8,0.15)]">
