@@ -187,6 +187,20 @@ class AccountsController extends Controller
                 'work_day_id' => $t->work_day_id,
             ]);
 
+        // Down Payment entries (Cash In)
+        $downPaymentEntries = Distribution::whereIn('work_day_id', $workDayIds)
+            ->where('amount_paid', '>', 0)
+            ->with(['distributor', 'workDay'])
+            ->get()
+            ->map(fn ($d) => [
+                'date' => $d->created_at,
+                'type' => 'cash_in',
+                'category' => __('Distributor Payment').' ('.__('Down Payment').')',
+                'description' => ($d->distributor->first_name ?? '').' '.($d->distributor->last_name ?? '').' - '.__('Invoice #').$d->id,
+                'amount' => Currency::convertAmount($d->amount_paid, $d->exchange_rate),
+                'work_day_id' => $d->work_day_id,
+            ]);
+
         // Debt Settlement entries (Cash Out)
         $debtPaymentEntries = \App\Models\SupplierPayment::whereIn('work_day_id', $workDayIds)
             ->with(['supply.supplier', 'workDay'])
@@ -206,6 +220,7 @@ class AccountsController extends Controller
             ->concat($expenseEntries)
             ->concat($refundEntries)
             ->concat($paymentEntries)
+            ->concat($downPaymentEntries)
             ->concat($debtPaymentEntries);
 
         // Apply type filter
@@ -236,6 +251,9 @@ class AccountsController extends Controller
             ->withSum(['distributions as total_billed' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds);
             }], Currency::getSelectRaw('total_price'))
+            ->withSum(['distributions as total_down_payments' => function ($q) use ($workDayIds) {
+                $q->whereIn('work_day_id', $workDayIds);
+            }], Currency::getSelectRaw('amount_paid'))
             ->withSum(['transactions as total_received' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds);
             }], Currency::getSelectRaw('amount'))
@@ -244,7 +262,7 @@ class AccountsController extends Controller
             }], Currency::getSelectRaw('total_refund'))
             ->get()
             ->map(function ($d) {
-                $d->balance = ($d->total_billed ?? 0) - ($d->total_received ?? 0) - ($d->total_refunded ?? 0);
+                $d->balance = ($d->total_billed ?? 0) - ($d->total_received ?? 0) - ($d->total_down_payments ?? 0) - ($d->total_refunded ?? 0);
 
                 return $d;
             })

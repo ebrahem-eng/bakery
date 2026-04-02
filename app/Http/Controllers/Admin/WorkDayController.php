@@ -114,7 +114,11 @@ class WorkDayController extends Controller
         // ── Sales Statistics ──────────────────────────────────────────
         $totalSales = $workDay->distributions->sum(fn($d) => Currency::convertAmount($d->total_price, $d->exchange_rate));
         $totalRefunds = $workDay->distributorReturns->sum(fn($r) => Currency::convertAmount($r->total_refund, $r->exchange_rate));
-        $totalPaymentsReceived = $workDay->distributorTransactions->sum(fn($t) => Currency::convertAmount($t->amount, $t->exchange_rate));
+        
+        $explicitPayments = $workDay->distributorTransactions->where('type', 'payment')->sum(fn($t) => Currency::convertAmount($t->amount, $t->exchange_rate));
+        $downPayments = $workDay->distributions->sum(fn($d) => Currency::convertAmount($d->amount_paid, $d->exchange_rate));
+        $totalPaymentsReceived = $explicitPayments + $downPayments;
+        
         $netSales = $totalSales - $totalRefunds;
 
         // ── Expense Breakdown ─────────────────────────────────────────
