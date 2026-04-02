@@ -133,6 +133,24 @@
                 transition: transform 350ms cubic-bezier(0.2, 0.8, 0.2, 1);
             }
 
+            @media (max-width: 1024px) {
+                .hero-sculpture {
+                    transform: translateY(-50%) rotateX(calc(var(--tilt-y) * 1deg)) rotateY(calc(var(--tilt-x) * 1deg)) scale(0.65);
+                    opacity: 0.35;
+                }
+                .hero-scene {
+                    justify-content: center;
+                    padding-inline-end: 0;
+                }
+            }
+
+            @media (max-width: 640px) {
+                .hero-sculpture {
+                    transform: translateY(-50%) rotateX(calc(var(--tilt-y) * 1deg)) rotateY(calc(var(--tilt-x) * 1deg)) scale(0.45);
+                    opacity: 0.25;
+                }
+            }
+
             .hero-sculpture::before {
                 content: "";
                 position: absolute;
@@ -621,7 +639,35 @@
                             <a href="{{ route('admin.login.page') }}" class="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-medium transition duration-300 backdrop-blur-md">{{ __('Log in') }}</a>
                         @endauth
                     </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-toggle" class="md:hidden p-2 text-slate-300 focus:outline-none" aria-label="Toggle Menu">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path class="menu-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                            <path class="menu-close hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
+            </div>
+
+            <!-- Mobile Menu Overlay -->
+            <div id="mobile-menu" class="fixed inset-0 z-50 bg-[#0b0704]/95 backdrop-blur-2xl flex flex-col items-center justify-center gap-8 transition-all duration-500 opacity-0 pointer-events-none translate-y-[-10%]">
+                <a href="#about" class="mobile-nav-link text-3xl font-bold text-white tracking-widest hover:text-amber-500 transition-colors">{{ __('About Us') }}</a>
+                <a href="#offer" class="mobile-nav-link text-3xl font-bold text-white tracking-widest hover:text-amber-500 transition-colors">{{ __('What We Offer') }}</a>
+                <a href="#contact" class="mobile-nav-link text-3xl font-bold text-white tracking-widest hover:text-amber-500 transition-colors">{{ __('Contact Us') }}</a>
+                
+                <div class="h-px w-24 bg-white/10 my-4"></div>
+
+                <a href="{{ route('admin.setLang', app()->getLocale() == 'en' ? 'ar' : 'en') }}" class="flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-amber-400"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    {{ app()->getLocale() == 'en' ? 'Arabic' : 'English' }}
+                </a>
+
+                @auth('admin')
+                    <a href="{{ url('/admin/dashboard') }}" class="px-8 py-4 rounded-full bg-amber-500 text-white font-bold tracking-widest shadow-xl">{{ __('Dashboard') }}</a>
+                @else
+                    <a href="{{ route('admin.login.page') }}" class="px-8 py-4 rounded-full bg-white/10 text-white font-bold tracking-widest border border-white/20">{{ __('Log in') }}</a>
+                @endauth
             </div>
         </nav>
 
@@ -675,10 +721,10 @@
                             <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                             {{ __('Small Batch, Big Flavor') }}
                         </div>
-                        <h1 class="text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight text-glow hero-reveal" style="--delay: 0.2s;">
+                        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight text-glow hero-reveal" style="--delay: 0.2s;">
                             {{ __('Artisan') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500">{{ __('Baking,') }}</span><br>{{ __('Modern Patisserie.') }}
                         </h1>
-                        <p class="text-lg text-slate-300 mb-8 leading-relaxed font-light hero-reveal" style="--delay: 0.3s;">
+                        <p class="text-base sm:text-lg text-slate-300 mb-8 leading-relaxed font-light hero-reveal" style="--delay: 0.3s;">
                             {{ __('Slow-fermented breads, delicate pastries, and celebration cakes finished with a designer\'s touch. Every bite balances warmth, craft, and a clean modern feel.') }}
                         </p>
                         <div class="flex flex-wrap gap-4 hero-reveal" style="--delay: 0.4s;">
@@ -694,7 +740,7 @@
             </div>
             
             <!-- Scroll Indicator -->
-            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce flex flex-col items-center content-overlay opacity-50 block md:block hidden">
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce flex flex-col items-center content-overlay opacity-50 hidden md:flex">
                 <span class="text-xs uppercase tracking-widest text-slate-400 mb-2">{{ __('Scroll') }}</span>
                 <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
             </div>
@@ -711,7 +757,7 @@
                         <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Beautiful fresh bread" class="rounded-3xl shadow-2xl relative z-10 w-full h-[500px] object-cover animate-float border border-white/10">
                         
                         <!-- Floating Badge -->
-                        <div class="absolute bottom-8 inset-inline-end-[-2rem] z-20 landing-glass p-6 rounded-2xl shadow-xl flex items-center gap-4">
+                        <div class="absolute bottom-4 lg:bottom-8 inset-inline-end-0 lg:inset-inline-end-[-2rem] z-20 landing-glass p-4 lg:p-6 rounded-2xl shadow-xl flex items-center gap-4">
                             <div class="text-amber-500">
                                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </div>
@@ -903,21 +949,6 @@
         </footer>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var hero = document.querySelector('[data-hero-3d]');
-                var sculpture = document.querySelector('[data-hero-sculpture]');
-
-                if (!hero || !sculpture) {
-                    return;
-                }
-
-                var canHover = window.matchMedia('(hover: hover)').matches;
-                var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-                if (!canHover || prefersReducedMotion) {
-                    return;
-                }
-
                 var currentTiltX = -8;
                 var currentTiltY = 8;
                 var targetTiltX = currentTiltX;
