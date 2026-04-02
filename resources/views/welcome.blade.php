@@ -6,50 +6,551 @@
         <title>{{ config('app.name', 'Bakery') }} - Modern Elegance</title>
 
         <!-- Fonts & Icons -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-        
-        <!-- Spline 3D Viewer -->
-        <script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.51/build/spline-viewer.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
         <!-- Use App Vite Assets -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
+            :root {
+                --ink: #0b0704;
+                --ink-soft: #140d07;
+                --cream: #f8f2e8;
+                --sand: #f1e4d3;
+                --caramel: #d28a45;
+                --toffee: #f2b36f;
+                --cocoa: #3b2716;
+                --rose: #f2c3a0;
+            }
+
             body {
-                font-family: 'Outfit', sans-serif;
-                background-color: #000000;
-                color: #f8fafc;
+                font-family: 'Manrope', sans-serif;
+                background:
+                    radial-gradient(1200px 900px at 70% 20%, rgba(210, 138, 69, 0.2), transparent 60%),
+                    radial-gradient(1000px 700px at 20% 80%, rgba(242, 179, 111, 0.2), transparent 65%),
+                    linear-gradient(180deg, #0b0704 0%, #110b06 40%, #060402 100%);
+                color: var(--cream);
+            }
+
+            h1, h2, h3, h4 {
+                font-family: 'Playfair Display', serif;
+                letter-spacing: -0.02em;
             }
             
             /* Custom glowing text effect */
             .text-glow {
-                text-shadow: 0 0 40px rgba(245, 158, 11, 0.4);
+                text-shadow: 0 0 45px rgba(242, 179, 111, 0.45);
             }
             
             /* Enhanced glass styling for the landing page */
             .landing-glass {
-                background: rgba(15, 23, 42, 0.4);
-                backdrop-filter: blur(16px);
-                -webkit-backdrop-filter: blur(16px);
-                border: 1px solid rgba(255, 255, 255, 0.05);
-            }
-            
-            .spline-container {
-                position: absolute;
-                top: 0;
-                right: 0;
-                width: 100%;
-                height: 100%;
-                z-index: 0;
-                pointer-events: none; /* Let clicks pass through to text where overlapped */
+                background: rgba(16, 12, 8, 0.6);
+                backdrop-filter: blur(18px);
+                -webkit-backdrop-filter: blur(18px);
+                border: 1px solid rgba(242, 179, 111, 0.18);
+                box-shadow: 0 20px 50px rgba(6, 4, 2, 0.45);
             }
 
             .content-overlay {
                 position: relative;
                 z-index: 10;
             }
-            
+
+
+            /* Premium hero 3D scene override */
+            .hero-ambience {
+                background:
+                    radial-gradient(820px 560px at 75% 40%, rgba(242, 179, 111, 0.26), transparent 65%),
+                    radial-gradient(740px 520px at 85% 80%, rgba(242, 195, 160, 0.22), transparent 70%),
+                    linear-gradient(110deg, rgba(11, 7, 4, 1) 0%, rgba(11, 7, 4, 0.68) 48%, rgba(11, 7, 4, 0.2) 100%);
+            }
+
+            .hero-grain {
+                background-image:
+                    radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+                    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+                background-size: 120px 120px, 70px 70px;
+                background-position: 0 0, 25px 35px;
+                opacity: 0.16;
+                mix-blend-mode: screen;
+            }
+
+            .hero-fade {
+                background: linear-gradient(90deg, rgba(11, 7, 4, 0.98) 0%, rgba(11, 7, 4, 0.9) 38%, rgba(11, 7, 4, 0.56) 58%, rgba(11, 7, 4, 0) 100%);
+            }
+
+            .hero-reveal {
+                animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+                animation-delay: var(--delay, 0s);
+            }
+
+            @keyframes hero-rise {
+                from {
+                    opacity: 0;
+                    transform: translateY(28px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .hero-scene {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding-right: clamp(1rem, 7vw, 6rem);
+                pointer-events: none;
+                z-index: 0;
+            }
+
+            .hero-sculpture {
+                --tilt-x: -8;
+                --tilt-y: 8;
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%) rotateX(calc(var(--tilt-y) * 1deg)) rotateY(calc(var(--tilt-x) * 1deg));
+                width: min(680px, 96vw);
+                aspect-ratio: 1 / 1;
+                transform-style: preserve-3d;
+                perspective: 1400px;
+                will-change: transform;
+                transition: transform 350ms cubic-bezier(0.2, 0.8, 0.2, 1);
+            }
+
+            .hero-sculpture::before {
+                content: "";
+                position: absolute;
+                inset: 16%;
+                border-radius: 50%;
+                background: radial-gradient(circle at 50% 55%, rgba(242, 179, 111, 0.26), rgba(11, 7, 4, 0) 72%);
+                filter: blur(6px);
+                transform: translateZ(-20px);
+            }
+
+            .hero-aura {
+                position: absolute;
+                inset: 0;
+                border-radius: 50%;
+                background: radial-gradient(circle at 50% 48%, rgba(242, 179, 111, 0.45), rgba(11, 7, 4, 0) 68%);
+                filter: blur(1px);
+                opacity: 0.95;
+                animation: aura-pulse 7s ease-in-out infinite;
+            }
+
+            @keyframes aura-pulse {
+                0%, 100% {
+                    transform: scale(0.98) translateZ(0);
+                    opacity: 0.72;
+                }
+                50% {
+                    transform: scale(1.05) translateZ(24px);
+                    opacity: 1;
+                }
+            }
+
+            .hero-beam {
+                position: absolute;
+                width: 42%;
+                height: 74%;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%) translateZ(70px);
+                border-radius: 999px;
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.04) 44%, rgba(255, 255, 255, 0));
+                filter: blur(0.8px);
+                opacity: 0.72;
+                animation: beam-breathe 8s ease-in-out infinite;
+            }
+
+            @keyframes beam-breathe {
+                0%, 100% {
+                    opacity: 0.5;
+                    transform: translate(-50%, -50%) translateZ(64px) scaleY(0.95);
+                }
+                50% {
+                    opacity: 0.86;
+                    transform: translate(-50%, -50%) translateZ(82px) scaleY(1.05);
+                }
+            }
+
+            .hero-halo {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                border-radius: 50%;
+                transform-style: preserve-3d;
+            }
+
+            .hero-halo--outer {
+                width: 72%;
+                height: 72%;
+                border: 1px solid rgba(242, 195, 160, 0.36);
+                box-shadow: 0 0 44px rgba(242, 179, 111, 0.28), inset 0 0 26px rgba(242, 179, 111, 0.16);
+                transform: translate(-50%, -50%) rotateX(70deg) translateZ(36px);
+                animation: halo-turn 18s linear infinite;
+            }
+
+            .hero-halo--inner {
+                width: 50%;
+                height: 50%;
+                border: 1px solid rgba(248, 242, 232, 0.45);
+                box-shadow: inset 0 0 22px rgba(248, 242, 232, 0.24);
+                transform: translate(-50%, -50%) rotateX(72deg) translateZ(48px);
+                animation: halo-turn-reverse 12s linear infinite;
+            }
+
+            @keyframes halo-turn {
+                from {
+                    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(0deg) translateZ(36px);
+                }
+                to {
+                    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(360deg) translateZ(36px);
+                }
+            }
+
+            @keyframes halo-turn-reverse {
+                from {
+                    transform: translate(-50%, -50%) rotateX(72deg) rotateZ(360deg) translateZ(48px);
+                }
+                to {
+                    transform: translate(-50%, -50%) rotateX(72deg) rotateZ(0deg) translateZ(48px);
+                }
+            }
+
+            .hero-orbit {
+                position: absolute;
+                inset: 12%;
+                transform-style: preserve-3d;
+                animation: hero-orbit-turn 20s linear infinite;
+            }
+
+            @keyframes hero-orbit-turn {
+                from {
+                    transform: rotateY(0deg) rotateX(12deg);
+                }
+                to {
+                    transform: rotateY(360deg) rotateX(12deg);
+                }
+            }
+
+            .hero-flour {
+                position: absolute;
+                inset: 0;
+            }
+
+            .hero-flour span {
+                position: absolute;
+                left: var(--x);
+                top: var(--y);
+                width: var(--size);
+                height: var(--size);
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+                opacity: 0.68;
+                transform: translate(-50%, -50%);
+                animation: flour-drift 6s ease-in-out infinite;
+                animation-delay: var(--delay);
+            }
+
+            @keyframes flour-drift {
+                0%, 100% {
+                    opacity: 0.3;
+                    transform: translate(-50%, -50%) scale(0.7);
+                }
+                50% {
+                    opacity: 0.9;
+                    transform: translate(-50%, -50%) translateY(-12px) scale(1.2);
+                }
+            }
+
+            /* Bread-focused hero centerpiece */
+            .hero-orbit--bread {
+                inset: 8%;
+                animation-duration: 24s;
+            }
+
+            .hero-garnish {
+                --angle: 0deg;
+                --radius: 250px;
+                --lift: 0px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotateY(var(--angle)) translateZ(var(--radius)) rotateY(calc(var(--angle) * -1)) translateY(var(--lift));
+                filter: drop-shadow(0 14px 24px rgba(6, 4, 2, 0.45));
+                animation: garnish-bob 7s ease-in-out infinite;
+                animation-delay: var(--delay, 0s);
+            }
+
+            .hero-garnish--grain {
+                width: 18px;
+                height: 92px;
+                border-radius: 999px;
+                background: linear-gradient(180deg, #f7d49d, #d08b43 50%, #8f531f);
+                border: 1px solid rgba(255, 255, 255, 0.26);
+            }
+
+            .hero-garnish--seed {
+                width: 54px;
+                height: 34px;
+                border-radius: 58% 42% 56% 44%;
+                background: linear-gradient(145deg, #f6c887, #b46934);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .hero-garnish--1 { --angle: 34deg; --radius: 246px; --lift: -8px; --delay: 0.3s; }
+            .hero-garnish--2 { --angle: 132deg; --radius: 232px; --lift: 10px; --delay: 1.4s; }
+            .hero-garnish--3 { --angle: 222deg; --radius: 256px; --lift: -6px; --delay: 0.8s; }
+            .hero-garnish--4 { --angle: 314deg; --radius: 242px; --lift: 7px; --delay: 1.8s; }
+
+            @keyframes garnish-bob {
+                0%, 100% {
+                    transform: translate(-50%, -50%) rotateY(var(--angle)) translateZ(var(--radius)) rotateY(calc(var(--angle) * -1)) translateY(var(--lift));
+                }
+                50% {
+                    transform: translate(-50%, -50%) rotateY(var(--angle)) translateZ(calc(var(--radius) + 12px)) rotateY(calc(var(--angle) * -1)) translateY(calc(var(--lift) - 12px));
+                }
+            }
+
+            .hero-bread-stage {
+                position: absolute;
+                left: 50%;
+                top: 54%;
+                width: 62%;
+                height: 64%;
+                transform: translate(-50%, -50%) translateZ(110px);
+                transform-style: preserve-3d;
+            }
+
+            .hero-bread-stage::before {
+                content: "";
+                position: absolute;
+                left: 50%;
+                bottom: 2%;
+                width: 88%;
+                height: 18%;
+                transform: translateX(-50%) translateZ(-8px);
+                border-radius: 999px;
+                background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0));
+                filter: blur(2px);
+                opacity: 0.72;
+            }
+
+            .hero-rolling-pin {
+                position: absolute;
+                left: 50%;
+                bottom: 20%;
+                width: 86%;
+                height: 12%;
+                transform: translateX(-50%) rotateZ(-8deg) translateZ(10px);
+                border-radius: 999px;
+                background: linear-gradient(180deg, #d99a62, #a76333);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                box-shadow: 0 12px 24px rgba(6, 4, 2, 0.36), inset 0 6px 10px rgba(255, 255, 255, 0.16), inset 0 -8px 10px rgba(84, 45, 21, 0.35);
+                opacity: 0.82;
+            }
+
+            .hero-rolling-pin::before,
+            .hero-rolling-pin::after {
+                content: "";
+                position: absolute;
+                top: 26%;
+                width: 12%;
+                height: 48%;
+                border-radius: 999px;
+                background: linear-gradient(180deg, #f0cf9f, #a76a39);
+                border: 1px solid rgba(255, 255, 255, 0.24);
+            }
+
+            .hero-rolling-pin::before {
+                left: -8%;
+            }
+
+            .hero-rolling-pin::after {
+                right: -8%;
+            }
+
+            .loaf-stack {
+                position: absolute;
+                left: 50%;
+                bottom: 18%;
+                width: 78%;
+                height: 62%;
+                transform: translateX(-50%) translateZ(44px);
+                transform-style: preserve-3d;
+                animation: loaf-stack-rise 8s ease-in-out infinite;
+            }
+
+            @keyframes loaf-stack-rise {
+                0%, 100% {
+                    transform: translateX(-50%) translateZ(44px) translateY(0);
+                }
+                50% {
+                    transform: translateX(-50%) translateZ(62px) translateY(-8px);
+                }
+            }
+
+            .loaf {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 56% 44% 48% 52% / 62% 58% 42% 38%;
+                border: 1px solid rgba(255, 255, 255, 0.24);
+                box-shadow: 0 14px 28px rgba(6, 4, 2, 0.42), inset 0 8px 14px rgba(255, 255, 255, 0.2), inset 0 -12px 16px rgba(81, 41, 17, 0.35);
+                overflow: hidden;
+            }
+
+            .loaf::before {
+                content: "";
+                position: absolute;
+                left: 18%;
+                right: 18%;
+                top: 30%;
+                height: 10%;
+                border-radius: 999px;
+                background: rgba(255, 242, 224, 0.55);
+                box-shadow: 0 18px 0 rgba(255, 242, 224, 0.35);
+                transform: rotate(-8deg);
+                opacity: 0.75;
+            }
+
+            .loaf::after {
+                content: "";
+                position: absolute;
+                inset: 10% 12%;
+                border-radius: inherit;
+                border: 1px solid rgba(255, 255, 255, 0.16);
+                opacity: 0.36;
+            }
+
+            .loaf--base {
+                width: 86%;
+                height: 42%;
+                bottom: 0;
+                background: linear-gradient(165deg, #f1b97b 0%, #c0743a 58%, #8d481f 100%);
+            }
+
+            .loaf--middle {
+                width: 68%;
+                height: 34%;
+                bottom: 30%;
+                background: linear-gradient(165deg, #f4c78f 0%, #cc8148 58%, #9e582a 100%);
+            }
+
+            .loaf--top {
+                width: 52%;
+                height: 28%;
+                bottom: 55%;
+                background: linear-gradient(165deg, #f8d9ac 0%, #d28c57 58%, #af6735 100%);
+            }
+
+            .hero-bread-board {
+                position: absolute;
+                left: 50%;
+                bottom: 6%;
+                width: 88%;
+                height: 16%;
+                transform: translateX(-50%) translateZ(0);
+                border-radius: 999px;
+                background: linear-gradient(180deg, #deb484, #9d6032);
+                border: 1px solid rgba(255, 255, 255, 0.24);
+                box-shadow: 0 22px 38px rgba(6, 4, 2, 0.55), inset 0 8px 12px rgba(255, 255, 255, 0.2), inset 0 -10px 16px rgba(84, 46, 22, 0.34);
+            }
+
+            .hero-bread-board::after {
+                content: "";
+                position: absolute;
+                inset: 18% 12%;
+                border-radius: 999px;
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                opacity: 0.5;
+            }
+
+            .aroma {
+                position: absolute;
+                width: 78px;
+                height: 150px;
+                border-radius: 50%;
+                border: 2px solid rgba(255, 242, 224, 0.36);
+                border-color: rgba(255, 242, 224, 0.5) transparent transparent transparent;
+                filter: blur(0.25px);
+                animation: aroma-rise 6s ease-in-out infinite;
+                --rot: 0deg;
+            }
+
+            .aroma--1 {
+                left: 34%;
+                bottom: 54%;
+                --rot: -10deg;
+                animation-delay: 0.1s;
+            }
+
+            .aroma--2 {
+                left: 48%;
+                bottom: 58%;
+                --rot: 5deg;
+                animation-delay: 1.1s;
+            }
+
+            .aroma--3 {
+                left: 62%;
+                bottom: 54%;
+                --rot: -3deg;
+                animation-delay: 2s;
+            }
+
+            @keyframes aroma-rise {
+                0% {
+                    opacity: 0;
+                    transform: rotate(var(--rot)) translateY(18px) scale(0.92);
+                }
+                40% {
+                    opacity: 0.7;
+                }
+                100% {
+                    opacity: 0;
+                    transform: rotate(var(--rot)) translateY(-34px) scale(1.08);
+                }
+            }
+
+            @media (max-width: 1024px) {
+                .hero-scene {
+                    justify-content: center;
+                    padding-right: 0;
+                }
+
+                .hero-sculpture {
+                    width: min(540px, 112vw);
+                    opacity: 0.78;
+                }
+
+                .hero-bread-stage {
+                    width: 70%;
+                    height: 66%;
+                }
+            }
+
+            @media (max-width: 640px) {
+                .hero-sculpture {
+                    width: min(430px, 134vw);
+                    opacity: 0.62;
+                }
+
+                .hero-bread-stage {
+                    width: 76%;
+                    height: 68%;
+                }
+
+                .hero-garnish {
+                    opacity: 0.75;
+                }
+            }
+
             /* Floating animation for images */
             @keyframes float {
                 0% { transform: translateY(0px); }
@@ -57,15 +558,31 @@
                 100% { transform: translateY(0px); }
             }
             .animate-float {
-                animation: float 6s ease-in-out infinite;
+                animation: float 8s ease-in-out infinite;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .hero-reveal,
+                .animate-float,
+                .hero-aura,
+                .hero-beam,
+                .hero-halo,
+                .hero-garnish,
+                .hero-bread-stage,
+                .loaf-stack,
+                .aroma,
+                .hero-orbit,
+                .hero-flour span {
+                    animation: none !important;
+                }
             }
         </style>
     </head>
-    <body class="antialiased font-sans selection:bg-amber-500 selection:text-white overflow-x-hidden">
+    <body class="antialiased selection:bg-amber-500 selection:text-white overflow-x-hidden">
 
         <!-- Navigation -->
         <nav class="fixed w-full z-50 transition-all duration-300 glass-navbar py-4">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-2 cursor-pointer">
                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-amber-500/30">
@@ -89,31 +606,62 @@
         </nav>
 
         <!-- Hero Section -->
-        <section class="relative min-h-screen flex items-center pt-20 overflow-hidden">
-            <!-- 3D Spline Background/Foreground -->
-            <!-- Using a gorgeous glass template spline -->
-            <div class="absolute inset-0 w-full h-full z-0 pointer-events-auto">
-                <!-- Using a suitable abstract background Spline shape -->
-                <spline-viewer url="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" style="width: 100%; height: 100%;"></spline-viewer>
+        <section class="relative min-h-screen flex items-center pt-20 overflow-hidden" data-hero-3d>
+            <!-- Premium Bakery-Themed 3D Hero -->
+            <div class="absolute inset-0 hero-ambience"></div>
+            <div class="absolute inset-0 hero-grain"></div>
+            <div class="hero-scene" aria-hidden="true">
+                <div class="hero-sculpture" data-hero-sculpture>
+                    <div class="hero-aura"></div>
+                    <div class="hero-beam"></div>
+                    <div class="hero-halo hero-halo--outer"></div>
+                    <div class="hero-halo hero-halo--inner"></div>
+                    <div class="hero-orbit hero-orbit--bread">
+                        <span class="hero-garnish hero-garnish--grain hero-garnish--1"></span>
+                        <span class="hero-garnish hero-garnish--seed hero-garnish--2"></span>
+                        <span class="hero-garnish hero-garnish--grain hero-garnish--3"></span>
+                        <span class="hero-garnish hero-garnish--seed hero-garnish--4"></span>
+                    </div>
+                    <div class="hero-bread-stage">
+                        <div class="hero-rolling-pin"></div>
+                        <div class="loaf-stack">
+                            <div class="loaf loaf--top"></div>
+                            <div class="loaf loaf--middle"></div>
+                            <div class="loaf loaf--base"></div>
+                        </div>
+                        <div class="hero-bread-board"></div>
+                        <div class="aroma aroma--1"></div>
+                        <div class="aroma aroma--2"></div>
+                        <div class="aroma aroma--3"></div>
+                    </div>
+                    <div class="hero-flour">
+                        <span style="--x: 18%; --y: 22%; --size: 10px; --delay: 0.3s;"></span>
+                        <span style="--x: 36%; --y: 14%; --size: 8px; --delay: 1.1s;"></span>
+                        <span style="--x: 72%; --y: 22%; --size: 12px; --delay: 0.8s;"></span>
+                        <span style="--x: 84%; --y: 40%; --size: 9px; --delay: 1.8s;"></span>
+                        <span style="--x: 24%; --y: 70%; --size: 10px; --delay: 1.4s;"></span>
+                        <span style="--x: 68%; --y: 78%; --size: 8px; --delay: 2.1s;"></span>
+                    </div>
+                </div>
             </div>
             
             <!-- Left Gradient Fade to make text readable over 3D -->
-            <div class="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent z-0 pointer-events-none"></div>
+            <div class="absolute inset-0 hero-fade z-0 pointer-events-none"></div>
 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full content-overlay">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     <div class="flex flex-col justify-center max-w-xl">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium mb-6 w-fit">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm font-medium mb-6 w-fit hero-reveal" style="--delay: 0.1s;">
                             <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                            Freshly Baked Daily
+                            Small Batch, Big Flavor
                         </div>
-                        <h1 class="text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight text-glow">
-                            Artisan <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-600">Baking,</span><br>Modern Elegance.
+                        <h1 class="text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight text-glow hero-reveal" style="--delay: 0.2s;">
+                            Artisan <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500">Baking,</span><br>Modern Patisserie.
                         </h1>
-                        <p class="text-lg text-slate-400 mb-8 leading-relaxed font-light">
-                            Discover the perfect fusion of traditional, handcrafted recipes and a contemporary aesthetic. Every bite is an experience, designed to captivate your senses.
+                        <p class="text-lg text-slate-300 mb-8 leading-relaxed font-light hero-reveal" style="--delay: 0.3s;">
+                            Slow-fermented breads, delicate pastries, and celebration cakes finished with a designer's touch. Every bite balances warmth, craft, and a clean modern feel.
                         </p>
-                        <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-wrap gap-4 hero-reveal" style="--delay: 0.4s;">
                             <a href="#offer" class="px-8 py-4 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-semibold transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:-translate-y-1 block text-center">
                                 Explore Menu
                             </a>
@@ -133,10 +681,10 @@
         </section>
 
         <!-- About Us Section -->
-        <section id="about" class="py-24 relative z-10 bg-black">
+        <section id="about" class="py-24 relative z-10 bg-[#0b0704]">
             <div class="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none"></div>
             
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="flex flex-col lg:flex-row items-center gap-16">
                     <div class="lg:w-1/2 relative">
                         <div class="absolute inset-0 bg-gradient-to-tr from-amber-500/20 to-transparent rounded-3xl transform rotate-3 scale-105 opacity-50"></div>
@@ -185,7 +733,7 @@
         <!-- What We Offer Section -->
         <section id="offer" class="py-24 relative z-10 overflow-hidden">
             <!-- Background Elements -->
-            <div class="absolute inset-0 bg-slate-900/50"></div>
+            <div class="absolute inset-0 bg-[#120c08]/70"></div>
             <div class="absolute -left-48 bottom-0 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none"></div>
 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -245,7 +793,7 @@
         </section>
 
         <!-- Contact Us Section -->
-        <section id="contact" class="py-24 relative bg-[#0a0a0a] border-t border-white/5">
+        <section id="contact" class="py-24 relative bg-[#0c0805] border-t border-white/5">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
                     <div>
@@ -314,8 +862,8 @@
         </section>
 
         <!-- Minimal Footer -->
-        <footer class="bg-black py-8 border-t border-white/5">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <footer class="bg-[#0a0704] py-8 border-t border-white/5">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 relative z-10">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-amber-500/30">
                         B
@@ -333,6 +881,69 @@
                 </div>
             </div>
         </footer>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var hero = document.querySelector('[data-hero-3d]');
+                var sculpture = document.querySelector('[data-hero-sculpture]');
+
+                if (!hero || !sculpture) {
+                    return;
+                }
+
+                var canHover = window.matchMedia('(hover: hover)').matches;
+                var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                if (!canHover || prefersReducedMotion) {
+                    return;
+                }
+
+                var currentTiltX = -8;
+                var currentTiltY = 8;
+                var targetTiltX = currentTiltX;
+                var targetTiltY = currentTiltY;
+                var rafId = null;
+
+                function tick() {
+                    currentTiltX += (targetTiltX - currentTiltX) * 0.12;
+                    currentTiltY += (targetTiltY - currentTiltY) * 0.12;
+
+                    sculpture.style.setProperty('--tilt-x', currentTiltX.toFixed(2));
+                    sculpture.style.setProperty('--tilt-y', currentTiltY.toFixed(2));
+
+                    if (Math.abs(targetTiltX - currentTiltX) > 0.02 || Math.abs(targetTiltY - currentTiltY) > 0.02) {
+                        rafId = window.requestAnimationFrame(tick);
+                    } else {
+                        rafId = null;
+                    }
+                }
+
+                function scheduleTick() {
+                    if (rafId === null) {
+                        rafId = window.requestAnimationFrame(tick);
+                    }
+                }
+
+                function handlePointerMove(event) {
+                    var rect = hero.getBoundingClientRect();
+                    var normalizedX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+                    var normalizedY = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+
+                    targetTiltX = normalizedX * 12;
+                    targetTiltY = normalizedY * -10 + 2;
+                    scheduleTick();
+                }
+
+                function handlePointerLeave() {
+                    targetTiltX = -8;
+                    targetTiltY = 8;
+                    scheduleTick();
+                }
+
+                hero.addEventListener('pointermove', handlePointerMove, { passive: true });
+                hero.addEventListener('pointerleave', handlePointerLeave);
+            });
+        </script>
 
     </body>
 </html>
