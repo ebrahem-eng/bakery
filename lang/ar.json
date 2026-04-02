@@ -1168,5 +1168,13 @@
     "Debt Payments": "مدفوعات الديون",
     "Cash Flow (Debts)": "التدفق النقدي (الديون)",
     "Cash Flow Details": "تفاصيل التدفق النقدي",
-    "Supplier Debts Paid": "ديون الموردين المسددة"
+    "Supplier Debts Paid": "ديون الموردين المسددة",
+    "Financial Summary": "الملخص المالي",
+    "Key performance indicators for the selected period.": "مؤشرات الأداء الرئيسية للفترة المحددة.",
+    "Gross income from all distribution sales.": "إجمالي الدخل من جميع مبيعات التوزيع.",
+    "Supplies, wages, freight, and operational costs.": "مستلزمات، أجور، شحن، وتكاليف تشغيلية.",
+    "Supplier debt settlements (not counted in expenses).": "تسديدات ديون الموردين (لا تُحتسب ضمن المصاريف).",
+    "Revenue minus all operational expenses.": "الإيرادات مطروحاً منها جميع المصاريف التشغيلية.",
+    "Total bread bundle units distributed.": "إجمالي وحدات ربطات الخبز الموزعة.",
+    "Settled accounting periods in this range.": "الفترات المحاسبية المغلقة ضمن هذا النطاق."
 }

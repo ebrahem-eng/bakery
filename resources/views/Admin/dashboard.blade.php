@@ -259,97 +259,133 @@
 @endcan
 
 @can('view analytics')
-{{-- ── KPI Cards ─────────────────────────────────────────────── --}}
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-5 mb-8">
-    {{-- Revenue --}}
-    <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-white/5 relative overflow-hidden group">
-        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-20 h-20 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
-        <div class="flex items-center gap-2 mb-2">
-            <div class="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+{{-- ── Financial Summary ──────────────────────────────────────── --}}
+<div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden mb-8">
+    {{-- Section Header --}}
+    <div class="px-6 py-4 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                <svg class="w-4.5 h-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
             </div>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{{ __('Total Revenue') }}</p>
+            <div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Financial Summary') }}</h3>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Key performance indicators for the selected period.') }}</p>
+            </div>
         </div>
-        <h3 class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($totalRevenue, 2) }}</h3>
-        <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium mt-1">{{ $currencyCode }}</p>
     </div>
 
-    {{-- Expenses --}}
-    <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-white/5 relative overflow-hidden group">
-        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-20 h-20 bg-red-500/10 rounded-full blur-2xl group-hover:bg-red-500/20 transition-all"></div>
-        <div class="flex items-center gap-2 mb-2">
-            <div class="w-8 h-8 bg-red-500/10 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
-            </div>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{{ __('Total Expenses') }}</p>
-        </div>
-        <h3 class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($totalExpenses, 2) }}</h3>
-        <p class="text-[10px] text-red-600 dark:text-red-400 font-medium mt-1">{{ $currencyCode }}</p>
-    </div>
+    {{-- Metric Rows --}}
+    <div class="divide-y divide-slate-100 dark:divide-white/5">
 
-    {{-- Debt Payments --}}
-    <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-white/5 relative overflow-hidden group">
-        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-20 h-20 bg-sky-500/10 rounded-full blur-2xl group-hover:bg-sky-500/20 transition-all"></div>
-        <div class="flex items-center gap-2 mb-2">
-            <div class="w-8 h-8 bg-sky-500/10 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        {{-- 1 · Total Revenue --}}
+        <div class="flex items-center gap-5 px-6 py-5 hover:bg-emerald-500/[0.03] transition-colors group">
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
             </div>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{{ __('Cash Flow (Debts)') }}</p>
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ __('Total Revenue') }}</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Gross income from all distribution sales.') }}</p>
+            </div>
+            <div class="text-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} flex-shrink-0">
+                <p class="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{{ number_format($totalRevenue, 2) }}</p>
+                <p class="text-[10px] text-emerald-500 font-bold mt-0.5">{{ $currencyCode }}</p>
+            </div>
         </div>
-        <h3 class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($totalSupplierPayments, 2) }}</h3>
-        <p class="text-[10px] text-sky-600 dark:text-sky-400 font-medium mt-1">{{ $currencyCode }}</p>
-    </div>
 
-    {{-- Net Profit --}}
-    <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-white/5 relative overflow-hidden group">
-        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-20 h-20 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
-        <div class="flex items-center gap-2 mb-2">
-            <div class="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/></svg>
+        {{-- 2 · Total Expenses --}}
+        <div class="flex items-center gap-5 px-6 py-5 hover:bg-red-500/[0.03] transition-colors group">
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
             </div>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{{ __('Net Profit') }}</p>
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ __('Total Expenses') }}</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Supplies, wages, freight, and operational costs.') }}</p>
+            </div>
+            <div class="text-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} flex-shrink-0">
+                <p class="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{{ number_format($totalExpenses, 2) }}</p>
+                <p class="text-[10px] text-red-500 font-bold mt-0.5">{{ $currencyCode }}</p>
+            </div>
         </div>
-        <h3 class="text-2xl font-black {{ $netProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">{{ $netProfit >= 0 ? '+' : '' }}{{ number_format($netProfit, 2) }}</h3>
-        <p class="text-[10px] text-slate-400 font-medium mt-1">{{ $currencyCode }}</p>
-    </div>
 
-    {{-- Margin --}}
-    <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-white/5 relative overflow-hidden group">
-        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-20 h-20 bg-violet-500/10 rounded-full blur-2xl group-hover:bg-violet-500/20 transition-all"></div>
-        <div class="flex items-center gap-2 mb-2">
-            <div class="w-8 h-8 bg-violet-500/10 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        {{-- 3 · Cash Flow (Debts) --}}
+        <div class="flex items-center gap-5 px-6 py-5 hover:bg-sky-500/[0.03] transition-colors group">
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-sky-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
             </div>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{{ __('Profit Margin') }}</p>
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ __('Cash Flow (Debts)') }}</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Supplier debt settlements (not counted in expenses).') }}</p>
+            </div>
+            <div class="text-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} flex-shrink-0">
+                <p class="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{{ number_format($totalSupplierPayments, 2) }}</p>
+                <p class="text-[10px] text-sky-500 font-bold mt-0.5">{{ $currencyCode }}</p>
+            </div>
         </div>
-        <h3 class="text-2xl font-black text-slate-900 dark:text-white">{{ $profitMargin }}%</h3>
-        <p class="text-[10px] {{ $profitMargin >= 0 ? 'text-emerald-500' : 'text-red-500' }} font-medium mt-1">{{ $profitMargin >= 20 ? __('Healthy') : ($profitMargin >= 0 ? __('Low') : __('Loss')) }}</p>
-    </div>
 
-    {{-- Bundles Sold --}}
-    <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-white/5 relative overflow-hidden group">
-        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-20 h-20 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
-        <div class="flex items-center gap-2 mb-2">
-            <div class="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        {{-- 4 · Net Profit (Highlighted) --}}
+        <div class="flex items-center gap-5 px-6 py-6 {{ $netProfit >= 0 ? 'bg-emerald-500/[0.04]' : 'bg-red-500/[0.04]' }} group">
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl {{ $netProfit >= 0 ? 'bg-emerald-500/15' : 'bg-red-500/15' }} flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6 {{ $netProfit >= 0 ? 'text-emerald-500' : 'text-red-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/></svg>
             </div>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{{ __('Bundles Sold') }}</p>
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold {{ $netProfit >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400' }} uppercase tracking-widest">{{ __('Net Profit') }}</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Revenue minus all operational expenses.') }}</p>
+            </div>
+            <div class="text-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} flex-shrink-0">
+                <p class="text-3xl font-black {{ $netProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }} tabular-nums">{{ $netProfit >= 0 ? '+' : '' }}{{ number_format($netProfit, 2) }}</p>
+                <p class="text-[10px] {{ $netProfit >= 0 ? 'text-emerald-500' : 'text-red-500' }} font-bold mt-0.5">{{ $currencyCode }}</p>
+            </div>
         </div>
-        <h3 class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($netBundlesSold) }}</h3>
-        <p class="text-[10px] text-blue-500 font-medium mt-1">{{ __('bundles') }}</p>
-    </div>
 
-    {{-- Work Days --}}
-    <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-white/5 relative overflow-hidden group">
-        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-20 h-20 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all"></div>
-        <div class="flex items-center gap-2 mb-2">
-            <div class="w-8 h-8 bg-cyan-500/10 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        {{-- 5 · Profit Margin --}}
+        <div class="flex items-center gap-5 px-6 py-5 hover:bg-violet-500/[0.03] transition-colors group">
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
             </div>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{{ __('Work Days') }}</p>
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ __('Profit Margin') }}</p>
+                <div class="w-full max-w-xs bg-slate-200 dark:bg-white/5 rounded-full h-1.5 mt-2 overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-700 {{ $profitMargin >= 20 ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : ($profitMargin >= 0 ? 'bg-gradient-to-r from-amber-400 to-amber-500' : 'bg-gradient-to-r from-red-400 to-red-500') }}" style="width: {{ min(abs($profitMargin), 100) }}%;"></div>
+                </div>
+            </div>
+            <div class="text-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} flex-shrink-0 flex items-center gap-3">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest {{ $profitMargin >= 20 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : ($profitMargin >= 0 ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-red-500/10 text-red-600 dark:text-red-400') }}">
+                    {{ $profitMargin >= 20 ? __('Healthy') : ($profitMargin >= 0 ? __('Low') : __('Loss')) }}
+                </span>
+                <p class="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{{ $profitMargin }}%</p>
+            </div>
         </div>
-        <h3 class="text-2xl font-black text-slate-900 dark:text-white">{{ $workDaysCount }}</h3>
-        <p class="text-[10px] text-cyan-500 font-medium mt-1">{{ __('Settled Periods') }}</p>
+
+        {{-- 6 · Bundles Sold --}}
+        <div class="flex items-center gap-5 px-6 py-5 hover:bg-blue-500/[0.03] transition-colors group">
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ __('Bundles Sold') }}</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Total bread bundle units distributed.') }}</p>
+            </div>
+            <div class="text-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} flex-shrink-0">
+                <p class="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{{ number_format($netBundlesSold) }}</p>
+                <p class="text-[10px] text-blue-500 font-bold mt-0.5">{{ __('bundles') }}</p>
+            </div>
+        </div>
+
+        {{-- 7 · Work Days --}}
+        <div class="flex items-center gap-5 px-6 py-5 hover:bg-cyan-500/[0.03] transition-colors group">
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ __('Work Days') }}</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Settled accounting periods in this range.') }}</p>
+            </div>
+            <div class="text-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} flex-shrink-0">
+                <p class="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{{ $workDaysCount }}</p>
+                <p class="text-[10px] text-cyan-500 font-bold mt-0.5">{{ __('Settled Periods') }}</p>
+            </div>
+        </div>
+
     </div>
 </div>
 
