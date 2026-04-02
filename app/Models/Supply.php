@@ -54,23 +54,41 @@ class Supply extends Model
 
     public function getUnpaidAmountAttribute(): float
     {
-        $paidInBase = Currency::convertAmount($this->paid_amount ?? 0, $this->paid_exchange_rate ?? 1);
         $costInBase = Currency::convertAmount($this->total_cost ?? 0, $this->exchange_rate ?? 1);
+        $totalPaidInBase = $this->getTotalPaidBase();
 
-        $laterPaymentsBase = 0;
-        foreach ($this->payments as $payment) {
-            $laterPaymentsBase += Currency::convertAmount($payment->amount, $payment->exchange_rate);
-        }
-
-        $unpaidInBase = max(0, $costInBase - ($paidInBase + $laterPaymentsBase));
+        $unpaidInBase = max(0, $costInBase - $totalPaidInBase);
         
-        // Convert difference back to native supply currency for standardized display tracking
         $baseToNativeRate = Currency::convertAmount(1, $this->exchange_rate ?? 1);
         if ($baseToNativeRate <= 0) return 0;
         
         $unpaidInNative = $unpaidInBase / $baseToNativeRate;
 
         return round($unpaidInNative, 2);
+    }
+
+    public function getTotalPaidBase(): float
+    {
+        $paidInBase = Currency::convertAmount($this->paid_amount ?? 0, $this->paid_exchange_rate ?? 1);
+        
+        $laterPaymentsBase = 0;
+        foreach ($this->payments as $payment) {
+            $laterPaymentsBase += Currency::convertAmount($payment->amount, $payment->exchange_rate);
+        }
+
+        return $paidInBase + $laterPaymentsBase;
+    }
+
+    public function getTotalPaidNativeAttribute(): float
+    {
+        $totalPaidInBase = $this->getTotalPaidBase();
+        
+        $baseToNativeRate = Currency::convertAmount(1, $this->exchange_rate ?? 1);
+        if ($baseToNativeRate <= 0) return 0;
+        
+        $totalPaidInNative = $totalPaidInBase / $baseToNativeRate;
+
+        return round($totalPaidInNative, 2);
     }
 
     public function getIsFullyPaidAttribute(): bool

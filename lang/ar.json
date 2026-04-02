@@ -1164,5 +1164,9 @@
     "Are you sure you want to delete this administrator?": "هل أنت متأكد من حذف هذا المسؤول؟",
     "Are you sure you want to delete this supplier completely?": "هل أنت متأكد من حذف هذا المورد بالكامل؟",
     "Are you sure you want to delete this currency?": "هل أنت متأكد من حذف هذه العملة؟",
-    "Are you sure you want to delete this category?": "هل أنت متأكد من حذف هذه الفئة؟"
+    "Are you sure you want to delete this category?": "هل أنت متأكد من حذف هذه الفئة؟",
+    "Debt Payments": "مدفوعات الديون",
+    "Cash Flow (Debts)": "التدفق النقدي (الديون)",
+    "Cash Flow Details": "تفاصيل التدفق النقدي",
+    "Supplier Debts Paid": "ديون الموردين المسددة"
 }

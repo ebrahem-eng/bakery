@@ -42,6 +42,7 @@ class WorkDayController extends Controller
             'distributorReturns.currency',
             'distributorTransactions.currency',
             'expenses.currency',
+            'supplierPayments.currency',
         ])->findOrFail($id);
 
         $stats = $this->getWorkDayStatistics($workDay);
@@ -97,6 +98,7 @@ class WorkDayController extends Controller
             'distributorReturns.currency',
             'distributorTransactions.currency',
             'expenses.currency',
+            'supplierPayments.currency',
         ]);
 
         $stats = $this->getWorkDayStatistics($workDay);
@@ -139,6 +141,8 @@ class WorkDayController extends Controller
             }, 0);
             
         $operationalExpenses = $workDay->expenses->sum(fn($e) => Currency::convertAmount($e->amount, $e->exchange_rate));
+        
+        $supplierPayments = $workDay->supplierPayments->sum(fn($sp) => Currency::convertAmount($sp->amount, $sp->exchange_rate));
 
         $totalExpenses = $suppliesCost + $unloadingFees + $workerPayments - $workerDeductions + $operationalExpenses;
         $netDayBalance = $netSales - $totalExpenses;
@@ -203,6 +207,7 @@ class WorkDayController extends Controller
             'workerPayments' => $workerPayments,
             'workerDeductions' => $workerDeductions,
             'operationalExpenses' => $operationalExpenses,
+            'supplierPayments' => $supplierPayments,
             'totalExpenses' => $totalExpenses,
             'netDayBalance' => $netDayBalance,
             // Bundles

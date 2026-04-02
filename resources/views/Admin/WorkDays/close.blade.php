@@ -56,7 +56,7 @@
 {{-- ════════════════════════════════════════════════════════════════ --}}
 {{-- SUMMARY STATS CARDS                                             --}}
 {{-- ════════════════════════════════════════════════════════════════ --}}
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
     {{-- Total Sales --}}
     <div class="glass-panel p-6 rounded-2xl border border-emerald-500/10 relative overflow-hidden group">
         <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform">
@@ -74,6 +74,15 @@
         <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Total Expenses') }}</p>
         <div class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($totalExpenses, 2) }}</div>
         <div class="mt-1 text-[10px] text-red-500 font-bold uppercase tracking-wider">{{ __($currencyCode) }}</div>
+    </div>
+    {{-- Debt Payments --}}
+    <div class="glass-panel p-6 rounded-2xl border border-sky-500/10 relative overflow-hidden group">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform">
+            <svg class="w-12 h-12 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </div>
+        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Cash Flow (Debts)') }}</p>
+        <div class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($supplierPayments ?? 0, 2) }}</div>
+        <div class="mt-1 text-[10px] text-sky-500 font-bold uppercase tracking-wider">{{ __($currencyCode) }}</div>
     </div>
     {{-- Net Balance --}}
     <div class="glass-panel p-6 rounded-2xl border border-amber-500/10 relative overflow-hidden group">
@@ -251,6 +260,22 @@
                 <div class="flex justify-between items-center py-3 bg-red-500/5 rounded-xl px-3 -mx-1 mt-2">
                     <span class="text-sm font-bold text-red-600 dark:text-red-400">{{ __('Total Expenses') }}</span>
                     <span class="font-bold text-red-600 dark:text-red-400 text-lg">{{ number_format($totalExpenses, 2) }} {{ __($currencyCode) }}</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── Cash Flow Details (Outside P&L) ─────────────── --}}
+        <div class="glass-panel rounded-2xl border border-sky-500/10 overflow-hidden mt-6">
+            <div class="p-4 bg-sky-500/5 border-b border-sky-500/10">
+                <h3 class="text-sm font-bold text-sky-600 dark:text-sky-400 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    {{ __('Cash Flow Details') }}
+                </h3>
+            </div>
+            <div class="p-5 space-y-1">
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Supplier Debts Paid') }}</span>
+                    <span class="font-bold text-sky-600 dark:text-sky-400">{{ number_format($supplierPayments ?? 0, 2) }} <span class="text-xs text-sky-400/50">{{ __($currencyCode) }}</span></span>
                 </div>
             </div>
         </div>

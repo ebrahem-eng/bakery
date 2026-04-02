@@ -91,4 +91,9 @@ class WorkDay extends Model
     {
         return $this->hasMany(Consumption::class);
     }
+
+    public function supplierPayments()
+    {
+        return $this->hasMany(SupplierPayment::class);
+    }
 }

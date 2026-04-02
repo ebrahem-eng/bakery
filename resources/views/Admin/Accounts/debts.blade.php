@@ -87,8 +87,13 @@
                                 </td>
                                 <td class="py-3 px-4 text-right">
                                     <div class="font-bold text-slate-900 dark:text-white font-mono">{{ number_format($supply->total_cost, 2) }} <span class="text-xs">{{ $supply->currency->code }}</span></div>
-                                    @if($supply->paid_amount > 0)
-                                        <div class="text-[10px] text-emerald-500 tracking-wider">{{ __('Paid:') }} {{ number_format($supply->paid_amount, 2) }} {{ $supply->paidCurrency->code ?? '' }}</div>
+                                    @if($supply->total_paid_native > 0)
+                                        <div class="text-[10px] text-emerald-500 tracking-wider flex flex-col items-end">
+                                            <span>{{ __('Paid:') }} {{ number_format($supply->total_paid_native, 2) }} {{ $supply->currency->code }}</span>
+                                            @if($supply->payments->count() > 0)
+                                                <span class="text-[8px] opacity-75 italic text-emerald-600 dark:text-emerald-400">({{ __('Includes later payments') }})</span>
+                                            @endif
+                                        </div>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4 text-right">

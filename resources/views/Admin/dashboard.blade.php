@@ -80,7 +80,7 @@
                     {{ __('Commenced At: ') }} {{ $activeWorkDay->start_time->translatedFormat('Y-m-d h:i A') }}
                     <span class="text-slate-500 {{ app()->getLocale() == 'ar' ? 'mr-2' : 'ml-2' }}">({{ $activeWorkDay->start_time->diffForHumans() }})</span>
                 </p>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                     <div class="flex flex-col">
                         <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Starting Cash') }}</span>
                         <span class="text-sm font-black text-emerald-600 dark:text-emerald-400">{{ number_format($startingCash, 2) }} <span class="text-[10px]">{{ $startingCurrency->code ?? $currencyCode }}</span></span>
@@ -96,6 +96,10 @@
                     <div class="flex flex-col">
                         <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Live Expenses') }}</span>
                         <span class="text-sm font-black text-red-500">{{ number_format($todayExpenses, 2) }} <span class="text-[10px]">{{ $currencyCode }}</span></span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Debt Payments') }}</span>
+                        <span class="text-sm font-black text-sky-500">{{ number_format($todaySupplierPayments, 2) }} <span class="text-[10px]">{{ $currencyCode }}</span></span>
                     </div>
                 </div>
             </div>
@@ -256,7 +260,7 @@
 
 @can('view analytics')
 {{-- ── KPI Cards ─────────────────────────────────────────────── --}}
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-5 mb-8">
     {{-- Revenue --}}
     <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-white/5 relative overflow-hidden group">
         <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-20 h-20 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
@@ -281,6 +285,19 @@
         </div>
         <h3 class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($totalExpenses, 2) }}</h3>
         <p class="text-[10px] text-red-600 dark:text-red-400 font-medium mt-1">{{ $currencyCode }}</p>
+    </div>
+
+    {{-- Debt Payments --}}
+    <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-white/5 relative overflow-hidden group">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} w-20 h-20 bg-sky-500/10 rounded-full blur-2xl group-hover:bg-sky-500/20 transition-all"></div>
+        <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 bg-sky-500/10 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{{ __('Cash Flow (Debts)') }}</p>
+        </div>
+        <h3 class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($totalSupplierPayments, 2) }}</h3>
+        <p class="text-[10px] text-sky-600 dark:text-sky-400 font-medium mt-1">{{ $currencyCode }}</p>
     </div>
 
     {{-- Net Profit --}}

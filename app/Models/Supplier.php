@@ -35,4 +35,9 @@ class Supplier extends Model
     {
         return $this->hasMany(Supply::class);
     }
+
+    public function payments()
+    {
+        return $this->hasManyThrough(SupplierPayment::class, Supply::class);
+    }
 }

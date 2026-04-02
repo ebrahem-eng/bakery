@@ -36,7 +36,7 @@ class DashboardController extends Controller
 
         // ── Active work day (always shown) ────────────────────────────
         $activeWorkDay = WorkDay::where('status', 'active')
-            ->with(['distributions', 'supplies', 'expenses', 'workerShifts', 'workerTransactions', 'distributorReturns'])
+            ->with(['distributions', 'supplies', 'supplierPayments', 'expenses', 'workerShifts', 'workerTransactions', 'distributorReturns'])
             ->first();
 
         $defaultCurrency = Currency::where('is_default', true)->first();
@@ -78,6 +78,8 @@ class DashboardController extends Controller
         $workerAdvances = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'advance')->sum(Currency::getSelectRaw('amount'));
         $workerDeductions = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'deduction')->sum(Currency::getSelectRaw('amount'));
         $operationalExpenses = Expense::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount'));
+        
+        $totalSupplierPayments = \App\Models\SupplierPayment::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount', 'exchange_rate'));
 
         $totalExpenses = $suppliesCost + $unloadingFees + $shiftWages + $workerAllowances - $workerDeductions + $operationalExpenses;
         $netProfit = $totalRevenue - $totalExpenses;
@@ -121,9 +123,10 @@ class DashboardController extends Controller
         $supplierBalances = Supplier::select('suppliers.*')
             ->withSum('supplies as total_owed', Currency::getSelectRaw('total_cost'))
             ->withSum('supplies as total_paid_amount', Currency::getSelectRaw('paid_amount'))
+            ->withSum('payments as total_later_payments', Currency::getSelectRaw('supplier_payments.amount', 'supplier_payments.exchange_rate'))
             ->get()
             ->map(function ($s) {
-                $s->outstanding = ($s->total_owed ?? 0) - ($s->total_paid_amount ?? 0);
+                $s->outstanding = ($s->total_owed ?? 0) - ($s->total_paid_amount ?? 0) - ($s->total_later_payments ?? 0);
 
                 return $s;
             })
@@ -168,6 +171,7 @@ class DashboardController extends Controller
         $todaySales = 0;
         $todayExpenses = 0;
         $todayBundlesSold = 0;
+        $todaySupplierPayments = 0;
 
         if ($activeWorkDay) {
             $todaySales = $activeWorkDay->distributions->sum(fn($d) => Currency::convertAmount($d->total_price, $d->exchange_rate)) 
@@ -179,6 +183,8 @@ class DashboardController extends Controller
             $todayExpenses += $activeWorkDay->workerTransactions->where('type', 'allowance')->sum(fn($wtf) => Currency::convertAmount($wtf->amount, $wtf->exchange_rate));
             $todayExpenses -= $activeWorkDay->workerTransactions->where('type', 'deduction')->sum(fn($wtf) => Currency::convertAmount($wtf->amount, $wtf->exchange_rate));
             $todayExpenses += $activeWorkDay->expenses->sum(fn($e) => Currency::convertAmount($e->amount, $e->exchange_rate));
+            
+            $todaySupplierPayments = $activeWorkDay->supplierPayments->sum(fn($sp) => Currency::convertAmount($sp->amount, $sp->exchange_rate));
         }
 
         return view('Admin.dashboard', compact(
@@ -190,9 +196,11 @@ class DashboardController extends Controller
             'expenseBreakdown', 'distributorBalances', 'supplierBalances',
             'topDistributors', 'trendData', 'lastDays',
             // Live stats
-            'todaySales', 'todayExpenses', 'todayBundlesSold',
+            'todaySales', 'todayExpenses', 'todayBundlesSold', 'todaySupplierPayments',
             // Starting balances
-            'startingCash', 'startingBundles', 'startingCurrency'
+            'startingCash', 'startingBundles', 'startingCurrency',
+            // Specific Debt tracking
+            'totalSupplierPayments'
         ));
     }
 

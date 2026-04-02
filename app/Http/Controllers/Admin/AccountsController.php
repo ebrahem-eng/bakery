@@ -334,7 +334,7 @@ class AccountsController extends Controller
 
         foreach ($allUnpaidSupplies as $s) {
             $costInBase = Currency::convertAmount($s->total_cost, $s->exchange_rate);
-            $paidInBase = Currency::convertAmount($s->paid_amount, $s->paid_exchange_rate);
+            $paidInBase = $s->getTotalPaidBase();
             $unpaid = max(0, $costInBase - $paidInBase);
             
             $totalOutstanding += $unpaid;
