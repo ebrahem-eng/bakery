@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login | Bakery Secure</title>
+    <title>{{ __('Admin Login') }} | Bakery Secure</title>
     <!-- Tailwind CSS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -121,10 +121,23 @@
             </form>
         </div>
         
-        <div class="text-center mt-6">
-            <a href="{{ route('admin.setLang', app()->getLocale() == 'en' ? 'ar' : 'en') }}" class="text-xs font-semibold text-slate-500 hover:text-amber-500 transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
-                {{ app()->getLocale() == 'en' ? 'عربي' : 'English' }}
+        <div class="mt-8 flex flex-col items-center gap-6">
+            <a href="{{ url('/') }}" class="group relative px-6 py-2.5 rounded-full overflow-hidden transition-all duration-500">
+                <!-- Animated background glow -->
+                <div class="absolute inset-0 bg-white/5 group-hover:bg-amber-500/10 border border-white/5 group-hover:border-amber-500/20 transition-all duration-500 rounded-full blur-[1px]"></div>
+                
+                <div class="relative flex items-center gap-3 text-slate-400 group-hover:text-amber-400 transition-colors duration-500">
+                    <svg class="w-4 h-4 transition-transform duration-500 group-hover:-translate-x-1 rtl:group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    <span class="text-[10px] font-extrabold uppercase tracking-[0.25em] pt-0.5">{{ __('Back to Website') }}</span>
+                </div>
+            </a>
+
+            <!-- Refined Language Switcher -->
+            <a href="{{ route('admin.setLang', app()->getLocale() == 'en' ? 'ar' : 'en') }}" class="text-[9px] font-bold text-slate-600 hover:text-amber-500/70 transition-all uppercase tracking-[0.4em] flex items-center justify-center gap-2 grayscale hover:grayscale-0 opacity-50 hover:opacity-100">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
+                {{ app()->getLocale() == 'en' ? 'Arabic' : 'English' }}
             </a>
         </div>
     </div>
