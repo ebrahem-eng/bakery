@@ -54,10 +54,29 @@
     </div>
 
     <!-- Recent Supply Ledgers -->
-    <div class="lg:col-span-2">
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Deliveries Table -->
         <div class="glass-panel rounded-2xl border border-white/5 overflow-hidden">
-            <div class="p-6 border-b border-white/5 flex justify-between items-center">
+            <div class="p-6 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h2 class="text-lg font-bold text-white">{{ __('Recent Deliveries') }}</h2>
+                
+                {{-- Deliveries Filter --}}
+                <form action="{{ route('admin.suppliers.show', $supplier) }}" method="GET" class="flex flex-wrap items-center gap-2">
+                    <input type="hidden" name="payment_start" value="{{ $paymentStart }}">
+                    <input type="hidden" name="payment_end" value="{{ $paymentEnd }}">
+                    
+                    <div class="flex items-center gap-1">
+                        <input type="date" name="delivery_start" value="{{ $deliveryStart }}" class="bg-black/20 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white focus:border-amber-500/50 outline-none">
+                        <span class="text-slate-500 text-[10px]">-</span>
+                        <input type="date" name="delivery_end" value="{{ $deliveryEnd }}" class="bg-black/20 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white focus:border-amber-500/50 outline-none">
+                    </div>
+                    <button type="submit" class="p-1 px-3 bg-amber-500 rounded-lg text-white text-[10px] font-bold hover:bg-amber-600 transition-colors">
+                        {{ __('Filter') }}
+                    </button>
+                    @if($deliveryStart || $deliveryEnd)
+                        <a href="{{ route('admin.suppliers.show', ['supplier' => $supplier, 'payment_start' => $paymentStart, 'payment_end' => $paymentEnd]) }}" class="text-[10px] text-slate-500 hover:text-white underline">{{ __('Clear') }}</a>
+                    @endif
+                </form>
             </div>
             <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full text-left border-collapse" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
@@ -66,11 +85,11 @@
                             <th class="py-4 px-4 font-medium">{{ __('Date & Work Day') }}</th>
                             <th class="py-4 px-4 font-medium">{{ __('Material Category') }}</th>
                             <th class="py-4 px-4 font-medium">{{ __('Quantity') }}</th>
-                            <th class="py-4 px-4 font-medium">{{ __('Total Invoice Cost') }}</th>
+                            <th class="py-4 px-4 font-medium">{{ __('Cost') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5 text-sm text-slate-300">
-                        @forelse($supplier->supplies->take(20) as $supply)
+                        @forelse($supplies as $supply)
                         <tr class="hover:bg-white/5 transition-colors">
                             <td class="py-3 px-4">
                                 <div class="font-medium text-white">{{ $supply->created_at->translatedFormat('Y-m-d H:i') }}</div>
@@ -80,21 +99,92 @@
                                 {{ __($supply->category->name ?? '--') }}
                             </td>
                             <td class="py-3 px-4">
-                                <div class="text-sm font-mono text-slate-900 dark:text-white font-bold">{{ number_format($supply->quantity, 2) }} {{ __('Units') }}</div>
+                                <div class="text-xs font-mono text-white font-bold">{{ number_format($supply->quantity, 2) }} {{ __('Units') }}</div>
                                 @if($supply->boxes_count)
-                                    <div class="text-[10px] text-slate-500 mt-1 font-mono">{{ $supply->boxes_count }} {{ __('Boxes') }} × {{ $supply->box_weight }} {{ __('KG') }}</div>
+                                    <div class="text-[10px] text-slate-500 mt-1 font-mono">{{ $supply->boxes_count }} {{ __('Boxes') }}</div>
                                 @endif
                                 @if($supply->material_type_name)
                                     <div class="text-[10px] text-amber-500 mt-1 font-bold">{{ $supply->material_type_name }}</div>
                                 @endif
                             </td>
-                            <td class="py-3 px-4 font-bold">
+                            <td class="py-3 px-4 font-bold text-white">
                                 {{ number_format($supply->total_cost, 2) }}
+                                <span class="text-[10px] text-slate-500">{{ $supply->currency->code ?? '' }}</span>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="py-8 text-center text-slate-500 italic">{{ __('No raw materials recorded in the system yet.') }}</td>
+                            <td colspan="4" class="py-8 text-center text-slate-500 italic">{{ __('No raw materials found matching the filters.') }}</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Payment History Table -->
+        <div class="glass-panel rounded-2xl border border-white/5 overflow-hidden">
+            <div class="p-6 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h2 class="text-lg font-bold text-white">{{ __('Payment History') }}</h2>
+                
+                {{-- Payments Filter --}}
+                <form action="{{ route('admin.suppliers.show', $supplier) }}" method="GET" class="flex flex-wrap items-center gap-2">
+                    <input type="hidden" name="delivery_start" value="{{ $deliveryStart }}">
+                    <input type="hidden" name="delivery_end" value="{{ $deliveryEnd }}">
+
+                    <div class="flex items-center gap-1">
+                        <input type="date" name="payment_start" value="{{ $paymentStart }}" class="bg-black/20 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white focus:border-purple-500/50 outline-none">
+                        <span class="text-slate-500 text-[10px]">-</span>
+                        <input type="date" name="payment_end" value="{{ $paymentEnd }}" class="bg-black/20 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white focus:border-purple-500/50 outline-none">
+                    </div>
+                    <button type="submit" class="p-1 px-3 bg-purple-600 rounded-lg text-white text-[10px] font-bold hover:bg-purple-700 transition-colors">
+                        {{ __('Filter') }}
+                    </button>
+                    @if($paymentStart || $paymentEnd)
+                        <a href="{{ route('admin.suppliers.show', ['supplier' => $supplier, 'delivery_start' => $deliveryStart, 'delivery_end' => $deliveryEnd]) }}" class="text-[10px] text-slate-500 hover:text-white underline">{{ __('Clear') }}</a>
+                    @endif
+                </form>
+            </div>
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+                    <thead>
+                        <tr class="text-slate-400 text-xs uppercase tracking-wider border-b border-white/5">
+                            <th class="py-4 px-4 font-medium">{{ __('Date') }}</th>
+                            <th class="py-4 px-4 font-medium">{{ __('Type') }}</th>
+                            <th class="py-4 px-4 font-medium">{{ __('Amount') }}</th>
+                            <th class="py-4 px-4 font-medium">{{ __('Base Equiv.') }}</th>
+                            <th class="py-4 px-4 font-medium">{{ __('Admin') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 text-sm text-slate-300">
+                        @forelse($allPayments as $payment)
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="py-3 px-4">
+                                <div class="font-medium text-white">{{ $payment->date->translatedFormat('Y-m-d H:i') }}</div>
+                                <a href="{{ route('admin.supplies.show', $payment->supply_id) }}" class="text-[10px] text-amber-500 hover:underline">#{{ $payment->supply_id }}</a>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold {{ $payment->type === 'initial_payment' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400' }}">
+                                    {{ $payment->type === 'initial_payment' ? __('Initial Payment') : __('Debt Settlement') }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="font-bold text-white">{{ number_format($payment->amount, 2) }}</span>
+                                <span class="text-[10px] text-slate-500 uppercase">{{ $payment->currency->code ?? '' }}</span>
+                            </td>
+                            <td class="py-3 px-4 text-emerald-400 font-bold">
+                                {{ number_format($payment->base_amount, 2) }}
+                            </td>
+                            <td class="py-3 px-4 text-xs">
+                                {{ $payment->admin_name }}
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="py-12 text-center text-slate-500 italic">
+                                <svg class="w-12 h-12 text-slate-700 mx-auto mb-3 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                {{ __('No payments recorded matching the filters.') }}
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>

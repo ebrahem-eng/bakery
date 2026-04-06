@@ -17,11 +17,76 @@ class SupplierController extends Controller
         return view('Admin.Suppliers.index', compact('suppliers'));
     }
 
-    public function show(Supplier $supplier)
+    public function show(Request $request, Supplier $supplier)
     {
-        $supplier->load(['mobiles', 'categories', 'supplies.category', 'supplies.currency', 'supplies.workDay.openedBy']);
+        // 1. Handle Deliveries Filtering
+        $deliveryStart = $request->get('delivery_start');
+        $deliveryEnd = $request->get('delivery_end');
 
-        return view('Admin.Suppliers.show', compact('supplier'));
+        $suppliesQuery = $supplier->supplies()->with(['category', 'currency', 'workDay.openedBy', 'admin']);
+        
+        if ($deliveryStart) {
+            $suppliesQuery->whereDate('created_at', '>=', $deliveryStart);
+        }
+        if ($deliveryEnd) {
+            $suppliesQuery->whereDate('created_at', '<=', $deliveryEnd);
+        }
+        
+        $supplies = $suppliesQuery->orderBy('id', 'desc')->get();
+
+        // 2. Handle Payments Filtering & Unification
+        $paymentStart = $request->get('payment_start');
+        $paymentEnd = $request->get('payment_end');
+
+        // Aggregation A: Initial Payments on Supplies
+        $initialPayments = $supplier->supplies()
+            ->where('paid_amount', '>', 0)
+            ->when($paymentStart, fn($q) => $q->whereDate('created_at', '>=', $paymentStart))
+            ->when($paymentEnd, fn($q) => $q->whereDate('created_at', '<=', $paymentEnd))
+            ->with(['paidCurrency', 'currency', 'admin'])
+            ->get()
+            ->map(function ($s) {
+                $amount = (float) $s->paid_amount;
+                $rate = (float) ($s->paid_exchange_rate ?? $s->exchange_rate ?? 1);
+                return (object) [
+                    'date' => $s->created_at,
+                    'type' => 'initial_payment',
+                    'amount' => $amount,
+                    'currency' => $s->paidCurrency ?? $s->currency,
+                    'exchange_rate' => $rate,
+                    'base_amount' => \App\Models\Currency::convertAmount($amount, $rate),
+                    'supply_id' => $s->id,
+                    'admin_name' => ($s->admin->first_name ?? '') . ' ' . ($s->admin->last_name ?? ''),
+                ];
+            });
+
+        // Aggregation B: Subsequent Debt Settlements
+        $settlementPayments = \App\Models\SupplierPayment::whereIn('supply_id', $supplier->supplies()->pluck('id'))
+            ->when($paymentStart, fn($q) => $q->whereDate('created_at', '>=', $paymentStart))
+            ->when($paymentEnd, fn($q) => $q->whereDate('created_at', '<=', $paymentEnd))
+            ->with(['currency', 'admin', 'supply'])
+            ->get()
+            ->map(function ($p) {
+                $amount = (float) $p->amount;
+                $rate = (float) ($p->exchange_rate ?? 1);
+                return (object) [
+                    'date' => $p->created_at,
+                    'type' => 'settlement',
+                    'amount' => $amount,
+                    'currency' => $p->currency,
+                    'exchange_rate' => $rate,
+                    'base_amount' => \App\Models\Currency::convertAmount($amount, $rate),
+                    'supply_id' => $p->supply_id,
+                    'admin_name' => ($p->admin->first_name ?? '') . ' ' . ($p->admin->last_name ?? ''),
+                ];
+            });
+
+        $allPayments = $initialPayments->concat($settlementPayments)
+            ->sortByDesc('date');
+
+        $supplier->load(['mobiles', 'categories']);
+
+        return view('Admin.Suppliers.show', compact('supplier', 'supplies', 'allPayments', 'deliveryStart', 'deliveryEnd', 'paymentStart', 'paymentEnd'));
     }
 
     public function create()

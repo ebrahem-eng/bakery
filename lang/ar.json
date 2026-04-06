@@ -1260,5 +1260,10 @@
     "Active Advances": "السلف النشطة",
     "No completed shifts found.": "لا توجد ورديات مكتملة.",
     "Produced (From Oven)": "الإنتاج (من الفرن)",
-    "Bread Expenses (Samples/Waste)": "مصاريف الخبز (عينات/هالك)"
+    "Bread Expenses (Samples/Waste)": "مصاريف الخبز (عينات/هالك)",
+    "Payment History": "سجل الدفعات",
+    "Initial Payment": "دفعة أولية",
+    "Base Equiv.": "معادل الأساس",
+    "No payments recorded matching the filters.": "لم يتم العثور على دفعات تطابق الفلاتر.",
+    "No raw materials found matching the filters.": "لم يتم العثور على توريدات تطابق الفلاتر."
 }
