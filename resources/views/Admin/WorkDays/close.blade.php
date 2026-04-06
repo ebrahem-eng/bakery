@@ -56,14 +56,48 @@
 {{-- ════════════════════════════════════════════════════════════════ --}}
 {{-- SUMMARY STATS CARDS                                             --}}
 {{-- ════════════════════════════════════════════════════════════════ --}}
-<div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+<div x-data="{
+    carriedOver: {{ $workDay->status === 'closed' ? $workDay->carried_over_money : 0 }},
+    isClosed: {{ $workDay->status === 'closed' ? 'true' : 'false' }},
+    currencyId: '{{ $defaultCurrency->id ?? '' }}',
+    isLocal: true,
+    exchangeRate: {{ $workDay->status === 'closed' ? ($workDay->carried_over_exchange_rate ?? 1) : 1 }},
+    baseNetSales: {{ $netSales - ($workDay->status === 'closed' ? $settlementCashBase : 0) }},
+    baseTotalExpenses: {{ $totalExpenses }},
+    
+    setCurrency(id) {
+        this.currencyId = id;
+        const currencies = @js($currencies->map(fn($c) => ['id' => $c->id, 'is_default' => $c->is_default, 'exchange_rate' => $c->exchange_rate]));
+        const found = currencies.find(c => c.id == id);
+        this.isLocal = found ? found.is_default : true;
+        this.exchangeRate = found ? found.exchange_rate : 1;
+    },
+
+    getSettlementInBase() {
+        if (!this.carriedOver || isNaN(this.carriedOver)) return 0;
+        return this.isLocal ? parseFloat(this.carriedOver) : (parseFloat(this.carriedOver) / this.exchangeRate);
+    },
+
+    getDynamicNetSales() {
+        return (this.baseNetSales + this.getSettlementInBase());
+    },
+
+    getDynamicNetBalance() {
+        return (this.getDynamicNetSales() - this.baseTotalExpenses);
+    },
+
+    formatMoney(val) {
+        return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
+    }
+}">
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
     {{-- Total Sales --}}
     <div class="glass-panel p-6 rounded-2xl border border-emerald-500/10 relative overflow-hidden group">
         <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform">
             <svg class="w-12 h-12 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
         </div>
         <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Net Sales') }}</p>
-        <div class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($netSales, 2) }}</div>
+        <div class="text-2xl font-black text-slate-900 dark:text-white" x-text="formatMoney(getDynamicNetSales())">{{ number_format($netSales, 2) }}</div>
         <div class="mt-1 text-[10px] text-emerald-500 font-bold uppercase tracking-wider">{{ __($currencyCode) }}</div>
     </div>
     {{-- Total Expenses --}}
@@ -90,7 +124,9 @@
             <svg class="w-12 h-12 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
         <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Net Balance') }}</p>
-        <div class="text-2xl font-black {{ $netDayBalance >= 0 ? 'text-emerald-500' : 'text-red-500' }}">{{ number_format($netDayBalance, 2) }}</div>
+        <div class="text-2xl font-black" 
+             :class="getDynamicNetBalance() >= 0 ? 'text-emerald-500' : 'text-red-500'"
+             x-text="formatMoney(getDynamicNetBalance())">{{ number_format($netDayBalance, 2) }}</div>
         <div class="mt-1 text-[10px] text-slate-400 font-bold uppercase tracking-wider">{{ __($currencyCode) }}</div>
     </div>
     {{-- Bundles Status --}}
@@ -104,19 +140,7 @@
     </div>
 </div>
 
-<form action="{{ route('admin.work_days.close', $workDay) }}" method="POST"
-      x-data="{
-          currencyId: '{{ $defaultCurrency->id ?? '' }}',
-          isLocal: true,
-          exchangeRate: 1,
-          setCurrency(id) {
-              this.currencyId = id;
-              const currencies = @js($currencies->map(fn($c) => ['id' => $c->id, 'is_default' => $c->is_default, 'exchange_rate' => $c->exchange_rate]));
-              const found = currencies.find(c => c.id == id);
-              this.isLocal = found ? found.is_default : true;
-              this.exchangeRate = found ? found.exchange_rate : 1;
-          }
-      }">
+<form action="{{ route('admin.work_days.close', $workDay) }}" method="POST">
     @csrf
     
     <input type="hidden" name="total_expenses_at_close" value="{{ $totalExpenses }}">
@@ -236,13 +260,18 @@
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Refunds Processed') }}</span>
                     <span class="font-bold text-red-600 dark:text-red-400">- {{ number_format($totalRefunds, 2) }} <span class="text-xs text-red-400/50">{{ __($currencyCode) }}</span></span>
                 </div>
+                {{-- Settlement Cash --}}
+                <div class="flex justify-between items-center py-2.5 bg-emerald-500/5 rounded-lg px-2 my-1">
+                    <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{ __('Settlement Cash') }}</span>
+                    <span class="font-bold text-emerald-600 dark:text-emerald-400" x-text="'+ ' + formatMoney(getSettlementInBase()) + ' {{ __($currencyCode) }}'">+ {{ number_format($settlementCashBase, 2) }} {{ __($currencyCode) }}</span>
+                </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Payments Received') }}</span>
-                    <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ number_format($totalPaymentsReceived, 2) }} <span class="text-xs text-emerald-400/50">{{ __($currencyCode) }}</span></span>
+                    <span class="font-bold text-emerald-600 dark:text-emerald-400" x-text="formatMoney({{ $totalPaymentsReceived - ($workDay->status === 'closed' ? $settlementCashBase : 0) }} + getSettlementInBase()) + ' {{ __($currencyCode) }}'">{{ number_format($totalPaymentsReceived, 2) }} <span class="text-xs text-emerald-400/50">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-3 bg-emerald-500/5 rounded-xl px-3 -mx-1 mt-2">
                     <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">{{ __('Net Sales') }}</span>
-                    <span class="font-bold text-emerald-600 dark:text-emerald-400 text-lg">{{ number_format($netSales, 2) }} {{ __($currencyCode) }}</span>
+                    <span class="font-bold text-emerald-600 dark:text-emerald-400 text-lg" x-text="formatMoney(getDynamicNetSales()) + ' {{ __($currencyCode) }}'">{{ number_format($netSales, 2) }} {{ __($currencyCode) }}</span>
                 </div>
             </div>
         </div>
@@ -407,7 +436,9 @@
                     <div class="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-xs text-slate-500 font-bold uppercase tracking-widest">{{ __('Net Balance') }}</span>
-                            <span class="text-lg font-bold {{ $netDayBalance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">{{ number_format($netDayBalance, 2) }} {{ __($currencyCode) }}</span>
+                            <span class="text-lg font-bold" 
+                                  :class="getDynamicNetBalance() >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'"
+                                  x-text="formatMoney(getDynamicNetBalance()) + ' {{ __($currencyCode) }}'">{{ number_format($netDayBalance, 2) }} {{ __($currencyCode) }}</span>
                         </div>
                         <div class="flex justify-between items-center text-xs text-slate-400">
                             <span>{{ __('Bundles Sold') }}: {{ $bundlesDistributed - $bundlesReturnedByDistributors }}</span>
@@ -445,8 +476,9 @@
                             <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
-                            <input type="number" step="0.01" name="carried_over_money" required min="0" value="{{ old('carried_over_money') }}"
-                                class="block w-full px-4 py-4 bg-slate-50 dark:bg-[#0f1115] border border-amber-500/30 rounded-xl text-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 transition-all font-bold"
+                            <input type="number" step="0.01" name="carried_over_money" required min="0" 
+                                x-model.number="carriedOver"
+                                class="block w-full px-4 py-4 bg-white dark:bg-[#1a1c23] border border-amber-500/30 rounded-xl text-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 transition-all font-bold"
                                 placeholder="0.00">
                         </div>
                     </div>
@@ -465,12 +497,12 @@
                     </div>
 
                     {{-- Exchange Rate (if non-local) --}}
-                    <div x-show="!isLocal" x-transition>
+                    <div x-show="!isLocal" x-transition x-cloak>
                         <label class="block text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2 px-1">
                             {{ __('Exchange Rate') }}
                         </label>
-                        <input type="number" step="0.01" name="carried_over_exchange_rate" :value="exchangeRate" min="0"
-                            class="block w-full px-4 py-4 bg-slate-50 dark:bg-[#0f1115] border border-amber-500/30 rounded-xl text-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 transition-all font-bold"
+                        <input type="number" step="0.01" name="carried_over_exchange_rate" x-model.number="exchangeRate" min="0"
+                            class="block w-full px-4 py-4 bg-white dark:bg-[#1a1c23] border border-amber-500/30 rounded-xl text-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 transition-all font-bold"
                             placeholder="1.00">
                     </div>
 
@@ -526,4 +558,5 @@
 
     </div>
 </form>
+</div>
 @endsection

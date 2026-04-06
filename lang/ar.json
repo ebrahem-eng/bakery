@@ -1235,5 +1235,9 @@
     "Returned": "المرتجع",
     "Sold": "المباع",
     "Wholesale Sales (Distributors)": "مبيعات الجملة (الموزعين)",
-    "Retail Sales (Shifts)": "مبيعات التجزئة (الورديات)"
+    "Retail Sales (Shifts)": "مبيعات التجزئة (الورديات)",
+    "Invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "Settlement Cash": "نقدية التسوية",
+    "End-of-Day Terminal Balance": "رصيد الصندوق عند الإغلاق",
+    "Gross Sales (Distribution, Shifts & Settlement)": "إجمالي المبيعات (توزيع، ورديات، وتسويات)"
 }
