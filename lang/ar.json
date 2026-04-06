@@ -1226,5 +1226,14 @@
     "Bundles Sold from Shifts": "الربطات المباعة من الورديات",
     "Remaining Bundles (Inventory)": "الربطات المتبقية (المخزون)",
     "Cash on hand at end of shift. Recorded under today's revenue.": "الكاش المتبقي عند نهاية الوردية. يُسجل ضمن إيرادات اليوم.",
-    "Bundles Sold": "الربطات المباعة"
+    "Bundles Taken from Bakery": "الربطات المسحوبة من المخبز",
+    "Net Returned from Shifts": "صافي المرتجع من الورديات",
+    "(Returned - Taken from Stock)": "(المرتجع - المسحوب من المخزون)",
+    "From Oven": "من الفرن",
+    "From Bakery": "من المخبز",
+    "Total Received": "إجمالي المستلم",
+    "Returned": "المرتجع",
+    "Sold": "المباع",
+    "Wholesale Sales (Distributors)": "مبيعات الجملة (الموزعين)",
+    "Retail Sales (Shifts)": "مبيعات التجزئة (الورديات)"
 }
