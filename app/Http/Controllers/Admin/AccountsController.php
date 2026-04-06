@@ -61,7 +61,10 @@ class AccountsController extends Controller
             }
         }
 
-        $wholesaleSales = Distribution::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('total_price'));
+        $wholesaleSalesInitial = Distribution::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('amount_paid'));
+        $wholesaleSalesSettlements = DistributorTransaction::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('amount'));
+        $wholesaleSales = $wholesaleSalesInitial + $wholesaleSalesSettlements;
+        
         $cashFromShifts = $totalActiveShiftCash;
         $endOfDayCash = $totalSettlementCash;
         $grossSales = $wholesaleSales + $cashFromShifts + $endOfDayCash;
@@ -439,6 +442,77 @@ class AccountsController extends Controller
         );
 
         return view('Admin.Accounts.debts', compact('supplies', 'currencyCode', 'totalOutstanding', 'overdueAmount', 'dueSoonAmount'));
+    }
+
+    public function financialLedger(Request $request)
+    {
+        $defaultCurrency = Currency::where('is_default', true)->first();
+        $currencyCode = $defaultCurrency->code ?? 'SYP';
+
+        // ── Distributor Balances (Lifetime) ──────────────────────────
+        $distributorBalances = Distributor::select('distributors.*')
+            ->withSum('distributions as total_billed', Currency::getSelectRaw('total_price'))
+            ->withSum('distributions as total_down_payment', Currency::getSelectRaw('amount_paid'))
+            ->withSum('transactions as total_payments', Currency::getSelectRaw('amount'))
+            ->withSum('returns as total_refunded', Currency::getSelectRaw('total_refund'))
+            ->get()
+            ->map(function ($d) {
+                $d->total_paid = ($d->total_down_payment ?? 0) + ($d->total_payments ?? 0);
+                $d->outstanding = ($d->total_billed ?? 0) - $d->total_paid - ($d->total_refunded ?? 0);
+                return $d;
+            })
+            ->sortByDesc('outstanding')
+            ->values();
+
+        // ── Supplier Balances (Lifetime) ─────────────────────────────
+        $supplierBalances = Supplier::select('suppliers.*')
+            ->withSum('supplies as total_owed', Currency::getSelectRaw('supplies.total_cost', 'supplies.exchange_rate'))
+            ->withSum('supplies as total_paid_initial', Currency::getSelectRaw('supplies.paid_amount', 'supplies.exchange_rate'))
+            ->withSum('payments as total_paid_later', Currency::getSelectRaw('supplier_payments.amount', 'supplier_payments.exchange_rate'))
+            ->get()
+            ->map(function ($s) {
+                $s->total_paid = ($s->total_paid_initial ?? 0) + ($s->total_paid_later ?? 0);
+                $s->outstanding = ($s->total_owed ?? 0) - $s->total_paid;
+                return $s;
+            })
+            ->sortByDesc('outstanding')
+            ->values();
+
+        // ── Unified Payment History (Recent 50) ──────────────────────
+        $distributorPayments = DistributorTransaction::with(['distributor', 'currency'])
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get()
+            ->map(fn($t) => [
+                'date' => $t->created_at,
+                'type' => 'in',
+                'category' => __('Distributor Payment'),
+                'name' => ($t->distributor->first_name ?? '') . ' ' . ($t->distributor->last_name ?? ''),
+                'amount' => $t->amount,
+                'currency' => $t->currency->code ?? '',
+                'amount_base' => Currency::convertAmount($t->amount, $t->exchange_rate),
+            ]);
+
+        $supplierPayments = \App\Models\SupplierPayment::with(['supply.supplier', 'currency'])
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get()
+            ->map(fn($p) => [
+                'date' => $p->created_at,
+                'type' => 'out',
+                'category' => __('Supplier Payment'),
+                'name' => ($p->supply->supplier->first_name ?? '') . ' ' . ($p->supply->supplier->last_name ?? ''),
+                'amount' => $p->amount,
+                'currency' => $p->currency->code ?? '',
+                'amount_base' => Currency::convertAmount($p->amount, $p->exchange_rate),
+            ]);
+
+        $paymentHistory = $distributorPayments->concat($supplierPayments)
+            ->sortByDesc('date')
+            ->take(50)
+            ->values();
+
+        return view('Admin.Accounts.ledger', compact('distributorBalances', 'supplierBalances', 'paymentHistory', 'currencyCode'));
     }
 
     private function getDateRange(string $period): array

@@ -61,7 +61,9 @@ class DashboardController extends Controller
         }
 
         // ── Revenue Metrics ───────────────────────────────────────────
-        $totalDistributions = Distribution::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_price'));
+        $totalDistributionsInitial = Distribution::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount_paid'));
+        $totalDistributionsSettlements = DistributorTransaction::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount'));
+        $totalDistributions = $totalDistributionsInitial + $totalDistributionsSettlements;
         $totalRefunds = DistributorReturn::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_refund'));
 
         $allWorkDays = WorkDay::whereIn('id', $periodWorkDayIds)->get();
