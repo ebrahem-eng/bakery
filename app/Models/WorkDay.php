@@ -193,6 +193,7 @@ class WorkDay extends Model
         return [
             'defaultCurrency' => $defaultCurrency,
             'currencyCode' => $currencyCode,
+            'currencies' => Currency::all(),
             'materialCategories' => $materialCategories,
             'calculatedRemainingBundles' => $calculatedRemainingBundles,
             'totalCashFromShifts' => $totalCashFromShifts,
