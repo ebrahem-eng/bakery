@@ -49,7 +49,23 @@ class AccountsController extends Controller
         // ═══════════════════════════════════════════════════════════════
 
         // ── Income ────────────────────────────────────────────────────
-        $grossSales = Distribution::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('total_price')) + WorkerShift::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('cash_collected', 'cash_exchange_rate'));
+        $allWorkDays = WorkDay::whereIn('id', $workDayIds)->get();
+        $totalSettlementCash = 0;
+        $totalActiveShiftCash = 0;
+
+        foreach ($allWorkDays as $wd) {
+            if ($wd->status === 'closed') {
+                $totalSettlementCash += Currency::convertAmount($wd->carried_over_money, $wd->carried_over_exchange_rate);
+            } else {
+                $totalActiveShiftCash += WorkerShift::where('work_day_id', $wd->id)->sum(Currency::getSelectRaw('cash_collected', 'cash_exchange_rate'));
+            }
+        }
+
+        $wholesaleSales = Distribution::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('total_price'));
+        $cashFromShifts = $totalActiveShiftCash;
+        $endOfDayCash = $totalSettlementCash;
+        $grossSales = $wholesaleSales + $cashFromShifts + $endOfDayCash;
+        
         $salesReturns = DistributorReturn::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('total_refund'));
         $netRevenue = $grossSales - $salesReturns;
 
@@ -81,14 +97,8 @@ class AccountsController extends Controller
 
         // Cash In
         $cashFromDistributors = DistributorTransaction::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('amount'));
-        $cashFromShifts = WorkerShift::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('cash_collected', 'cash_exchange_rate'));
 
-        // End-of-day cash (recorded at close, belongs to same day's revenue)
-        $endOfDayCash = WorkDay::whereIn('id', $workDayIds)
-            ->where('status', 'closed')
-            ->sum(Currency::getSelectRaw('carried_over_money', 'carried_over_exchange_rate'));
-
-        $totalCashIn = $cashFromDistributors + $cashFromShifts + $endOfDayCash;
+        $totalCashIn = $cashFromDistributors + $totalActiveShiftCash + $totalSettlementCash;
 
         $cashToSuppliers = Supply::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('paid_amount'));
         $cashToSupplierDebts = \App\Models\SupplierPayment::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('amount', 'exchange_rate'));
@@ -132,6 +142,20 @@ class AccountsController extends Controller
                 'description' => ($s->worker->first_name ?? '').' '.($s->worker->last_name ?? '').' — '.__('Shift Cash'),
                 'amount' => Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate),
                 'work_day_id' => $s->work_day_id,
+            ]);
+
+        // Income entries (End-of-Day Settlement Cash)
+        $settlementEntries = WorkDay::whereIn('id', $workDayIds)
+            ->where('status', 'closed')
+            ->where('carried_over_money', '>', 0)
+            ->get()
+            ->map(fn ($wd) => [
+                'date' => $wd->end_time,
+                'type' => 'income',
+                'category' => __('Settlement Cash'),
+                'description' => __('End-of-Day Terminal Balance'),
+                'amount' => Currency::convertAmount($wd->carried_over_money, $wd->carried_over_exchange_rate),
+                'work_day_id' => $wd->id,
             ]);
 
         // Expense entries (Supplies)
@@ -215,8 +239,10 @@ class AccountsController extends Controller
 
         $transactions = $distributions
             ->concat($shiftEntries)
+            ->concat($settlementEntries)
             ->concat($supplyEntries)
             ->concat($expenseEntries)
+            ->concat($refund_entries ?? collect())
             ->concat($refundEntries)
             ->concat($paymentEntries)
             ->concat($downPaymentEntries)

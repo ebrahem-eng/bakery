@@ -92,7 +92,7 @@
             <span class="text-xs text-slate-400">{{ $currencyCode }}</span>
         </div>
         <div class="flex justify-between items-center py-2.5 px-4 border-b border-slate-100 dark:border-white/5">
-            <span class="text-sm text-slate-600 dark:text-slate-400">{{ __('Gross Sales (Distribution & Shifts)') }}</span>
+            <span class="text-sm text-slate-600 dark:text-slate-400">{{ __('Gross Sales (Distribution, Shifts & Settlement)') }}</span>
             <span class="font-semibold text-slate-900 dark:text-white">{{ number_format($grossSales, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
         </div>
         <div class="flex justify-between items-center py-2.5 px-4 border-b border-slate-100 dark:border-white/5">

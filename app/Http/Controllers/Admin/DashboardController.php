@@ -62,11 +62,22 @@ class DashboardController extends Controller
 
         // ── Revenue Metrics ───────────────────────────────────────────
         $totalDistributions = Distribution::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_price'));
-        $totalShiftCash = \App\Models\WorkerShift::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('cash_collected', 'cash_exchange_rate'));
         $totalRefunds = DistributorReturn::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_refund'));
-        
-        $totalRevenue = $totalDistributions + $totalShiftCash - $totalRefunds;
-        $totalPaymentsReceived = DistributorTransaction::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount')) + $totalShiftCash;
+
+        $allWorkDays = WorkDay::whereIn('id', $periodWorkDayIds)->get();
+        $totalSettlementCash = 0;
+        $totalActiveShiftCash = 0;
+
+        foreach ($allWorkDays as $wd) {
+            if ($wd->status === 'closed') {
+                $totalSettlementCash += Currency::convertAmount($wd->carried_over_money, $wd->carried_over_exchange_rate);
+            } else {
+                $totalActiveShiftCash += \App\Models\WorkerShift::where('work_day_id', $wd->id)->sum(Currency::getSelectRaw('cash_collected', 'cash_exchange_rate'));
+            }
+        }
+
+        $totalRevenue = $totalDistributions + $totalActiveShiftCash + $totalSettlementCash - $totalRefunds;
+        $totalPaymentsReceived = DistributorTransaction::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount')) + $totalActiveShiftCash + $totalSettlementCash;
 
         // ── Expense Metrics ───────────────────────────────────────────
         $suppliesCost = Supply::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_cost'));

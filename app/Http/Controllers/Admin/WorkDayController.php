@@ -112,15 +112,23 @@ class WorkDayController extends Controller
         $currencyCode = $defaultCurrency->code ?? '';
 
         // ── Sales Statistics ──────────────────────────────────────────
-        $wholesaleSales = $workDay->distributions->sum(fn($d) => Currency::convertAmount($d->total_price, $d->exchange_rate));
-        $retailSales = $workDay->workerShifts->sum(fn($s) => Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate));
+        $wholesaleSales = $workDay->distributions->reduce(fn($carry, $d) => $carry + Currency::convertAmount($d->total_price, $d->exchange_rate), 0);
+        $retailSales = $workDay->workerShifts->reduce(fn($carry, $s) => $carry + Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate), 0);
         
-        $totalSales = $wholesaleSales + $retailSales;
-        $totalRefunds = $workDay->distributorReturns->sum(fn($r) => Currency::convertAmount($r->total_refund, $r->exchange_rate));
+        $settlementCashBase = 0;
+        if ($workDay->status === 'closed') {
+            $settlementCashBase = Currency::convertAmount($workDay->carried_over_money, $workDay->carried_over_exchange_rate);
+        }
+
+        // Use settlement cash if closed, otherwise use reported retail sales as estimate
+        $cashRevenue = ($workDay->status === 'closed') ? $settlementCashBase : $retailSales;
+
+        $totalSales = $wholesaleSales + $cashRevenue;
+        $totalRefunds = $workDay->distributorReturns->reduce(fn($carry, $r) => $carry + Currency::convertAmount($r->total_refund, $r->exchange_rate), 0);
         
-        $explicitPayments = $workDay->distributorTransactions->where('type', 'payment')->sum(fn($t) => Currency::convertAmount($t->amount, $t->exchange_rate));
-        $downPayments = $workDay->distributions->sum(fn($d) => Currency::convertAmount($d->amount_paid, $d->exchange_rate));
-        $totalPaymentsReceived = $explicitPayments + $downPayments + $retailSales;
+        $explicitPayments = $workDay->distributorTransactions->where('type', 'payment')->reduce(fn($carry, $t) => $carry + Currency::convertAmount($t->amount, $t->exchange_rate), 0);
+        $downPayments = $workDay->distributions->reduce(fn($carry, $d) => $carry + Currency::convertAmount($d->amount_paid, $d->exchange_rate), 0);
+        $totalPaymentsReceived = $explicitPayments + $downPayments + $cashRevenue;
         
         $netSales = $totalSales - $totalRefunds;
 
@@ -147,9 +155,9 @@ class WorkDayController extends Controller
                 return $carry + Currency::convertAmount($t->amount, $t->exchange_rate); 
             }, 0);
             
-        $operationalExpenses = $workDay->expenses->sum(fn($e) => Currency::convertAmount($e->amount, $e->exchange_rate));
+        $operationalExpenses = $workDay->expenses->reduce(fn($carry, $e) => $carry + Currency::convertAmount($e->amount, $e->exchange_rate), 0);
         
-        $supplierPayments = $workDay->supplierPayments->sum(fn($sp) => Currency::convertAmount($sp->amount, $sp->exchange_rate));
+        $supplierPayments = $workDay->supplierPayments->reduce(fn($carry, $sp) => $carry + Currency::convertAmount($sp->amount, $sp->exchange_rate), 0);
 
         $totalExpenses = $suppliesCost + $unloadingFees + $workerPayouts - $workerDeductions + $operationalExpenses;
         $netDayBalance = $netSales - $totalExpenses;
@@ -191,9 +199,9 @@ class WorkDayController extends Controller
         $currencies = Currency::all();
 
         // ── Cash collected from shifts ────────────────────────────────
-        $totalCashFromShifts = $workDay->workerShifts->sum(function ($s) {
-            return Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate);
-        });
+        $totalCashFromShifts = $workDay->workerShifts->reduce(function ($carry, $s) {
+            return $carry + Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate);
+        }, 0);
 
         // ── Raw Material Categories for Consumption ──────────────────
         $materialCategories = Category::where('track_in_daily_close', true)
@@ -240,6 +248,7 @@ class WorkDayController extends Controller
             'previousCarryOverBundles' => $previousCarryOverBundles,
             'activeShifts' => $workDay->workerShifts->whereNull('check_out'),
             'bundlesSoldFromShifts' => $bundlesSoldFromShifts,
+            'settlementCashBase' => $settlementCashBase,
         ];
     }
 
