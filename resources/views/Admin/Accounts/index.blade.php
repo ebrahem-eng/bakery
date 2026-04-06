@@ -92,7 +92,7 @@
             <span class="text-xs text-slate-400">{{ $currencyCode }}</span>
         </div>
         <div class="flex justify-between items-center py-2.5 px-4 border-b border-slate-100 dark:border-white/5">
-            <span class="text-sm text-slate-600 dark:text-slate-400">{{ __('Gross Sales') }}</span>
+            <span class="text-sm text-slate-600 dark:text-slate-400">{{ __('Gross Sales (Distribution & Shifts)') }}</span>
             <span class="font-semibold text-slate-900 dark:text-white">{{ number_format($grossSales, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
         </div>
         <div class="flex justify-between items-center py-2.5 px-4 border-b border-slate-100 dark:border-white/5">
@@ -137,12 +137,8 @@
             <span></span>
         </div>
         <div class="flex justify-between items-center py-2.5 px-4 border-b border-slate-100 dark:border-white/5">
-            <span class="text-sm text-slate-600 dark:text-slate-400">{{ __('Worker Wages') }}</span>
-            <span class="font-semibold text-slate-900 dark:text-white">{{ number_format($workerWages, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
-        </div>
-        <div class="flex justify-between items-center py-2.5 px-4 border-b border-slate-100 dark:border-white/5">
-            <span class="text-sm text-slate-600 dark:text-slate-400">{{ __('Allowances & Advances') }}</span>
-            <span class="font-semibold text-slate-900 dark:text-white">{{ number_format($workerAllowances, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
+            <span class="text-sm text-slate-600 dark:text-slate-400">{{ __('Worker Payments (Manual)') }}</span>
+            <span class="font-semibold text-slate-900 dark:text-white">{{ number_format($cashToAdvances + $cashToAllowances + $cashToWages, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
         </div>
         <div class="flex justify-between items-center py-2.5 px-4 border-b border-slate-100 dark:border-white/5">
             <span class="text-sm text-slate-600 dark:text-slate-400">{{ __('Less: Deductions') }}</span>
@@ -191,6 +187,12 @@
                     <span class="text-slate-500">{{ __('Cash from Shifts') }}</span>
                     <span class="font-bold text-slate-900 dark:text-white">{{ number_format($cashFromShifts, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
                 </div>
+                @if($endOfDayCash > 0)
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-500">{{ __('End-of-Day Cash') }}</span>
+                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($endOfDayCash, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
+                </div>
+                @endif
                 <div class="border-t border-emerald-500/20 pt-2 flex justify-between">
                     <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">{{ __('Total') }}</span>
                     <span class="text-lg font-black text-emerald-600 dark:text-emerald-400">{{ number_format($totalCashIn, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
@@ -223,10 +225,6 @@
                     <span class="font-bold text-slate-900 dark:text-white">{{ number_format($cashToFreight, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
                 </div>
                 <div class="flex justify-between text-xs">
-                    <span class="text-slate-500">{{ __('Worker Wages') }}</span>
-                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($cashToWages, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
-                </div>
-                <div class="flex justify-between text-xs">
                     <span class="text-slate-500">{{ __('Advances & Allowances') }}</span>
                     <span class="font-bold text-slate-900 dark:text-white">{{ number_format($cashToAdvances + $cashToAllowances, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
                 </div>
@@ -251,10 +249,10 @@
                 {{ $netCashFlow >= 0 ? '+' : '' }}{{ number_format($netCashFlow, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span>
             </p>
             <p class="text-xs text-slate-400 mt-1">{{ $currencyCode }}</p>
-            @if($carriedOverCash > 0)
+            @if($endOfDayCash > 0)
             <div class="mt-3 pt-3 border-t border-slate-100 dark:border-white/5">
-                <p class="text-[10px] text-slate-400 uppercase tracking-wider">{{ __('Carried Over Cash') }}</p>
-                <p class="text-sm font-bold text-amber-600 dark:text-amber-400">{{ number_format($carriedOverCash, 2) }} {{ $currencyCode }}</p>
+                <p class="text-[10px] text-slate-400 uppercase tracking-wider">{{ __('End-of-Day Cash') }}</p>
+                <p class="text-sm font-bold text-amber-600 dark:text-amber-400">{{ number_format($endOfDayCash, 2) }} {{ $currencyCode }}</p>
             </div>
             @endif
         </div>
@@ -409,23 +407,23 @@
     <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
         <div class="p-4 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Worker Payouts') }}</h3>
-            <p class="text-[10px] text-slate-500 mt-0.5">{{ __('Earned wages vs advances paid.') }}</p>
+            <p class="text-[10px] text-slate-500 mt-0.5">{{ __('Total earned vs actual payments issued.') }}</p>
         </div>
         <div class="max-h-64 overflow-y-auto">
             <table class="w-full text-left">
                 <thead class="sticky top-0 bg-slate-100 dark:bg-[#0f1115]">
                     <tr class="text-[10px] uppercase tracking-widest text-slate-500 font-bold border-b border-slate-200 dark:border-white/5">
                         <th class="p-3">{{ __('Name') }}</th>
-                        <th class="p-3">{{ __('Net Pay') }}</th>
-                        <th class="p-3">{{ __('Advances') }}</th>
+                        <th class="p-3">{{ __('Earned') }}</th>
+                        <th class="p-3">{{ __('Paid Out') }}</th>
                         <th class="p-3">{{ __('Balance') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-white/5">
-                    @forelse($workerPayouts->filter(fn($w) => ($w->net_pay ?? 0) > 0) as $wp)
+                    @forelse($workerPayouts->filter(fn($w) => ($w->earned ?? 0) > 0 || ($w->total_paid_out ?? 0) > 0) as $wp)
                     <tr class="hover:bg-slate-50 dark:hover:bg-white/5">
                         <td class="p-3 text-xs font-semibold text-slate-900 dark:text-white">{{ $wp->first_name }} {{ $wp->last_name }}</td>
-                        <td class="p-3 text-xs text-slate-500">{{ number_format($wp->net_pay, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></td>
+                        <td class="p-3 text-xs text-slate-500">{{ number_format($wp->earned, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></td>
                         <td class="p-3 text-xs text-amber-500">{{ number_format($wp->total_paid_out, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></td>
                         <td class="p-3 text-xs font-bold {{ $wp->balance > 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-500' }}">{{ number_format($wp->balance, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></td>
                     </tr>

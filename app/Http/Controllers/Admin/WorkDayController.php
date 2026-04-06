@@ -112,12 +112,15 @@ class WorkDayController extends Controller
         $currencyCode = $defaultCurrency->code ?? '';
 
         // ── Sales Statistics ──────────────────────────────────────────
-        $totalSales = $workDay->distributions->sum(fn($d) => Currency::convertAmount($d->total_price, $d->exchange_rate));
+        $wholesaleSales = $workDay->distributions->sum(fn($d) => Currency::convertAmount($d->total_price, $d->exchange_rate));
+        $retailSales = $workDay->workerShifts->sum(fn($s) => Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate));
+        
+        $totalSales = $wholesaleSales + $retailSales;
         $totalRefunds = $workDay->distributorReturns->sum(fn($r) => Currency::convertAmount($r->total_refund, $r->exchange_rate));
         
         $explicitPayments = $workDay->distributorTransactions->where('type', 'payment')->sum(fn($t) => Currency::convertAmount($t->amount, $t->exchange_rate));
         $downPayments = $workDay->distributions->sum(fn($d) => Currency::convertAmount($d->amount_paid, $d->exchange_rate));
-        $totalPaymentsReceived = $explicitPayments + $downPayments;
+        $totalPaymentsReceived = $explicitPayments + $downPayments + $retailSales;
         
         $netSales = $totalSales - $totalRefunds;
 
@@ -131,8 +134,8 @@ class WorkDayController extends Controller
                 return $carry + Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate);
             }, 0);
         
-        // Use actual recorded transactions instead of theoretical shift wages
-        $workerPayments = $workDay->workerTransactions
+        // Manual worker payments (Cash-based reporting for expenses as requested)
+        $workerPayouts = $workDay->workerTransactions
             ->whereIn('type', ['salary', 'wage', 'advance', 'allowance', 'bonus'])
             ->reduce(function($carry, $t) { 
                 return $carry + Currency::convertAmount($t->amount, $t->exchange_rate); 
@@ -148,14 +151,22 @@ class WorkDayController extends Controller
         
         $supplierPayments = $workDay->supplierPayments->sum(fn($sp) => Currency::convertAmount($sp->amount, $sp->exchange_rate));
 
-        $totalExpenses = $suppliesCost + $unloadingFees + $workerPayments - $workerDeductions + $operationalExpenses;
+        $totalExpenses = $suppliesCost + $unloadingFees + $workerPayouts - $workerDeductions + $operationalExpenses;
         $netDayBalance = $netSales - $totalExpenses;
 
         // ── Bundle Flow ───────────────────────────────────────────────
         $bundlesDistributed = $workDay->distributions->sum('bundle_count');
         $bundlesReturnedByDistributors = $workDay->distributorReturns->sum('bundle_count');
+        
+        $bundlesFromOvenSum = $workDay->workerShifts->sum('bundles_from_oven');
+        $bundlesFromBakerySum = $workDay->workerShifts->sum('bundles_from_bakery');
+        
         $bundlesReceivedByShifts = $workDay->workerShifts->sum('bundles_received');
-        $bundlesReturnedByShifts = $workDay->workerShifts->sum('bundles_returned');
+        $bundlesReturnedByShiftsTotal = $workDay->workerShifts->sum('bundles_returned');
+        
+        // Net Shift Return = What came back minus what was taken from existing stock
+        $bundlesReturnedByShifts = $bundlesReturnedByShiftsTotal - $bundlesFromBakerySum;
+        
         $breadExpenses = $workDay->expenses->where('category', 'bread')->sum('quantity');
 
         // Previous day carry-over
@@ -165,8 +176,13 @@ class WorkDayController extends Controller
             ->first();
         $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
 
-        // Calculated remaining = previous carry-over + returned by shifts - distributed + returned by distributors - bread expenses
-        $calculatedRemainingBundles = $previousCarryOverBundles + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses;
+        // Calculated remaining = previous carry-over + production (from oven) - sold from shifts - distributed + returned by distributors - bread expenses
+        // Alternatively: previous carry-over - (given to shifts - returned by shifts) - distributed + returned by distributors - bread expenses
+        // Sold from shifts = Received - Returned
+        $bundlesSoldFromShifts = $bundlesReceivedByShifts - $bundlesReturnedByShiftsTotal;
+
+        $calculatedRemainingBundles = $previousCarryOverBundles - $bundlesSoldFromShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses;
+        
         if ($calculatedRemainingBundles < 0) {
             $calculatedRemainingBundles = 0;
         }
@@ -202,13 +218,15 @@ class WorkDayController extends Controller
             'totalCashFromShifts' => $totalCashFromShifts,
             // Sales
             'totalSales' => $totalSales,
+            'wholesaleSales' => $wholesaleSales,
+            'retailSales' => $retailSales,
             'totalRefunds' => $totalRefunds,
             'totalPaymentsReceived' => $totalPaymentsReceived,
             'netSales' => $netSales,
             // Expenses
             'suppliesCost' => $suppliesCost,
             'unloadingFees' => $unloadingFees,
-            'workerPayments' => $workerPayments,
+            'workerPayments' => $workerPayouts,
             'workerDeductions' => $workerDeductions,
             'operationalExpenses' => $operationalExpenses,
             'supplierPayments' => $supplierPayments,
@@ -221,6 +239,7 @@ class WorkDayController extends Controller
             'bundlesReturnedByShifts' => $bundlesReturnedByShifts,
             'previousCarryOverBundles' => $previousCarryOverBundles,
             'activeShifts' => $workDay->workerShifts->whereNull('check_out'),
+            'bundlesSoldFromShifts' => $bundlesSoldFromShifts,
         ];
     }
 
@@ -263,6 +282,7 @@ class WorkDayController extends Controller
         $workDay->load(['workerShifts', 'distributions', 'distributorReturns', 'expenses']);
 
         $bundlesReturnedByShifts = $workDay->workerShifts->sum('bundles_returned');
+        $bundlesReceivedByShifts = $workDay->workerShifts->sum('bundles_received');
         $bundlesDistributed = $workDay->distributions->sum('bundle_count');
         $bundlesReturnedByDistributors = $workDay->distributorReturns->sum('bundle_count');
         $breadExpenses = $workDay->expenses->where('category', 'bread')->sum('quantity');
@@ -273,7 +293,7 @@ class WorkDayController extends Controller
             ->first();
         $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
 
-        $calculatedBundles = $previousCarryOverBundles + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses;
+        $calculatedBundles = $previousCarryOverBundles - $bundlesReceivedByShifts + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses;
         if ($calculatedBundles < 0) {
             $calculatedBundles = 0;
         }

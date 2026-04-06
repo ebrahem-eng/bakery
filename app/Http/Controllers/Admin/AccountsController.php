@@ -49,7 +49,7 @@ class AccountsController extends Controller
         // ═══════════════════════════════════════════════════════════════
 
         // ── Income ────────────────────────────────────────────────────
-        $grossSales = Distribution::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('total_price'));
+        $grossSales = Distribution::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('total_price')) + WorkerShift::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('cash_collected', 'cash_exchange_rate'));
         $salesReturns = DistributorReturn::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('total_refund'));
         $netRevenue = $grossSales - $salesReturns;
 
@@ -63,13 +63,13 @@ class AccountsController extends Controller
         $grossMargin = $netRevenue > 0 ? round(($grossProfit / $netRevenue) * 100, 1) : 0;
 
         // ── Operating Expenses ────────────────────────────────────────
-        $workerWages = WorkerShift::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('snapshot_daily_wage', 'snapshot_exchange_rate'));
         $workerAllowances = WorkerTransaction::whereIn('work_day_id', $workDayIds)->where('type', 'allowance')->sum(Currency::getSelectRaw('amount'));
         $workerAdvances = WorkerTransaction::whereIn('work_day_id', $workDayIds)->where('type', 'advance')->sum(Currency::getSelectRaw('amount'));
+        $workerSalaries = WorkerTransaction::whereIn('work_day_id', $workDayIds)->whereIn('type', ['salary', 'wage', 'bonus'])->sum(Currency::getSelectRaw('amount'));
         $workerDeductions = WorkerTransaction::whereIn('work_day_id', $workDayIds)->where('type', 'deduction')->sum(Currency::getSelectRaw('amount'));
         $operationalExpenses = Expense::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('amount'));
 
-        $totalOperatingExpenses = $workerWages + $workerAllowances - $workerDeductions + $operationalExpenses;
+        $totalOperatingExpenses = ($workerAllowances + $workerAdvances + $workerSalaries) - $workerDeductions + $operationalExpenses;
 
         // ── Net Profit ────────────────────────────────────────────────
         $netProfit = $grossProfit - $totalOperatingExpenses;
@@ -83,23 +83,22 @@ class AccountsController extends Controller
         $cashFromDistributors = DistributorTransaction::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('amount'));
         $cashFromShifts = WorkerShift::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('cash_collected', 'cash_exchange_rate'));
 
-        // Carried over cash from previous days
-        $carriedOverCash = WorkDay::whereIn('id', $workDayIds)
+        // End-of-day cash (recorded at close, belongs to same day's revenue)
+        $endOfDayCash = WorkDay::whereIn('id', $workDayIds)
             ->where('status', 'closed')
             ->sum(Currency::getSelectRaw('carried_over_money', 'carried_over_exchange_rate'));
 
-        $totalCashIn = $cashFromDistributors + $cashFromShifts;
+        $totalCashIn = $cashFromDistributors + $cashFromShifts + $endOfDayCash;
 
-        // Cash Out
         $cashToSuppliers = Supply::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('paid_amount'));
         $cashToSupplierDebts = \App\Models\SupplierPayment::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('amount', 'exchange_rate'));
         $cashToFreight = Supply::whereIn('work_day_id', $workDayIds)->where('unloading_fee_payer', 'bakery')->sum(Currency::getSelectRaw('unloading_fee', 'unloading_fee_exchange_rate'));
         
-        $cashToWages = $workerWages;
+        $cashToWages = $workerSalaries;
         $cashToAdvances = $workerAdvances;
         $cashToAllowances = $workerAllowances;
         $cashToExpenses = $operationalExpenses;
-        $totalCashOut = $cashToSuppliers + $cashToSupplierDebts + $cashToFreight + $cashToWages + $cashToAdvances + $cashToAllowances + $cashToExpenses;
+        $totalCashOut = $cashToSuppliers + $cashToSupplierDebts + $cashToFreight + $cashToAdvances + $cashToAllowances + $cashToWages + $cashToExpenses;
 
         $netCashFlow = $totalCashIn - $totalCashOut;
 
@@ -122,6 +121,19 @@ class AccountsController extends Controller
                 'work_day_id' => $d->work_day_id,
             ]);
 
+        // Income entries (Shifts)
+        $shiftEntries = WorkerShift::whereIn('work_day_id', $workDayIds)
+            ->with(['worker', 'workDay'])
+            ->get()
+            ->map(fn ($s) => [
+                'date' => $s->created_at,
+                'type' => 'income',
+                'category' => __('Retail Sales'),
+                'description' => ($s->worker->first_name ?? '').' '.($s->worker->last_name ?? '').' — '.__('Shift Cash'),
+                'amount' => Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate),
+                'work_day_id' => $s->work_day_id,
+            ]);
+
         // Expense entries (Supplies)
         $supplyEntries = Supply::whereIn('work_day_id', $workDayIds)
             ->with(['supplier', 'category', 'workDay'])
@@ -133,19 +145,6 @@ class AccountsController extends Controller
                 'description' => ($s->supplier->first_name ?? '').' '.($s->supplier->last_name ?? ''),
                 'amount' => Currency::convertAmount($s->total_cost, $s->exchange_rate) + Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate),
                 'work_day_id' => $s->work_day_id,
-            ]);
-
-        // Expense entries (Worker wages)
-        $wageEntries = WorkerShift::whereIn('work_day_id', $workDayIds)
-            ->with(['worker', 'workDay'])
-            ->get()
-            ->map(fn ($ws) => [
-                'date' => $ws->created_at,
-                'type' => 'expense',
-                'category' => __('Worker Wages'),
-                'description' => ($ws->worker->first_name ?? '').' '.($ws->worker->last_name ?? ''),
-                'amount' => Currency::convertAmount($ws->snapshot_daily_wage, $ws->snapshot_exchange_rate),
-                'work_day_id' => $ws->work_day_id,
             ]);
 
         // Expense entries (Operational expenses)
@@ -215,8 +214,8 @@ class AccountsController extends Controller
             ]);
 
         $transactions = $distributions
+            ->concat($shiftEntries)
             ->concat($supplyEntries)
-            ->concat($wageEntries)
             ->concat($expenseEntries)
             ->concat($refundEntries)
             ->concat($paymentEntries)
@@ -286,47 +285,60 @@ class AccountsController extends Controller
             ->sortByDesc('total_owed')
             ->values();
 
-        // Worker Payouts
+        // Worker Payouts (Earned vs Paid)
         $workerPayouts = Worker::select('workers.*')
             ->withSum(['shifts as total_wages' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds);
             }], Currency::getSelectRaw('snapshot_daily_wage', 'snapshot_exchange_rate'))
-            ->withSum(['transactions as total_advances' => function ($q) use ($workDayIds) {
-                $q->whereIn('work_day_id', $workDayIds)->where('type', 'advance');
+            ->withSum(['transactions as total_manual_payouts' => function ($q) use ($workDayIds) {
+                $q->whereIn('work_day_id', $workDayIds)->whereIn('type', ['salary', 'wage', 'advance', 'allowance', 'bonus']);
             }], Currency::getSelectRaw('amount'))
             ->withSum(['transactions as total_allowances' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds)->where('type', 'allowance');
+            }], Currency::getSelectRaw('amount'))
+            ->withSum(['transactions as total_bonuses' => function ($q) use ($workDayIds) {
+                $q->whereIn('work_day_id', $workDayIds)->where('type', 'bonus');
             }], Currency::getSelectRaw('amount'))
             ->withSum(['transactions as total_deductions' => function ($q) use ($workDayIds) {
                 $q->whereIn('work_day_id', $workDayIds)->where('type', 'deduction');
             }], Currency::getSelectRaw('amount'))
             ->get()
             ->map(function ($w) {
-                $w->net_pay = ($w->total_wages ?? 0) + ($w->total_allowances ?? 0) - ($w->total_deductions ?? 0);
-                $w->total_paid_out = ($w->total_advances ?? 0);
-                $w->balance = $w->net_pay - $w->total_paid_out;
+                // Earned = Basic Wage + Allowances + Bonuses
+                $w->earned = ($w->total_wages ?? 0) + ($w->total_allowances ?? 0) + ($w->total_bonuses ?? 0);
+                
+                // Deductions reduce the net liability
+                $w->net_earned = $w->earned - ($w->total_deductions ?? 0);
+                
+                // Total Paid Out is the sum of actual cash payments
+                $w->total_paid_out = ($w->total_manual_payouts ?? 0);
+                
+                // Remaining Balance
+                $w->balance = $w->net_earned - $w->total_paid_out;
+
+                // For the view, keep legacy net_pay as net_earned
+                $w->net_pay = $w->net_earned;
 
                 return $w;
             })
-            ->sortByDesc('net_pay')
+            ->sortByDesc('earned')
             ->values();
 
         // Work days count
         $workDaysCount = $workDayIds->count();
 
         return view('Admin.Accounts.index', compact(
-            'period', 'currencyCode', 'workDaysCount',
+            'period', 'start', 'end', 'currencyCode', 'workDaysCount',
             // P&L
-            'grossSales', 'salesReturns', 'netRevenue',
+            'grossSales', 'salesReturns', 'netRevenue', 
             'rawMaterialsCost', 'freightUnloading', 'totalCOGS',
             'grossProfit', 'grossMargin',
-            'workerWages', 'workerAllowances', 'workerAdvances', 'workerDeductions',
-            'operationalExpenses', 'totalOperatingExpenses',
-            'netProfit', 'netMargin',
+            'workerAllowances', 'workerAdvances', 'workerSalaries', 'workerDeductions', 'operationalExpenses',
+            'totalOperatingExpenses', 'netProfit', 'netMargin',
             // Cash Flow
-            'cashFromDistributors', 'cashFromShifts', 'totalCashIn',
+            'cashFromDistributors', 'cashFromShifts', 'endOfDayCash', 'totalCashIn',
             'cashToSuppliers', 'cashToSupplierDebts', 'cashToFreight', 'cashToWages', 'cashToAdvances', 'cashToAllowances', 'cashToExpenses', 'totalCashOut',
-            'netCashFlow', 'carriedOverCash',
+            'netCashFlow',
             // Ledger
             'paginatedTransactions', 'typeFilter',
             // Payouts

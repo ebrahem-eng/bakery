@@ -143,8 +143,19 @@
                     <span class="font-bold text-blue-600 dark:text-blue-400">{{ $bundlesReceivedByShifts }} {{ __('bundles') }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Bundles Returned from Shifts') }}</span>
-                    <span class="font-bold text-emerald-600 dark:text-emerald-400">+ {{ $bundlesReturnedByShifts }} {{ __('bundles') }}</span>
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Bundles Taken from Bakery') }}</span>
+                    <span class="font-bold text-amber-600 dark:text-amber-400">- {{ $workDay->workerShifts->sum('bundles_from_bakery') }} {{ __('bundles') }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Net Returned from Shifts') }}</span>
+                    <div class="text-right">
+                        <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ $bundlesReturnedByShifts >= 0 ? '+' : '' }}{{ $bundlesReturnedByShifts }} {{ __('bundles') }}</span>
+                        <p class="text-[9px] text-slate-400 leading-none mt-1">{{ __('(Returned - Taken from Stock)') }}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5 bg-indigo-500/5 rounded-lg px-3 -mx-1">
+                    <span class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{ __('Bundles Sold from Shifts') }}</span>
+                    <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ $bundlesSoldFromShifts }} {{ __('bundles') }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Distributed to Distributors') }}</span>
@@ -171,9 +182,11 @@
                         <thead>
                             <tr class="text-[10px] uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-white/5">
                                 <th class="py-3 px-4 font-medium text-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{ __('Worker') }}</th>
-                                <th class="py-3 px-4 font-medium text-center">{{ __('Received') }}</th>
+                                <th class="py-3 px-4 font-medium text-center text-emerald-500">{{ __('From Oven') }}</th>
+                                <th class="py-3 px-4 font-medium text-center text-blue-500">{{ __('From Bakery') }}</th>
+                                <th class="py-3 px-4 font-medium text-center">{{ __('Total Received') }}</th>
                                 <th class="py-3 px-4 font-medium text-center">{{ __('Returned') }}</th>
-                                <th class="py-3 px-4 font-medium text-center">{{ __('Net') }}</th>
+                                <th class="py-3 px-4 font-medium text-center">{{ __('Sold') }}</th>
                                 <th class="py-3 px-4 font-medium text-center">{{ __('Status') }}</th>
                             </tr>
                         </thead>
@@ -181,7 +194,9 @@
                             @foreach($workDay->workerShifts as $shift)
                             <tr class="text-slate-600 dark:text-slate-300">
                                 <td class="py-2.5 px-4 font-medium text-slate-900 dark:text-white">{{ $shift->worker->first_name ?? '—' }}</td>
-                                <td class="py-2.5 px-4 text-center text-blue-600 dark:text-blue-400 font-bold">{{ $shift->bundles_received }}</td>
+                                <td class="py-2.5 px-4 text-center text-emerald-600 dark:text-emerald-400 font-medium">{{ $shift->bundles_from_oven }}</td>
+                                <td class="py-2.5 px-4 text-center text-blue-600 dark:text-blue-400 font-medium">{{ $shift->bundles_from_bakery }}</td>
+                                <td class="py-2.5 px-4 text-center font-bold text-slate-700 dark:text-slate-300">{{ $shift->bundles_received }}</td>
                                 <td class="py-2.5 px-4 text-center text-emerald-600 dark:text-emerald-400 font-bold">{{ $shift->bundles_returned }}</td>
                                 <td class="py-2.5 px-4 text-center font-bold {{ ($shift->bundles_received - $shift->bundles_returned) > 0 ? 'text-red-500' : 'text-emerald-500' }}">{{ $shift->bundles_received - $shift->bundles_returned }}</td>
                                 <td class="py-2.5 px-4 text-center">
@@ -210,8 +225,12 @@
             </div>
             <div class="p-5 space-y-1">
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Total Distributions Billed') }}</span>
-                    <span class="font-bold text-slate-900 dark:text-white">+ {{ number_format($totalSales, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Wholesale Sales (Distributors)') }}</span>
+                    <span class="font-bold text-slate-900 dark:text-white">+ {{ number_format($wholesaleSales, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
+                </div>
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Retail Sales (Shifts)') }}</span>
+                    <span class="font-bold text-slate-900 dark:text-white">+ {{ number_format($retailSales, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Refunds Processed') }}</span>
@@ -422,7 +441,7 @@
                     {{-- Carried Over Cash --}}
                     <div>
                         <label class="block text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2 px-1">
-                            {{ __('Carried Over Cash Balance') }}
+                            {{ __('End-of-Day Cash') }}
                             <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
@@ -481,7 +500,7 @@
                         {{ __('Close Work Day Permanently') }}
                     </button>
                     <p class="mt-4 text-center text-[10px] text-slate-400 uppercase tracking-widest font-bold">
-                        {{ __('Physical cash left in drawer for the next work day.') }}
+                        {{ __('Cash on hand at end of shift. Recorded under today\'s revenue.') }}
                     </p>
                 </div>
             </div>
@@ -493,7 +512,7 @@
                         <p class="text-slate-900 dark:text-white font-black text-3xl">{{ $workDay->carried_over_bundles }}</p>
                     </div>
                     <div class="p-6 rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0f1115]">
-                        <p class="text-slate-400 text-[10px] uppercase tracking-widest mb-2 font-bold">{{ __('Carried Over Cash Balance') }}</p>
+                        <p class="text-slate-400 text-[10px] uppercase tracking-widest mb-2 font-bold">{{ __('End-of-Day Cash') }}</p>
                         <p class="text-slate-900 dark:text-white font-black text-3xl">{{ number_format($workDay->carried_over_money, 2) }} {{ $workDay->carriedOverCurrency ? $workDay->carriedOverCurrency->code : __($currencyCode) }}</p>
                     </div>
                 </div>

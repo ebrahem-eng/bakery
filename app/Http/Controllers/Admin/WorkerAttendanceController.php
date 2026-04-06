@@ -93,10 +93,15 @@ class WorkerAttendanceController extends Controller
         $request->validate([
             'worker_id' => 'required|exists:workers,id',
             'check_in' => 'nullable|date',
-            'bundles_received' => "nullable|integer|min:$minBundles",
+            'bundles_from_oven' => "nullable|integer|min:0",
+            'bundles_from_bakery' => "nullable|integer|min:0",
         ]);
 
         $worker = Worker::findOrFail($request->worker_id);
+        
+        $fromOven = $request->bundles_from_oven ?? 0;
+        $fromBakery = $request->bundles_from_bakery ?? 0;
+        $totalReceived = $fromOven + $fromBakery;
 
         // Check if already checked in and not checked out
         $existingShift = WorkerShift::where('worker_id', $worker->id)
@@ -126,7 +131,9 @@ class WorkerAttendanceController extends Controller
             'snapshot_daily_wage' => $worker->daily_wage,
             'snapshot_currency_id' => $worker->currency_id,
             'snapshot_exchange_rate' => $rate,
-            'bundles_received' => $request->bundles_received ?? 0,
+            'bundles_from_oven' => $fromOven,
+            'bundles_from_bakery' => $fromBakery,
+            'bundles_received' => $totalReceived,
             'admin_id' => auth()->id(),
         ]);
 

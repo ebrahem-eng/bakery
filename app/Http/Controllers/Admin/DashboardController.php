@@ -42,16 +42,12 @@ class DashboardController extends Controller
         $defaultCurrency = Currency::where('is_default', true)->first();
         $currencyCode = $defaultCurrency->code ?? 'SYP';
 
-        // ── Previous carry-over (Starting balance for active/next day)
+        // ── Previous carry-over (Bundles only — for inventory tracking)
         $previousWorkDay = WorkDay::where('status', 'closed')
             ->orderBy('id', 'desc')
             ->first();
         
-        $startingCash = $previousWorkDay ? $previousWorkDay->carried_over_money : 0;
         $startingBundles = $previousWorkDay ? $previousWorkDay->carried_over_bundles : 0;
-        $startingCurrency = $previousWorkDay && $previousWorkDay->carried_over_currency_id 
-            ? Currency::find($previousWorkDay->carried_over_currency_id) 
-            : $defaultCurrency;
 
         // ── Period-filtered work day IDs ──────────────────────────────
         $periodWorkDayIds = WorkDay::where('status', 'closed')
@@ -66,29 +62,39 @@ class DashboardController extends Controller
 
         // ── Revenue Metrics ───────────────────────────────────────────
         $totalDistributions = Distribution::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_price'));
+        $totalShiftCash = \App\Models\WorkerShift::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('cash_collected', 'cash_exchange_rate'));
         $totalRefunds = DistributorReturn::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_refund'));
-        $totalRevenue = $totalDistributions - $totalRefunds;
-        $totalPaymentsReceived = DistributorTransaction::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount'));
+        
+        $totalRevenue = $totalDistributions + $totalShiftCash - $totalRefunds;
+        $totalPaymentsReceived = DistributorTransaction::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount')) + $totalShiftCash;
 
         // ── Expense Metrics ───────────────────────────────────────────
         $suppliesCost = Supply::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_cost'));
         $unloadingFees = Supply::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('unloading_fee', 'unloading_fee_exchange_rate'));
-        $shiftWages = WorkerShift::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('snapshot_daily_wage', 'snapshot_exchange_rate'));
+        
+        // Manual worker payments (Cash-based reporting for expenses as requested)
         $workerAllowances = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'allowance')->sum(Currency::getSelectRaw('amount'));
         $workerAdvances = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'advance')->sum(Currency::getSelectRaw('amount'));
+        $workerSalaries = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->whereIn('type', ['salary', 'wage', 'bonus'])->sum(Currency::getSelectRaw('amount'));
         $workerDeductions = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'deduction')->sum(Currency::getSelectRaw('amount'));
+        
         $operationalExpenses = Expense::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount'));
         
         $totalSupplierPayments = \App\Models\SupplierPayment::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('amount', 'exchange_rate'));
 
-        $totalExpenses = $suppliesCost + $unloadingFees + $shiftWages + $workerAllowances - $workerDeductions + $operationalExpenses;
+        $totalExpenses = $suppliesCost + $unloadingFees + $workerAllowances + $workerAdvances + $workerSalaries - $workerDeductions + $operationalExpenses;
         $netProfit = $totalRevenue - $totalExpenses;
         $profitMargin = $totalRevenue > 0 ? round(($netProfit / $totalRevenue) * 100, 1) : 0;
 
         // ── Bundle metrics ────────────────────────────────────────────
-        $bundlesSold = Distribution::whereIn('work_day_id', $periodWorkDayIds)->sum('bundle_count');
-        $bundlesReturned = DistributorReturn::whereIn('work_day_id', $periodWorkDayIds)->sum('bundle_count');
-        $netBundlesSold = $bundlesSold - $bundlesReturned;
+        $distributorBundlesSold = Distribution::whereIn('work_day_id', $periodWorkDayIds)->sum('bundle_count');
+        $distributorBundlesReturned = DistributorReturn::whereIn('work_day_id', $periodWorkDayIds)->sum('bundle_count');
+        
+        $shiftBundlesReceived = \App\Models\WorkerShift::whereIn('work_day_id', $periodWorkDayIds)->sum('bundles_received');
+        $shiftBundlesReturned = \App\Models\WorkerShift::whereIn('work_day_id', $periodWorkDayIds)->sum('bundles_returned');
+        $shiftBundlesSold = $shiftBundlesReceived - $shiftBundlesReturned;
+
+        $netBundlesSold = ($distributorBundlesSold - $distributorBundlesReturned) + $shiftBundlesSold;
 
         // ── Counts ────────────────────────────────────────────────────
         $workDaysCount = $periodWorkDayIds->count();
@@ -99,7 +105,6 @@ class DashboardController extends Controller
         $expenseBreakdown = [
             ['label' => __('Raw Materials'), 'value' => $suppliesCost, 'color' => '#f59e0b'],
             ['label' => __('Freight & Unloading'), 'value' => $unloadingFees, 'color' => '#ef4444'],
-            ['label' => __('Worker Wages'), 'value' => $shiftWages, 'color' => '#3b82f6'],
             ['label' => __('Allowances & Advances'), 'value' => $workerAllowances + $workerAdvances, 'color' => '#8b5cf6'],
             ['label' => __('Deductions'), 'value' => $workerDeductions, 'color' => '#10b981'],
             ['label' => __('Operations'), 'value' => $operationalExpenses, 'color' => '#6366f1'],
@@ -137,12 +142,17 @@ class DashboardController extends Controller
         $trendData = WorkDay::where('status', 'closed')
             ->when($start, fn ($q) => $q->where('start_time', '>=', $start))
             ->when($end, fn ($q) => $q->where('start_time', '<=', $end))
+            ->withSum('distributions', Currency::getSelectRaw('total_price'))
+            ->withSum('workerShifts as retail_sales', Currency::getSelectRaw('cash_collected', 'cash_exchange_rate'))
             ->orderBy('start_time')
             ->get()
             ->map(function ($wd) {
+                // Combine wholesale + retail
+                $dailyRevenue = ($wd->distributions_sum_total_price ?? 0) + ($wd->retail_sales ?? 0);
+                
                 return [
                     'date' => $wd->start_time->translatedFormat('m/d'),
-                    'revenue' => Currency::convertAmount($wd->total_sales_at_close ?? 0),
+                    'revenue' => Currency::convertAmount($dailyRevenue),
                     'expenses' => Currency::convertAmount($wd->total_expenses_at_close ?? 0),
                 ];
             });
@@ -179,7 +189,6 @@ class DashboardController extends Controller
             $todayBundlesSold = $activeWorkDay->distributions->sum('bundle_count');
             $todayExpenses += $activeWorkDay->supplies->sum(fn($s) => Currency::convertAmount($s->total_cost, $s->exchange_rate)) 
                            + $activeWorkDay->supplies->sum(fn($s) => Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate));
-            $todayExpenses += $activeWorkDay->workerShifts->sum(fn($w) => Currency::convertAmount($w->snapshot_daily_wage, $w->snapshot_exchange_rate));
             $todayExpenses += $activeWorkDay->workerTransactions->where('type', 'allowance')->sum(fn($wtf) => Currency::convertAmount($wtf->amount, $wtf->exchange_rate));
             $todayExpenses -= $activeWorkDay->workerTransactions->where('type', 'deduction')->sum(fn($wtf) => Currency::convertAmount($wtf->amount, $wtf->exchange_rate));
             $todayExpenses += $activeWorkDay->expenses->sum(fn($e) => Currency::convertAmount($e->amount, $e->exchange_rate));
@@ -197,8 +206,8 @@ class DashboardController extends Controller
             'topDistributors', 'trendData', 'lastDays',
             // Live stats
             'todaySales', 'todayExpenses', 'todayBundlesSold', 'todaySupplierPayments',
-            // Starting balances
-            'startingCash', 'startingBundles', 'startingCurrency',
+            // Starting balances (bundles only)
+            'startingBundles',
             // Specific Debt tracking
             'totalSupplierPayments'
         ));

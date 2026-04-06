@@ -82,10 +82,6 @@
                 </p>
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                     <div class="flex flex-col">
-                        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Starting Cash') }}</span>
-                        <span class="text-sm font-black text-emerald-600 dark:text-emerald-400">{{ number_format($startingCash, 2) }} <span class="text-[10px]">{{ $startingCurrency->code ?? $currencyCode }}</span></span>
-                    </div>
-                    <div class="flex flex-col">
                         <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Starting Bundles') }}</span>
                         <span class="text-sm font-black text-blue-500 dark:text-blue-400">{{ number_format($startingBundles) }}</span>
                     </div>
@@ -96,6 +92,10 @@
                     <div class="flex flex-col">
                         <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Live Expenses') }}</span>
                         <span class="text-sm font-black text-red-500">{{ number_format($todayExpenses, 2) }} <span class="text-[10px]">{{ $currencyCode }}</span></span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Bundles Sold') }}</span>
+                        <span class="text-sm font-black text-emerald-600 dark:text-emerald-400">{{ number_format($todayBundlesSold) }}</span>
                     </div>
                     <div class="flex flex-col">
                         <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Debt Payments') }}</span>
@@ -120,14 +120,10 @@
             <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-wide">{{ __('System is Idle') }}</h2>
             <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-md mx-auto">{{ __('No active work day is running. Accounting and operations are locked.') }}</p>
             
-            @if($startingCash > 0 || $startingBundles > 0)
+            @if($startingBundles > 0)
             <div class="flex justify-center gap-8 mb-8">
                 <div class="text-center">
-                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Allocated Cash (Ready)') }}</p>
-                    <p class="text-xl font-black text-amber-600">{{ number_format($startingCash, 2) }} <span class="text-xs">{{ $startingCurrency->code ?? $currencyCode }}</span></p>
-                </div>
-                <div class="text-center">
-                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Allocated Bundles (Ready)') }}</p>
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Remaining Bundles (Inventory)') }}</p>
                     <p class="text-xl font-black text-blue-500">{{ number_format($startingBundles) }}</p>
                 </div>
             </div>
@@ -284,7 +280,7 @@
             </div>
             <div class="flex-1 min-w-0">
                 <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ __('Total Revenue') }}</p>
-                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Gross income from all distribution sales.') }}</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Gross income from shifts and distribution sales.') }}</p>
             </div>
             <div class="text-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} flex-shrink-0">
                 <p class="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{{ number_format($totalRevenue, 2) }}</p>
