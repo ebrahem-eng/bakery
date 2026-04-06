@@ -83,7 +83,7 @@
                                             <span class="text-xs text-slate-500">({{ $supply->material_type_name }})</span>
                                         @endif
                                     </div>
-                                    <div class="text-[10px] text-slate-400 font-mono">Invoice #{{ $supply->id }}</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">{{ __('Invoice') }} #{{ $supply->id }}</div>
                                 </td>
                                 <td class="py-3 px-4 text-right">
                                     <div class="font-bold text-slate-900 dark:text-white font-mono">{{ number_format($supply->total_cost, 2) }} <span class="text-xs">{{ $supply->currency->code }}</span></div>

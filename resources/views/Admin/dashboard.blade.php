@@ -279,8 +279,8 @@
                 <svg class="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ __('Total Revenue') }}</p>
-                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Gross income from shifts and distribution sales.') }}</p>
+                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ __('Collected Revenue') }}</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Actual cash collected from distributions, shifts and settlements.') }}</p>
             </div>
             <div class="text-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} flex-shrink-0">
                 <p class="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{{ number_format($totalRevenue, 2) }}</p>
@@ -324,8 +324,8 @@
                 <svg class="w-6 h-6 {{ $netProfit >= 0 ? 'text-emerald-500' : 'text-red-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/></svg>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-xs font-bold {{ $netProfit >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400' }} uppercase tracking-widest">{{ __('Net Profit') }}</p>
-                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Revenue minus all operational expenses.') }}</p>
+                <p class="text-xs font-bold {{ $netProfit >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400' }} uppercase tracking-widest">{{ __('Collected Net Profit') }}</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ __('Actual cash in minus all operational expenses.') }}</p>
             </div>
             <div class="text-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} flex-shrink-0">
                 <p class="text-3xl font-black {{ $netProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }} tabular-nums">{{ $netProfit >= 0 ? '+' : '' }}{{ number_format($netProfit, 2) }}</p>

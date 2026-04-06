@@ -30,12 +30,26 @@
 
                 <!-- Accounts -->
                 @if(auth('admin')->user() && (auth('admin')->user()->can('view ledger') || auth('admin')->user()->can('view debts')))
-                <a href="{{ route('admin.accounts.index') }}" class="{{ request()->routeIs('admin.accounts.*') ? 'sidebar-item-active text-amber-600 dark:text-[#fde047]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
-                    <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.accounts.*') ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                    {{ __('Accounts') }}
-                </a>
+                <div x-data="{ open: {{ request()->routeIs('admin.accounts.*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" class="{{ request()->routeIs('admin.accounts.*') ? 'sidebar-item-active text-amber-500' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} w-full flex justify-between items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors text-slate-600 dark:text-slate-400">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.accounts.*') ? 'text-amber-400' : 'text-slate-500' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            {{ __('Accounts') }}
+                        </div>
+                        <svg :class="{'rotate-180': open}" class="w-4 h-4 transition-transform text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="open" class="my-1 space-y-1">
+                        @can('view ledger')
+                        <a href="{{ route('admin.accounts.index') }}" class="{{ request()->routeIs('admin.accounts.index') ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }} block {{ app()->getLocale() == 'ar' ? 'pr-12' : 'pl-12' }} py-2 text-xs transition-colors">{{ __('Profit & Loss (P&L)') }}</a>
+                        <a href="{{ route('admin.accounts.ledger') }}" class="{{ request()->routeIs('admin.accounts.ledger') ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }} block {{ app()->getLocale() == 'ar' ? 'pr-12' : 'pl-12' }} py-2 text-xs transition-colors">{{ __('Financial Ledger') }}</a>
+                        @endcan
+                        @can('view debts')
+                        <a href="{{ route('admin.accounts.debts') }}" class="{{ request()->routeIs('admin.accounts.debts') ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }} block {{ app()->getLocale() == 'ar' ? 'pr-12' : 'pl-12' }} py-2 text-xs transition-colors">{{ __('Outstanding Debts') }}</a>
+                        @endcan
+                    </div>
+                </div>
                 @endif
 
                 <!-- Work Days -->

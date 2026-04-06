@@ -11,9 +11,9 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">
             {{ __('Profit & Loss, Cash Flow, and Transaction Ledger.') }}
         </p>
-        <a href="{{ route('admin.accounts.debts') }}" class="inline-flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 px-4 py-2 rounded-xl text-sm font-bold border border-red-500/20 transition-colors">
+        <a href="{{ route('admin.accounts.ledger') }}" class="inline-flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-4 py-2 rounded-xl text-sm font-bold border border-emerald-500/20 transition-colors">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            {{ __('View All Outstanding Debts') }}
+            {{ __('Open Financial Ledger') }}
         </a>
     </div>
     <div class="flex flex-wrap gap-2">
@@ -92,7 +92,7 @@
             <span class="text-xs text-slate-400">{{ $currencyCode }}</span>
         </div>
         <div class="flex justify-between items-center py-2.5 px-4 border-b border-slate-100 dark:border-white/5">
-            <span class="text-sm text-slate-600 dark:text-slate-400">{{ __('Gross Sales (Distribution, Shifts & Settlement)') }}</span>
+            <span class="text-sm text-slate-600 dark:text-slate-400">{{ __('Collected Revenue (Cash In)') }}</span>
             <span class="font-semibold text-slate-900 dark:text-white">{{ number_format($grossSales, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
         </div>
         <div class="flex justify-between items-center py-2.5 px-4 border-b border-slate-100 dark:border-white/5">
@@ -100,7 +100,7 @@
             <span class="font-semibold text-red-500">- {{ number_format($salesReturns, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
         </div>
         <div class="flex justify-between items-center py-3 px-4 bg-emerald-500/10 rounded-xl mt-1 mb-3">
-            <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{ __('Net Revenue') }}</span>
+            <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{ __('Collected Net Revenue') }}</span>
             <span class="text-lg font-black text-emerald-600 dark:text-emerald-400">{{ number_format($netRevenue, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
         </div>
 
@@ -125,7 +125,7 @@
         {{-- Gross Profit --}}
         <div class="flex justify-between items-center py-4 px-4 bg-gradient-to-r {{ $grossProfit >= 0 ? 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20' : 'from-red-500/10 to-red-500/5 border-red-500/20' }} rounded-xl border mb-3">
             <div>
-                <span class="text-sm font-bold {{ $grossProfit >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400' }}">{{ __('Gross Profit') }}</span>
+                <span class="text-sm font-bold {{ $grossProfit >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400' }}">{{ __('Collected Gross Profit') }}</span>
                 <span class="text-xs text-slate-400 {{ app()->getLocale() == 'ar' ? 'mr-2' : 'ml-2' }}">({{ $grossMargin }}%)</span>
             </div>
             <span class="text-xl font-black {{ $grossProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">{{ $grossProfit >= 0 ? '+' : '' }}{{ number_format($grossProfit, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
@@ -156,10 +156,10 @@
         {{-- NET PROFIT --}}
         <div class="flex justify-between items-center py-5 px-5 bg-gradient-to-r {{ $netProfit >= 0 ? 'from-emerald-600/20 to-emerald-500/10' : 'from-red-600/20 to-red-500/10' }} rounded-2xl border {{ $netProfit >= 0 ? 'border-emerald-500/30' : 'border-red-500/30' }}">
             <div>
-                <span class="text-lg font-bold {{ $netProfit >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400' }}">{{ __('Net Profit') }}</span>
+                <span class="text-lg font-bold {{ $netProfit >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400' }}">{{ __('Collected Net Profit') }}</span>
                 <span class="text-xs {{ $netProfit >= 0 ? 'text-emerald-500' : 'text-red-500' }} {{ app()->getLocale() == 'ar' ? 'mr-2' : 'ml-2' }}">({{ $netMargin }}% {{ __('margin') }})</span>
             </div>
-            <span class="text-2xl font-black {{ $netProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">{{ $netProfit >= 0 ? '+' : '' }}{{ number_format($netProfit, 2) }} <span class="text-sm">{{ $currencyCode }}</span></span>
+            <span class="text-2xl font-black {{ $netProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">{{ $netProfit >= 0 ? '+' : '' }}{{ number_format($netProfit, 2) }} <span class="text-sm font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></span>
         </div>
     </div>
 </div>
