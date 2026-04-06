@@ -435,11 +435,11 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-white/5">
-                    @forelse($supplierPayouts->filter(fn($s) => ($s->total_owed ?? 0) > 0) as $sp)
+                    @forelse($supplierPayouts->filter(fn($s) => ($s->total_owed ?? 0) > 0 || ($s->total_paid_combined ?? 0) > 0) as $sp)
                     <tr class="hover:bg-slate-50 dark:hover:bg-white/5">
                         <td class="p-3 text-xs font-semibold text-slate-900 dark:text-white">{{ $sp->first_name }} {{ $sp->last_name }}</td>
                         <td class="p-3 text-xs text-slate-500">{{ number_format($sp->total_owed ?? 0, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></td>
-                        <td class="p-3 text-xs text-emerald-500">{{ number_format($sp->total_paid_to ?? 0, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></td>
+                        <td class="p-3 text-xs text-emerald-500">{{ number_format($sp->total_paid_combined ?? 0, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></td>
                         <td class="p-3 text-xs font-bold {{ ($sp->balance ?? 0) > 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-500' }}">{{ number_format($sp->balance ?? 0, 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></td>
                     </tr>
                     @empty

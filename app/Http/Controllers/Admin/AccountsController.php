@@ -313,14 +313,18 @@ class AccountsController extends Controller
         // Supplier Payouts
         $supplierPayouts = Supplier::select('suppliers.*')
             ->withSum(['supplies as total_owed' => function ($q) use ($workDayIds) {
-                $q->whereIn('work_day_id', $workDayIds);
-            }], Currency::getSelectRaw('total_cost'))
+                $q->whereIn('supplies.work_day_id', $workDayIds);
+            }], Currency::getSelectRaw('supplies.total_cost', 'supplies.exchange_rate'))
             ->withSum(['supplies as total_paid_to' => function ($q) use ($workDayIds) {
-                $q->whereIn('work_day_id', $workDayIds);
-            }], Currency::getSelectRaw('paid_amount'))
+                $q->whereIn('supplies.work_day_id', $workDayIds);
+            }], Currency::getSelectRaw('supplies.paid_amount', 'supplies.exchange_rate'))
+            ->withSum(['payments as total_settlements' => function ($q) use ($workDayIds) {
+                $q->whereIn('supplier_payments.work_day_id', $workDayIds);
+            }], Currency::getSelectRaw('supplier_payments.amount', 'supplier_payments.exchange_rate'))
             ->get()
             ->map(function ($s) {
-                $s->balance = ($s->total_owed ?? 0) - ($s->total_paid_to ?? 0);
+                $s->total_paid_combined = ($s->total_paid_to ?? 0) + ($s->total_settlements ?? 0);
+                $s->balance = ($s->total_owed ?? 0) - $s->total_paid_combined;
 
                 return $s;
             })
