@@ -1239,5 +1239,7 @@
     "Invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
     "Settlement Cash": "نقدية التسوية",
     "End-of-Day Terminal Balance": "رصيد الصندوق عند الإغلاق",
-    "Gross Sales (Distribution, Shifts & Settlement)": "إجمالي المبيعات (توزيع، ورديات، وتسويات)"
+    "Gross Sales (Distribution, Shifts & Settlement)": "إجمالي المبيعات (توزيع، ورديات، وتسويات)",
+    "Fresh from Oven": "طازج من الفرن",
+    "Bakery Stock": "مخزون المخبز"
 }
