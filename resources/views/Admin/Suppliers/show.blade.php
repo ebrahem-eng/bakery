@@ -120,6 +120,11 @@
                     </tbody>
                 </table>
             </div>
+            @if($supplies->hasPages())
+                <div class="p-4 border-t border-white/5">
+                    {{ $supplies->links() }}
+                </div>
+            @endif
         </div>
 
         <!-- Payment History Table -->
@@ -131,6 +136,7 @@
                 <form action="{{ route('admin.suppliers.show', $supplier) }}" method="GET" class="flex flex-wrap items-center gap-2">
                     <input type="hidden" name="delivery_start" value="{{ $deliveryStart }}">
                     <input type="hidden" name="delivery_end" value="{{ $deliveryEnd }}">
+                    <input type="hidden" name="deliveries_page" value="{{ request('deliveries_page') }}">
 
                     <div class="flex items-center gap-1">
                         <input type="date" name="payment_start" value="{{ $paymentStart }}" class="bg-black/20 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white focus:border-purple-500/50 outline-none">
@@ -141,7 +147,7 @@
                         {{ __('Filter') }}
                     </button>
                     @if($paymentStart || $paymentEnd)
-                        <a href="{{ route('admin.suppliers.show', ['supplier' => $supplier, 'delivery_start' => $deliveryStart, 'delivery_end' => $deliveryEnd]) }}" class="text-[10px] text-slate-500 hover:text-white underline">{{ __('Clear') }}</a>
+                        <a href="{{ route('admin.suppliers.show', ['supplier' => $supplier, 'delivery_start' => $deliveryStart, 'delivery_end' => $deliveryEnd, 'deliveries_page' => request('deliveries_page')]) }}" class="text-[10px] text-slate-500 hover:text-white underline">{{ __('Clear') }}</a>
                     @endif
                 </form>
             </div>
@@ -190,6 +196,11 @@
                     </tbody>
                 </table>
             </div>
+            @if($allPayments->hasPages())
+                <div class="p-4 border-t border-white/5">
+                    {{ $allPayments->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </div>

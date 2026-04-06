@@ -32,7 +32,10 @@ class SupplierController extends Controller
             $suppliesQuery->whereDate('created_at', '<=', $deliveryEnd);
         }
         
-        $supplies = $suppliesQuery->orderBy('id', 'desc')->get();
+        $perPage = 10;
+        
+        $supplies = $suppliesQuery->orderBy('id', 'desc')->paginate($perPage, ['*'], 'deliveries_page');
+        $supplies->appends($request->all());
 
         // 2. Handle Payments Filtering & Unification
         $paymentStart = $request->get('payment_start');
@@ -81,8 +84,20 @@ class SupplierController extends Controller
                 ];
             });
 
-        $allPayments = $initialPayments->concat($settlementPayments)
-            ->sortByDesc('date');
+        $allPaymentsCollection = $initialPayments->concat($settlementPayments)->sortByDesc('date');
+        $paymentsPage = \Illuminate\Pagination\Paginator::resolveCurrentPage('payments_page');
+        
+        $allPayments = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allPaymentsCollection->forPage($paymentsPage, $perPage),
+            $allPaymentsCollection->count(),
+            $perPage,
+            $paymentsPage,
+            [
+                'path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(),
+                'pageName' => 'payments_page',
+            ]
+        );
+        $allPayments->appends($request->all());
 
         $supplier->load(['mobiles', 'categories']);
 
