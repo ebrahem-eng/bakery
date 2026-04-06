@@ -1,23 +1,27 @@
 @extends('layouts.Admin.App')
 
 @section('content')
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end w-full gap-4">
-        <div>
-            <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{{ __('Worker') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">{{ __('Attendance & Shifts') }}</span></h1>
-            <p class="text-sm text-slate-400">
-                {{ __('Managing shifts for Active Work Day:') }} 
-                <span class="font-bold text-emerald-500">{{ $activeWorkDay->start_time->translatedFormat('Y-m-d h:i A') }}</span>
-            </p>
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-6 lg:p-8 shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end w-full gap-4">
+            <div>
+                <p class="text-[11px] uppercase tracking-[0.3em] text-slate-400">{{ __('Operations') }}</p>
+                <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
+                    {{ __('Worker') }}
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">{{ __('Attendance & Shifts') }}</span>
+                </h1>
+                <p class="text-sm text-slate-400">
+                    {{ __('Managing shifts for Active Work Day:') }}
+                    <span class="font-bold text-emerald-500">{{ $activeWorkDay->start_time->translatedFormat('Y-m-d h:i A') }}</span>
+                </p>
+            </div>
+            @can('create attendance')
+            <a href="{{ route('admin.attendance.presence') }}" class="bg-emerald-500 hover:bg-emerald-400 text-black px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center shadow-lg shadow-emerald-500/20">
+                <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                {{ __('Manage Daily Presence') }}
+            </a>
+            @endcan
         </div>
-        @can('create attendance')
-        <a href="{{ route('admin.attendance.presence') }}" class="bg-emerald-500 hover:bg-emerald-400 text-black px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center shadow-lg shadow-emerald-500/20">
-            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-            {{ __('Manage Daily Presence') }}
-        </a>
-        @endcan
     </div>
-
-    <br>
     <!-- Alerts -->
     <div class="mt-8 space-y-4">
         @if(session('success_message'))
@@ -50,7 +54,7 @@
 @php 
     $pendingWorkers = $pendingWorkersOverall;
 @endphp
-<br>
+<div class="h-2"></div>
 @if($pendingWorkers->isNotEmpty())
     <!-- Pending Shifts Alert -->
     <div class="mt-8 mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between gap-4 shadow-lg shadow-amber-500/5">
@@ -79,7 +83,7 @@
 @endif
 
 <!-- Cards Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-10">
+<div class="grid grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6 mt-10 auto-rows-fr items-stretch">
     @foreach($workers as $worker)
         @php
             $activeShift = $worker->shifts->whereNull('check_out')->first();
@@ -93,7 +97,7 @@
             $netAccrued = $earnedWage + $allowances - $deductions - $advances;
         @endphp
 
-        <div class="glass-panel rounded-2xl border border-white/5 overflow-hidden flex flex-col group relative">
+        <div class="glass-panel rounded-2xl border border-white/5 overflow-hidden flex flex-col group relative h-full min-h-[520px]" x-data="{ open: false }">
             
             <!-- Header -->
             <div class="p-5 border-b border-white/5 bg-black/10 flex justify-between items-start">
@@ -152,11 +156,18 @@
             </div>
 
             <!-- Actions Footer -->
-            <div class="p-4 border-t border-white/5 bg-black/20 flex gap-2">
+            <div class="p-4 border-t border-white/5 bg-black/20 flex flex-col gap-3 mt-auto">
+                <button type="button"
+                        class="w-full py-2.5 rounded-xl border border-white/10 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:border-white/20 transition-colors"
+                        @click="open = !open"
+                        :aria-expanded="open.toString()">
+                    <span x-text="open ? '{{ __('Hide Details') }}' : '{{ __('Show Details') }}'"></span>
+                </button>
+                <div x-show="open" x-transition class="space-y-3">
                 @can('create attendance')
                 @if(!$activeShift)
                         @if(!$isPresent)
-                            <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
+                            <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-center w-full">
                                 <p class="text-[10px] font-bold text-red-400 uppercase tracking-widest">{{ __('Worker is not present today') }}</p>
                                 <p class="text-[9px] text-red-400/60 mt-1">{{ __('You must mark attendance above first.') }}</p>
                             </div>
@@ -327,13 +338,25 @@
                     </form>
                 @endif
                 @endcan
+                </div>
             </div>
-            </div>
-
         </div>
     @endforeach
 </div>
-<div class="mt-8">
-    {{ $workers->links() }}
-</div>
+@if($workers->hasPages())
+    <div class="mt-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+        <p class="text-xs text-slate-400">
+            {{ __('Showing') }}
+            <span class="text-slate-100 font-semibold">{{ $workers->firstItem() ?? 0 }}</span>
+            {{ __('to') }}
+            <span class="text-slate-100 font-semibold">{{ $workers->lastItem() ?? 0 }}</span>
+            {{ __('of') }}
+            <span class="text-slate-100 font-semibold">{{ $workers->total() }}</span>
+            {{ __('workers') }}
+        </p>
+        <div class="w-full md:w-auto">
+            {{ $workers->onEachSide(1)->links('pagination::tailwind') }}
+        </div>
+    </div>
+@endif
 @endsection
