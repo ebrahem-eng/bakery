@@ -43,6 +43,8 @@ Route::group(['middleware' => ['admin.auth']], function () {
         ->middleware('permission:view ledger,admin')->name('accounts.index');
     Route::get('/accounts/debts', [AccountsController::class, 'debts'])
         ->middleware('permission:view debts,admin')->name('accounts.debts');
+    Route::get('/accounts/ledger', [AccountsController::class, 'financialLedger'])
+        ->middleware('permission:view ledger,admin')->name('accounts.ledger');
 
     // ── Roles & Permissions ────────────────────────────────────────────
     Route::resource('roles', RoleController::class)->middleware('permission:view roles,admin');
