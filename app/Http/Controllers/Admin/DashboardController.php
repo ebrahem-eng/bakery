@@ -195,16 +195,12 @@ class DashboardController extends Controller
         $todaySupplierPayments = 0;
 
         if ($activeWorkDay) {
-            $todaySales = $activeWorkDay->distributions->sum(fn($d) => Currency::convertAmount($d->total_price, $d->exchange_rate)) 
-                        - $activeWorkDay->distributorReturns->sum(fn($r) => Currency::convertAmount($r->total_refund, $r->exchange_rate));
-            $todayBundlesSold = $activeWorkDay->distributions->sum('bundle_count');
-            $todayExpenses += $activeWorkDay->supplies->sum(fn($s) => Currency::convertAmount($s->total_cost, $s->exchange_rate)) 
-                           + $activeWorkDay->supplies->sum(fn($s) => Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate));
-            $todayExpenses += $activeWorkDay->workerTransactions->where('type', 'allowance')->sum(fn($wtf) => Currency::convertAmount($wtf->amount, $wtf->exchange_rate));
-            $todayExpenses -= $activeWorkDay->workerTransactions->where('type', 'deduction')->sum(fn($wtf) => Currency::convertAmount($wtf->amount, $wtf->exchange_rate));
-            $todayExpenses += $activeWorkDay->expenses->sum(fn($e) => Currency::convertAmount($e->amount, $e->exchange_rate));
+            $stats = $activeWorkDay->getStatistics();
             
-            $todaySupplierPayments = $activeWorkDay->supplierPayments->sum(fn($sp) => Currency::convertAmount($sp->amount, $sp->exchange_rate));
+            $todaySales = $stats['totalSales'] - $stats['totalRefunds'];
+            $todayExpenses = $stats['totalExpenses'];
+            $todayBundlesSold = $stats['bundlesSold'];
+            $todaySupplierPayments = $stats['supplierPayments'];
         }
 
         return view('Admin.dashboard', compact(

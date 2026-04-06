@@ -1249,7 +1249,6 @@
     "Employee Revenue Contributions": "مساهمات الموظفين في الإيرادات",
     "Tracking individual impact on bakery revenue.": "تتبع الأثر الفردي على إيرادات المخبز.",
     "Average Daily Revenue": "متوسط الإيراد اليومي",
-    "Tracking individual impact on bakery revenue.": "تتبع الأثر الفردي على إيرادات المخبز.",
     "Total Collected": "إجمالي المحصل",
     "% of Revenue": "% من الإيرادات",
     "No shift data recorded for this period.": "لا توجد بيانات ورديات مسجلة لهذه الفترة.",
@@ -1258,5 +1257,7 @@
     "Shift Performance History": "سجل أداء الورديات",
     "Total Shifts": "إجمالي الورديات",
     "Active Advances": "السلف النشطة",
-    "No completed shifts found.": "لا توجد ورديات مكتملة."
+    "No completed shifts found.": "لا توجد ورديات مكتملة.",
+    "Produced (From Oven)": "الإنتاج (من الفرن)",
+    "Bread Expenses (Samples/Waste)": "مصاريف الخبز (عينات/هالك)"
 }

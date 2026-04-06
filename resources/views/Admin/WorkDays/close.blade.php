@@ -163,23 +163,12 @@
                     <span class="font-bold text-slate-900 dark:text-white">{{ $previousCarryOverBundles }} {{ __('bundles') }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Bundles Given to Shifts') }}</span>
-                    <span class="font-bold text-blue-600 dark:text-blue-400">{{ $bundlesReceivedByShifts }} {{ __('bundles') }}</span>
-                </div>
-                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Bundles Taken from Bakery') }}</span>
-                    <span class="font-bold text-amber-600 dark:text-amber-400">- {{ $workDay->workerShifts->sum('bundles_from_bakery') }} {{ __('bundles') }}</span>
-                </div>
-                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Net Returned from Shifts') }}</span>
-                    <div class="text-right">
-                        <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ $bundlesReturnedByShifts >= 0 ? '+' : '' }}{{ $bundlesReturnedByShifts }} {{ __('bundles') }}</span>
-                        <p class="text-[9px] text-slate-400 leading-none mt-1">{{ __('(Returned - Taken from Stock)') }}</p>
-                    </div>
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Produced (From Oven)') }}</span>
+                    <span class="font-bold text-emerald-600 dark:text-emerald-400">+ {{ $bundlesFromOvenSum }} {{ __('bundles') }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5 bg-indigo-500/5 rounded-lg px-3 -mx-1">
-                    <span class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{ __('Bundles Sold from Shifts') }}</span>
-                    <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ $bundlesSoldFromShifts }} {{ __('bundles') }}</span>
+                    <span class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{ __('Sold from Shifts') }}</span>
+                    <span class="font-bold text-indigo-600 dark:text-indigo-400">- {{ $bundlesSoldFromShifts }} {{ __('bundles') }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Distributed to Distributors') }}</span>
@@ -189,6 +178,12 @@
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Returned by Distributors') }}</span>
                     <span class="font-bold text-emerald-600 dark:text-emerald-400">+ {{ $bundlesReturnedByDistributors }} {{ __('bundles') }}</span>
                 </div>
+                @if($breadExpenses > 0)
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Bread Expenses (Samples/Waste)') }}</span>
+                    <span class="font-bold text-red-600 dark:text-red-400">- {{ $breadExpenses }} {{ __('bundles') }}</span>
+                </div>
+                @endif
                 <div class="flex justify-between items-center py-3 bg-blue-500/5 rounded-xl px-3 -mx-1">
                     <span class="text-sm font-bold text-blue-600 dark:text-blue-400">{{ __('Calculated Remaining') }}</span>
                     <span class="font-bold text-blue-600 dark:text-blue-400 text-lg">{{ $calculatedRemainingBundles }} {{ __('bundles') }}</span>

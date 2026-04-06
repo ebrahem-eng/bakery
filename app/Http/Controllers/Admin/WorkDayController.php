@@ -45,7 +45,7 @@ class WorkDayController extends Controller
             'supplierPayments.currency',
         ])->findOrFail($id);
 
-        $stats = $this->getWorkDayStatistics($workDay);
+        $stats = $workDay->getStatistics();
 
         return view('Admin.WorkDays.close', array_merge(['workDay' => $workDay], $stats));
     }
@@ -101,156 +101,9 @@ class WorkDayController extends Controller
             'supplierPayments.currency',
         ]);
 
-        $stats = $this->getWorkDayStatistics($workDay);
-
-        return view('Admin.WorkDays.close', array_merge(['workDay' => $workDay], $stats));
+        return view('Admin.WorkDays.close', array_merge(['workDay' => $workDay], $workDay->getStatistics()));
     }
 
-    private function getWorkDayStatistics(WorkDay $workDay)
-    {
-        $defaultCurrency = Currency::where('is_default', true)->first();
-        $currencyCode = $defaultCurrency->code ?? '';
-
-        // ── Sales Statistics ──────────────────────────────────────────
-        $wholesaleSales = $workDay->distributions->reduce(fn($carry, $d) => $carry + Currency::convertAmount($d->total_price, $d->exchange_rate), 0);
-        $retailSales = $workDay->workerShifts->reduce(fn($carry, $s) => $carry + Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate), 0);
-        
-        $settlementCashBase = 0;
-        if ($workDay->status === 'closed') {
-            $settlementCashBase = Currency::convertAmount($workDay->carried_over_money, $workDay->carried_over_exchange_rate);
-        }
-
-        // Use settlement cash if closed, otherwise use reported retail sales as estimate
-        $cashRevenue = ($workDay->status === 'closed') ? $settlementCashBase : $retailSales;
-
-        $totalSales = $wholesaleSales + $cashRevenue;
-        $totalRefunds = $workDay->distributorReturns->reduce(fn($carry, $r) => $carry + Currency::convertAmount($r->total_refund, $r->exchange_rate), 0);
-        
-        $explicitPayments = $workDay->distributorTransactions->where('type', 'payment')->reduce(fn($carry, $t) => $carry + Currency::convertAmount($t->amount, $t->exchange_rate), 0);
-        $downPayments = $workDay->distributions->reduce(fn($carry, $d) => $carry + Currency::convertAmount($d->amount_paid, $d->exchange_rate), 0);
-        $totalPaymentsReceived = $explicitPayments + $downPayments + $cashRevenue;
-        
-        $netSales = $totalSales - $totalRefunds;
-
-        // ── Expense Breakdown ─────────────────────────────────────────
-        $suppliesCost = $workDay->supplies
-            ->sum(fn($s) => Currency::convertAmount($s->total_cost, $s->exchange_rate));
-            
-        $unloadingFees = $workDay->supplies
-            ->filter(fn($s) => $s->unloading_fee_payer === 'bakery')
-            ->reduce(function ($carry, $s) {
-                return $carry + Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate);
-            }, 0);
-        
-        // Manual worker payments (Cash-based reporting for expenses as requested)
-        $workerPayouts = $workDay->workerTransactions
-            ->whereIn('type', ['salary', 'wage', 'advance', 'allowance', 'bonus'])
-            ->reduce(function($carry, $t) { 
-                return $carry + Currency::convertAmount($t->amount, $t->exchange_rate); 
-            }, 0);
-            
-        $workerDeductions = $workDay->workerTransactions
-            ->where('type', 'deduction')
-            ->reduce(function($carry, $t) { 
-                return $carry + Currency::convertAmount($t->amount, $t->exchange_rate); 
-            }, 0);
-            
-        $operationalExpenses = $workDay->expenses->reduce(fn($carry, $e) => $carry + Currency::convertAmount($e->amount, $e->exchange_rate), 0);
-        
-        $supplierPayments = $workDay->supplierPayments->reduce(fn($carry, $sp) => $carry + Currency::convertAmount($sp->amount, $sp->exchange_rate), 0);
-
-        $totalExpenses = $suppliesCost + $unloadingFees + $workerPayouts - $workerDeductions + $operationalExpenses;
-        $netDayBalance = $netSales - $totalExpenses;
-
-        // ── Bundle Flow ───────────────────────────────────────────────
-        $bundlesDistributed = $workDay->distributions->sum('bundle_count');
-        $bundlesReturnedByDistributors = $workDay->distributorReturns->sum('bundle_count');
-        
-        $bundlesFromOvenSum = $workDay->workerShifts->sum('bundles_from_oven');
-        $bundlesFromBakerySum = $workDay->workerShifts->sum('bundles_from_bakery');
-        
-        $bundlesReceivedByShifts = $workDay->workerShifts->sum('bundles_received');
-        $bundlesReturnedByShiftsTotal = $workDay->workerShifts->sum('bundles_returned');
-        
-        // Net Shift Return = What came back minus what was taken from existing stock
-        $bundlesReturnedByShifts = $bundlesReturnedByShiftsTotal - $bundlesFromBakerySum;
-        
-        $breadExpenses = $workDay->expenses->where('category', 'bread')->sum('quantity');
-
-        // Previous day carry-over
-        $previousDay = WorkDay::where('status', 'closed')
-            ->where('id', '<', $workDay->id)
-            ->orderBy('id', 'desc')
-            ->first();
-        $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
-
-        // Calculated remaining = previous carry-over + production (from oven) - sold from shifts - distributed + returned by distributors - bread expenses
-        // Alternatively: previous carry-over - (given to shifts - returned by shifts) - distributed + returned by distributors - bread expenses
-        // Sold from shifts = Received - Returned
-        $bundlesSoldFromShifts = $bundlesReceivedByShifts - $bundlesReturnedByShiftsTotal;
-
-        $calculatedRemainingBundles = $previousCarryOverBundles - $bundlesSoldFromShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses;
-        
-        if ($calculatedRemainingBundles < 0) {
-            $calculatedRemainingBundles = 0;
-        }
-
-        // ── Currencies for settlement form ────────────────────────────
-        $currencies = Currency::all();
-
-        // ── Cash collected from shifts ────────────────────────────────
-        $totalCashFromShifts = $workDay->workerShifts->reduce(function ($carry, $s) {
-            return $carry + Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate);
-        }, 0);
-
-        // ── Raw Material Categories for Consumption ──────────────────
-        $materialCategories = Category::where('track_in_daily_close', true)
-            ->where('is_active', true)
-            ->withSum(['supplies as total_in' => function ($query) {
-                // Global stock tracking
-            }], 'quantity')
-            ->withSum('consumptions as total_out', 'quantity')
-            ->get()
-            ->map(function ($cat) {
-                $cat->available = ($cat->total_in ?? 0) - ($cat->total_out ?? 0);
-
-                return $cat;
-            });
-
-        return [
-            'defaultCurrency' => $defaultCurrency,
-            'currencyCode' => $currencyCode,
-            'currencies' => $currencies,
-            'materialCategories' => $materialCategories,
-            'calculatedRemainingBundles' => $calculatedRemainingBundles,
-            'totalCashFromShifts' => $totalCashFromShifts,
-            // Sales
-            'totalSales' => $totalSales,
-            'wholesaleSales' => $wholesaleSales,
-            'retailSales' => $retailSales,
-            'totalRefunds' => $totalRefunds,
-            'totalPaymentsReceived' => $totalPaymentsReceived,
-            'netSales' => $netSales,
-            // Expenses
-            'suppliesCost' => $suppliesCost,
-            'unloadingFees' => $unloadingFees,
-            'workerPayments' => $workerPayouts,
-            'workerDeductions' => $workerDeductions,
-            'operationalExpenses' => $operationalExpenses,
-            'supplierPayments' => $supplierPayments,
-            'totalExpenses' => $totalExpenses,
-            'netDayBalance' => $netDayBalance,
-            // Bundles
-            'bundlesDistributed' => $bundlesDistributed,
-            'bundlesReturnedByDistributors' => $bundlesReturnedByDistributors,
-            'bundlesReceivedByShifts' => $bundlesReceivedByShifts,
-            'bundlesReturnedByShifts' => $bundlesReturnedByShifts,
-            'previousCarryOverBundles' => $previousCarryOverBundles,
-            'activeShifts' => $workDay->workerShifts->whereNull('check_out'),
-            'bundlesSoldFromShifts' => $bundlesSoldFromShifts,
-            'settlementCashBase' => $settlementCashBase,
-        ];
-    }
 
     public function close(Request $request, WorkDay $workDay)
     {
@@ -287,25 +140,9 @@ class WorkDayController extends Controller
             }
         }
 
-        // Auto-calculate bundles from shift data
-        $workDay->load(['workerShifts', 'distributions', 'distributorReturns', 'expenses']);
-
-        $bundlesReturnedByShifts = $workDay->workerShifts->sum('bundles_returned');
-        $bundlesReceivedByShifts = $workDay->workerShifts->sum('bundles_received');
-        $bundlesDistributed = $workDay->distributions->sum('bundle_count');
-        $bundlesReturnedByDistributors = $workDay->distributorReturns->sum('bundle_count');
-        $breadExpenses = $workDay->expenses->where('category', 'bread')->sum('quantity');
-
-        $previousDay = WorkDay::where('status', 'closed')
-            ->where('id', '<', $workDay->id)
-            ->orderBy('id', 'desc')
-            ->first();
-        $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
-
-        $calculatedBundles = $previousCarryOverBundles - $bundlesReceivedByShifts + $bundlesReturnedByShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses;
-        if ($calculatedBundles < 0) {
-            $calculatedBundles = 0;
-        }
+        // Use centralized statistics for final checks and carry-over calculation
+        $stats = $workDay->getStatistics();
+        $calculatedBundles = $stats['calculatedRemainingBundles'];
 
         // Resolve exchange rate
         $exchangeRate = 1;

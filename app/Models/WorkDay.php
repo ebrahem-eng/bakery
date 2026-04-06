@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\Category;
+use App\Models\Currency;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -96,4 +97,134 @@ class WorkDay extends Model
     {
         return $this->hasMany(SupplierPayment::class);
     }
+
+    /**
+     * Get comprehensive statistics for the work day.
+     * Synchronized between Dashboard Live Stats and Daily Close Settlement.
+     */
+    public function getStatistics()
+    {
+        $defaultCurrency = Currency::where('is_default', true)->first();
+        $currencyCode = $defaultCurrency->code ?? 'SYP';
+
+        // ── Sales Statistics ──────────────────────────────────────────
+        // wholesaleSales (Distributors)
+        $wholesaleSales = $this->distributions->reduce(fn($carry, $d) => $carry + Currency::convertAmount($d->total_price, $d->exchange_rate), 0);
+        // retailSales (Worker Shifts)
+        $retailSales = $this->workerShifts->reduce(fn($carry, $s) => $carry + Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate), 0);
+        
+        $settlementCashBase = 0;
+        if ($this->status === 'closed') {
+            $settlementCashBase = Currency::convertAmount($this->carried_over_money, $this->carried_over_exchange_rate);
+        }
+
+        // Use settlement cash if closed, otherwise use reported retail sales as estimate
+        $cashRevenue = ($this->status === 'closed') ? $settlementCashBase : $retailSales;
+
+        $totalSales = $wholesaleSales + $cashRevenue;
+        $totalRefunds = $this->distributorReturns->reduce(fn($carry, $r) => $carry + Currency::convertAmount($r->total_refund, $r->exchange_rate), 0);
+        
+        $explicitPayments = $this->distributorTransactions->where('type', 'payment')->reduce(fn($carry, $t) => $carry + Currency::convertAmount($t->amount, $t->exchange_rate), 0);
+        $downPayments = $this->distributions->reduce(fn($carry, $d) => $carry + Currency::convertAmount($d->amount_paid, $d->exchange_rate), 0);
+        $totalPaymentsReceived = $explicitPayments + $downPayments + $cashRevenue;
+        
+        $netSales = $totalSales - $totalRefunds;
+
+        // ── Expense Breakdown ─────────────────────────────────────────
+        $suppliesCost = $this->supplies->reduce(function ($carry, $s) {
+            return $carry + Currency::convertAmount($s->total_cost, $s->exchange_rate);
+        }, 0);
+
+        $unloadingFees = $this->supplies->filter(fn($s) => $s->unloading_fee_payer === 'bakery')
+            ->reduce(fn($carry, $s) => $carry + Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate), 0);
+        
+        // Manual worker payments (Cash-based reporting for expenses)
+        $workerPayouts = $this->workerTransactions
+            ->whereIn('type', ['salary', 'wage', 'advance', 'allowance', 'bonus'])
+            ->reduce(fn($carry, $t) => $carry + Currency::convertAmount($t->amount, $t->exchange_rate), 0);
+            
+        $workerDeductions = $this->workerTransactions
+            ->where('type', 'deduction')
+            ->reduce(fn($carry, $t) => $carry + Currency::convertAmount($t->amount, $t->exchange_rate), 0);
+            
+        $operationalExpenses = $this->expenses->reduce(fn($carry, $e) => $carry + Currency::convertAmount($e->amount, $e->exchange_rate), 0);
+        
+        $supplierPayments = $this->supplierPayments->reduce(fn($carry, $sp) => $carry + Currency::convertAmount($sp->amount, $sp->exchange_rate), 0);
+
+        $totalExpenses = $suppliesCost + $unloadingFees + $workerPayouts - $workerDeductions + $operationalExpenses;
+        $netDayBalance = $netSales - $totalExpenses;
+
+        // ── Bundle Flow ───────────────────────────────────────────────
+        $bundlesDistributed = $this->distributions->sum('bundle_count');
+        $bundlesReturnedByDistributors = $this->distributorReturns->sum('bundle_count');
+        
+        $bundlesFromOvenSum = $this->workerShifts->sum('bundles_from_oven');
+        $bundlesFromBakerySum = $this->workerShifts->sum('bundles_from_bakery');
+        
+        $bundlesReceivedByShifts = $this->workerShifts->sum('bundles_received');
+        $bundlesReturnedByShiftsTotal = $this->workerShifts->sum('bundles_returned');
+        $bundlesSoldFromShifts = $bundlesReceivedByShifts - $bundlesReturnedByShiftsTotal;
+        $breadExpenses = $this->expenses->where('category', 'bread')->sum('quantity');
+
+        // Previous day carry-over
+        $previousDay = self::where('status', 'closed')->where('id', '<', $this->id)->orderBy('id', 'desc')->first();
+        $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
+
+        $calculatedRemainingBundles = max(0, $previousCarryOverBundles + $bundlesFromOvenSum - $bundlesSoldFromShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses);
+
+        // ── Cash collected from shifts ────────────────────────────────
+        $totalCashFromShifts = $this->workerShifts->reduce(function ($carry, $s) {
+            return $carry + Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate);
+        }, 0);
+
+        // ── Raw Material Categories for Consumption ──────────────────
+        $materialCategories = Category::where('track_in_daily_close', true)
+            ->where('is_active', true)
+            ->withSum(['supplies as total_in' => function ($query) {
+                // Relevant for active day stock
+            }], 'quantity')
+            ->withSum('consumptions as total_out', 'quantity')
+            ->get()
+            ->map(function ($cat) {
+                $cat->available = ($cat->total_in ?? 0) - ($cat->total_out ?? 0);
+                return $cat;
+            });
+
+        return [
+            'defaultCurrency' => $defaultCurrency,
+            'currencyCode' => $currencyCode,
+            'materialCategories' => $materialCategories,
+            'calculatedRemainingBundles' => $calculatedRemainingBundles,
+            'totalCashFromShifts' => $totalCashFromShifts,
+            // Sales Metrics
+            'totalSales' => $totalSales,
+            'wholesaleSales' => $wholesaleSales,
+            'retailSales' => $retailSales,
+            'totalRefunds' => $totalRefunds,
+            'totalPaymentsReceived' => $totalPaymentsReceived,
+            'netSales' => $netSales,
+            // Expenses Metrics
+            'suppliesCost' => $suppliesCost,
+            'unloadingFees' => $unloadingFees,
+            'workerPayments' => $workerPayouts,
+            'workerDeductions' => $workerDeductions,
+            'operationalExpenses' => $operationalExpenses,
+            'supplierPayments' => $supplierPayments,
+            'totalExpenses' => $totalExpenses,
+            'netDayBalance' => $netDayBalance,
+            // Bundle Counts
+            'bundlesDistributed' => $bundlesDistributed,
+            'bundlesReturnedByDistributors' => $bundlesReturnedByDistributors,
+            'bundlesReceivedByShifts' => $bundlesReceivedByShifts,
+            'bundlesReturnedByShifts' => $bundlesReturnedByShiftsTotal,
+            'bundlesSoldFromShifts' => $bundlesSoldFromShifts,
+            'bundlesSold' => ($bundlesDistributed - $bundlesReturnedByDistributors) + $bundlesSoldFromShifts,
+            'bundlesFromOvenSum' => $bundlesFromOvenSum,
+            'breadExpenses' => $breadExpenses,
+            'previousCarryOverBundles' => $previousCarryOverBundles,
+            'activeShifts' => $this->workerShifts->whereNull('check_out'),
+            'settlementCashBase' => $settlementCashBase,
+        ];
+    }
 }
+
