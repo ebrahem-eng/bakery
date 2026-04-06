@@ -260,6 +260,53 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════════════════ --}}
+{{-- EMPLOYEE REVENUE CONTRIBUTIONS                             --}}
+{{-- ═══════════════════════════════════════════════════════════ --}}
+<div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 mb-8 overflow-hidden">
+    <div class="p-5 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20">
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ __('Employee Revenue Contributions') }}</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Tracking individual impact on bakery revenue.') }}</p>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="bg-slate-100 dark:bg-black/10 border-b border-slate-200 dark:border-white/5 text-[10px] uppercase tracking-widest text-slate-500 font-bold">
+                    <th class="p-4">{{ __('Worker') }}</th>
+                    <th class="p-4 text-center">{{ __('Shifts') }}</th>
+                    <th class="p-4 text-center">{{ __('Bundles Sold') }}</th>
+                    <th class="p-4 text-right">{{ __('Total Collected') }}</th>
+                    <th class="p-4 text-right">{{ __('% of Revenue') }}</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-white/5">
+                @forelse($employeeContributions as $contrib)
+                <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                    <td class="p-4">
+                        <span class="font-bold text-slate-900 dark:text-white">{{ $contrib['worker_name'] }}</span>
+                    </td>
+                    <td class="p-4 text-center font-medium text-slate-600 dark:text-slate-400">{{ $contrib['shift_count'] }}</td>
+                    <td class="p-4 text-center font-bold text-amber-600 dark:text-amber-400">{{ number_format($contrib['total_bundles_sold']) }}</td>
+                    <td class="p-4 text-right font-black text-emerald-600 dark:text-emerald-400">{{ number_format($contrib['total_collected'], 2) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span></td>
+                    <td class="p-4 text-right">
+                        @php
+                            $percentage = $netRevenue > 0 ? ($contrib['total_collected'] / $netRevenue) * 100 : 0;
+                        @endphp
+                        <span class="text-xs font-bold text-slate-500">{{ number_format($percentage, 1) }}%</span>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="p-8 text-center text-slate-400 text-sm">
+                        {{ __('No shift data recorded for this period.') }}
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════ --}}
 {{-- SECTION C: TRANSACTION LEDGER                              --}}
 {{-- ═══════════════════════════════════════════════════════════ --}}
 <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 mb-8 overflow-hidden">

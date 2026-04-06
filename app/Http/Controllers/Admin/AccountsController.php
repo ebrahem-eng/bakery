@@ -98,6 +98,22 @@ class AccountsController extends Controller
         // Cash In
         $cashFromDistributors = DistributorTransaction::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('amount'));
 
+        // ── Employee Contributions ──────────────────────────────────
+        $employeeContributions = WorkerShift::whereIn('work_day_id', $workDayIds)
+            ->with('worker')
+            ->get()
+            ->groupBy('worker_id')
+            ->map(function ($shifts) {
+                return [
+                    'worker_name' => $shifts->first()->worker->first_name . ' ' . $shifts->first()->worker->last_name,
+                    'total_collected' => $shifts->sum('cash_collected_base'),
+                    'total_bundles_sold' => $shifts->sum(fn($s) => $s->bundles_received - $s->bundles_returned),
+                    'shift_count' => $shifts->count(),
+                ];
+            })
+            ->sortByDesc('total_collected')
+            ->values();
+
         $totalCashIn = $cashFromDistributors + $totalActiveShiftCash + $totalSettlementCash;
 
         $cashToSuppliers = Supply::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('paid_amount'));
@@ -365,6 +381,9 @@ class AccountsController extends Controller
             'cashFromDistributors', 'cashFromShifts', 'endOfDayCash', 'totalCashIn',
             'cashToSuppliers', 'cashToSupplierDebts', 'cashToFreight', 'cashToWages', 'cashToAdvances', 'cashToAllowances', 'cashToExpenses', 'totalCashOut',
             'netCashFlow',
+            // Contributions
+            'employeeContributions',
+            'netRevenue', 
             // Ledger
             'paginatedTransactions', 'typeFilter',
             // Payouts

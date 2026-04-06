@@ -69,4 +69,35 @@ class WorkerShift extends Model
     {
         return $this->belongsTo(Currency::class, 'cash_currency_id');
     }
+
+    // ── Computed Financial Attributes ──────────────────────────────
+
+    /**
+     * Expected cash based on bundles sold and price per bundle.
+     */
+    public function getExpectedCashAttribute()
+    {
+        $sold = $this->bundles_received - $this->bundles_returned;
+        return max(0, $sold * ($this->price_per_bundle ?? 0));
+    }
+
+    /**
+     * Cash collected converted to the system's base currency.
+     */
+    public function getCashCollectedBaseAttribute()
+    {
+        if (!$this->cash_collected) return 0;
+        
+        // Use snapshot rate and Currency helper
+        return Currency::convertAmount($this->cash_collected, $this->cash_exchange_rate);
+    }
+
+    /**
+     * The difference between actual collected (in base) and expected (in base).
+     * Since price_per_bundle is usually in base currency, we compare directly.
+     */
+    public function getRemainingCashAttribute()
+    {
+        return $this->cash_collected_base - $this->expected_cash;
+    }
 }

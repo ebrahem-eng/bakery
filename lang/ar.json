@@ -1241,5 +1241,22 @@
     "End-of-Day Terminal Balance": "رصيد الصندوق عند الإغلاق",
     "Gross Sales (Distribution, Shifts & Settlement)": "إجمالي المبيعات (توزيع، ورديات، وتسويات)",
     "Fresh from Oven": "طازج من الفرن",
-    "Bakery Stock": "مخزون المخبز"
+    "Bakery Stock": "مخزون المخبز",
+    "Expected": "المتوقع",
+    "Collected": "المحصّل",
+    "Difference": "الفرق",
+    "Remaining Balance": "الرصيد المتبقي",
+    "Employee Revenue Contributions": "مساهمات الموظفين في الإيرادات",
+    "Tracking individual impact on bakery revenue.": "تتبع الأثر الفردي على إيرادات المخبز.",
+    "Average Daily Revenue": "متوسط الإيراد اليومي",
+    "Tracking individual impact on bakery revenue.": "تتبع الأثر الفردي على إيرادات المخبز.",
+    "Total Collected": "إجمالي المحصل",
+    "% of Revenue": "% من الإيرادات",
+    "No shift data recorded for this period.": "لا توجد بيانات ورديات مسجلة لهذه الفترة.",
+    "Total Revenue Generated": "إجمالي الإيرادات المولدة",
+    "Avg. Revenue per Shift": "متوسط الإيراد لكل وردية",
+    "Shift Performance History": "سجل أداء الورديات",
+    "Total Shifts": "إجمالي الورديات",
+    "Active Advances": "السلف النشطة",
+    "No completed shifts found.": "لا توجد ورديات مكتملة."
 }

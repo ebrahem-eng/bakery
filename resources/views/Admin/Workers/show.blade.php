@@ -20,55 +20,76 @@
 </div>
 
 <!-- Stats Overview -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-    <!-- Total Earned (Theoretical) -->
-    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group">
-        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-2 opacity-10 group-hover:scale-110 transition-transform">
-            <svg class="w-10 h-10 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        </div>
-        <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Total Earned') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalEarnedSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}</span></div>
-        <div class="mt-1 text-[9px] text-emerald-500 font-bold uppercase">{{ __('From Shifts') }}</div>
-    </div>
-
-    <!-- Total Salaries / Wages -->
-    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group border-emerald-500/10 bg-emerald-500/5">
-        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-2 opacity-10 group-hover:scale-110 transition-transform text-emerald-500">
-            <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-        </div>
-        <h3 class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1">{{ __('Wages & Bonuses') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalSalariesSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}</span></div>
-        <div class="mt-1 text-[9px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">{{ __('Actual Paid') }}</div>
-    </div>
-
-    <!-- Total Advances -->
-    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group border-sky-500/10">
-        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-2 opacity-10 group-hover:scale-110 transition-transform text-sky-500">
-            <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
-        </div>
-        <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Total Advances') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalAdvancesSYP - $totalSalariesSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}</span></div>
-        <div class="mt-1 text-[9px] text-sky-500 font-bold uppercase">{{ __('Pending Settlement') }}</div>
-    </div>
-
-    <!-- Total Discounts -->
-    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group border-amber-500/10">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    <!-- Contribution Stats -->
+    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group border-amber-500/20 bg-amber-500/5">
         <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-2 opacity-10 group-hover:scale-110 transition-transform text-amber-500">
             <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
         </div>
-        <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Discounts') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalDiscountsSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}</span></div>
-        <div class="mt-1 text-[9px] text-amber-500 font-bold uppercase">{{ __('Deductions') }}</div>
+        <h3 class="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-1">{{ __('Total Revenue Generated') }}</h3>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalRevenueSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium ms-1">SYP</span></div>
+        <div class="mt-1 text-[9px] text-amber-500 font-bold uppercase">{{ number_format($totalBundlesSold) }} {{ __('Bundles Sold') }}</div>
     </div>
 
-    <!-- Outstanding Liability -->
+    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group border-emerald-500/20 bg-emerald-500/5">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-2 opacity-10 group-hover:scale-110 transition-transform text-emerald-500">
+            <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+        </div>
+        <h3 class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1">{{ __('Avg. Revenue per Shift') }}</h3>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($avgRevenueSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium ms-1">SYP</span></div>
+        <div class="mt-1 text-[9px] text-emerald-500 font-bold uppercase">{{ $shiftCount }} {{ __('Total Shifts') }}</div>
+    </div>
+
+    <!-- Liability (Replaced position) -->
     <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group border-rose-500/30 bg-rose-500/5">
         <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-2 opacity-20 group-hover:scale-110 transition-transform text-rose-500">
             <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         </div>
         <h3 class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-1">{{ __('Net Liability') }}</h3>
-        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($balanceSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium tracking-normal ms-1 lowercase">{{ \App\Models\Currency::where('is_default', true)->value('code') ?? 'SYP' }}</span></div>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($balanceSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium ms-1">SYP</span></div>
         <div class="mt-1 text-[9px] text-slate-500 font-bold uppercase">{{ __('To be paid') }}</div>
+    </div>
+
+    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group">
+        <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-2 opacity-10 group-hover:scale-110 transition-transform text-slate-400">
+            <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </div>
+        <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Total Earned') }}</h3>
+        <div class="text-xl font-black text-slate-900 dark:text-white">{{ number_format($totalEarnedSYP, 0) }} <span class="text-[10px] text-slate-400 font-medium ms-1">SYP</span></div>
+        <div class="mt-1 text-[9px] text-emerald-500 font-bold uppercase">{{ __('From Shifts') }}</div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+    <!-- Existing Detail Stats -->
+    <div class="glass-panel p-4 rounded-2xl flex items-center gap-4">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+        </div>
+        <div>
+            <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{{ __('Wages & Bonuses') }}</h3>
+            <div class="text-lg font-black text-slate-900 dark:text-white">{{ number_format($totalSalariesSYP, 0) }} <span class="text-[9px] text-slate-400 font-medium ms-1 uppercase">SYP</span></div>
+        </div>
+    </div>
+
+    <div class="glass-panel p-4 rounded-2xl flex items-center gap-4">
+        <div class="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-500">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+        </div>
+        <div>
+            <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{{ __('Active Advances') }}</h3>
+            <div class="text-lg font-black text-slate-900 dark:text-white">{{ number_format($totalAdvancesSYP - $totalSalariesSYP, 0) }} <span class="text-[9px] text-slate-400 font-medium ms-1 uppercase">SYP</span></div>
+        </div>
+    </div>
+
+    <div class="glass-panel p-4 rounded-2xl flex items-center gap-4">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </div>
+        <div>
+            <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{{ __('Discounts') }}</h3>
+            <div class="text-lg font-black text-slate-900 dark:text-white">{{ number_format($totalDiscountsSYP, 0) }} <span class="text-[9px] text-slate-400 font-medium ms-1 uppercase">SYP</span></div>
+        </div>
     </div>
 </div>
 
@@ -167,6 +188,57 @@
     </div>
     <div class="p-4 bg-slate-50 dark:bg-black/20 border-t border-slate-200 dark:border-white/5">
         {{ $history->links() }}
+    </div>
+</div>
+
+<!-- Shift Performance History -->
+<div class="glass-panel rounded-2xl border border-emerald-500/20 overflow-hidden shadow-sm mt-8">
+    <div class="p-4 bg-emerald-500/5 border-b border-emerald-500/10 flex justify-between items-center">
+        <h2 class="text-sm font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            {{ __('Shift Performance History') }}
+        </h2>
+    </div>
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-start border-collapse" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+            <thead>
+                <tr class="text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-widest border-b border-slate-200 dark:border-white/5 font-bold">
+                    <th class="py-4 px-6">{{ __('Work Day') }}</th>
+                    <th class="py-4 px-6 text-center">{{ __('Bundles Received') }}</th>
+                    <th class="py-4 px-6 text-center">{{ __('Returned') }}</th>
+                    <th class="py-4 px-6 text-center text-amber-500">{{ __('Expected') }}</th>
+                    <th class="py-4 px-6 text-center text-emerald-500">{{ __('Collected') }}</th>
+                    <th class="py-4 px-6 text-center">{{ __('Difference') }}</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-white/5 text-sm">
+                @forelse($shifts as $shift)
+                <tr class="hover:bg-emerald-500/5 transition-colors">
+                    <td class="py-4 px-6">
+                        <div class="font-bold text-slate-800 dark:text-slate-200">#{{ $shift->work_day_id }}</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">{{ $shift->workDay?->start_time->translatedFormat('Y-m-d') }}</div>
+                    </td>
+                    <td class="py-4 px-6 text-center font-medium">{{ $shift->bundles_received }}</td>
+                    <td class="py-4 px-6 text-center text-emerald-600">{{ $shift->bundles_returned }}</td>
+                    <td class="py-4 px-6 text-center font-bold text-amber-600">
+                        {{ number_format($shift->expected_cash, 0) }} <span class="text-[9px] opacity-70 ms-1 uppercase">SYP</span>
+                    </td>
+                    <td class="py-4 px-6 text-center font-black text-emerald-600">
+                        {{ number_format($shift->cash_collected_base, 0) }} <span class="text-[9px] opacity-70 ms-1 uppercase">SYP</span>
+                    </td>
+                    <td class="py-4 px-6 text-center font-black {{ $shift->remaining_cash < 0 ? 'text-red-500' : ($shift->remaining_cash > 0 ? 'text-emerald-500' : 'text-slate-400') }}">
+                        {{ $shift->remaining_cash > 0 ? '+' : '' }}{{ number_format($shift->remaining_cash, 0) }} <span class="text-[9px] opacity-70 ms-1 uppercase">SYP</span>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="py-12 text-center text-slate-400 italic text-sm">
+                        {{ __('No completed shifts found.') }}
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 @endsection

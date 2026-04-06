@@ -211,6 +211,9 @@
                                 <th class="py-3 px-4 font-medium text-center">{{ __('Total Received') }}</th>
                                 <th class="py-3 px-4 font-medium text-center">{{ __('Returned') }}</th>
                                 <th class="py-3 px-4 font-medium text-center">{{ __('Sold') }}</th>
+                                <th class="py-3 px-4 font-medium text-center text-amber-500">{{ __('Expected') }}</th>
+                                <th class="py-3 px-4 font-medium text-center text-emerald-500">{{ __('Collected') }}</th>
+                                <th class="py-3 px-4 font-medium text-center">{{ __('Difference') }}</th>
                                 <th class="py-3 px-4 font-medium text-center">{{ __('Status') }}</th>
                             </tr>
                         </thead>
@@ -223,6 +226,15 @@
                                 <td class="py-2.5 px-4 text-center font-bold text-slate-700 dark:text-slate-300">{{ $shift->bundles_received }}</td>
                                 <td class="py-2.5 px-4 text-center text-emerald-600 dark:text-emerald-400 font-bold">{{ $shift->bundles_returned }}</td>
                                 <td class="py-2.5 px-4 text-center font-bold {{ ($shift->bundles_received - $shift->bundles_returned) > 0 ? 'text-red-500' : 'text-emerald-500' }}">{{ $shift->bundles_received - $shift->bundles_returned }}</td>
+                                <td class="py-2.5 px-4 text-center font-medium text-amber-600 dark:text-amber-400">
+                                    {{ number_format($shift->expected_cash, 0) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span>
+                                </td>
+                                <td class="py-2.5 px-4 text-center font-bold text-emerald-600 dark:text-emerald-400">
+                                    {{ number_format($shift->cash_collected_base, 0) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span>
+                                </td>
+                                <td class="py-2.5 px-4 text-center font-black {{ $shift->remaining_cash < 0 ? 'text-red-500' : ($shift->remaining_cash > 0 ? 'text-emerald-500' : 'text-slate-400') }}">
+                                    {{ $shift->remaining_cash > 0 ? '+' : '' }}{{ number_format($shift->remaining_cash, 0) }} <span class="text-[9px] font-bold text-slate-400 ms-1 lowercase">{{ $currencyCode }}</span>
+                                </td>
                                 <td class="py-2.5 px-4 text-center">
                                     @if($shift->check_out)
                                         <span class="text-[10px] uppercase tracking-widest font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">{{ __('Done') }}</span>
