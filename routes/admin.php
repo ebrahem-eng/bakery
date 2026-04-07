@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\WorkDayController;
 use App\Http\Controllers\Admin\WorkerAttendanceController;
 use App\Http\Controllers\Admin\WorkerController;
 use App\Http\Controllers\Admin\WorkerWageController;
+use App\Http\Controllers\Admin\InventoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'loginPage'])->name('login.page');
@@ -86,9 +87,9 @@ Route::group(['middleware' => ['admin.auth']], function () {
 
     // ── Warehouse ──────────────────────────────────────────────────────
     Route::group(['prefix' => 'warehouse', 'as' => 'warehouse.', 'middleware' => ['permission:view warehouse,admin']], function () {
-        Route::get('/', [\App\Http\Controllers\Admin\WarehouseController::class, 'index'])->name('index');
-        Route::get('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'create'])->middleware('permission:manage inventory,admin')->name('inventory.create');
-        Route::post('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'store'])->middleware('permission:manage inventory,admin')->name('inventory.store');
+        Route::get('/', [WarehouseController::class, 'index'])->name('index');
+        Route::get('/inventory', [InventoryController::class, 'create'])->middleware('permission:manage inventory,admin')->name('inventory.create');
+        Route::post('/inventory', [InventoryController::class, 'store'])->middleware('permission:manage inventory,admin')->name('inventory.store');
     });
 
     // ── Distributions (Sales) ──────────────────────────────────────────
