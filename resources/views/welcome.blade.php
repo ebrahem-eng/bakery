@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{{ config('app.name', 'Bakery') }} - {{ __('Modern Elegance') }}</title>
+        <title>{{ \App\Models\Setting::get('bakery_name', config('app.name', 'Bakery')) }} - {{ __('Modern Elegance') }}</title>
 
         <!-- Fonts & Icons -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -615,9 +615,9 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-2 cursor-pointer">
                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-amber-500/30">
-                            B
+                            {{ mb_substr(\App\Models\Setting::get('bakery_name', config('app.name', 'Bakery')), 0, 1) }}
                         </div>
-                        <span class="text-2xl font-bold text-white tracking-tight">{{ config('app.name', 'Bakery') }}</span>
+                        <span class="text-2xl font-bold text-white tracking-tight">{{ \App\Models\Setting::get('bakery_name', config('app.name', 'Bakery')) }}</span>
                     </div>
                     
                     <div class="hidden md:flex items-center gap-8">
@@ -932,13 +932,13 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 relative z-10">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-amber-500/30">
-                        B
+                        {{ mb_substr(\App\Models\Setting::get('bakery_name', config('app.name', 'Bakery')), 0, 1) }}
                     </div>
-                    <span class="text-lg font-bold text-white tracking-tight">{{ config('app.name', 'Bakery') }}</span>
+                    <span class="text-lg font-bold text-white tracking-tight">{{ \App\Models\Setting::get('bakery_name', config('app.name', 'Bakery')) }}</span>
                 </div>
                 
                 <p class="text-slate-500 text-sm">
-                    &copy; {{ date('Y') }} {{ config('app.name', 'Bakery') }}. {{ __('All rights reserved.') }} | {{ __('Modern Elegance') }}
+                    &copy; {{ date('Y') }} {{ \App\Models\Setting::get('bakery_name', config('app.name', 'Bakery')) }}. {{ __('All rights reserved.') }} | {{ __('Modern Elegance') }}
                 </p>
                 
                 <div class="flex gap-4 text-slate-500">

@@ -11,7 +11,7 @@
                     </div>
                 </div>
                 <div>
-                    <h2 class="text-xl font-bold text-slate-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-amber-400 dark:to-orange-500">{{ __('Bakery') }}</h2>
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-amber-400 dark:to-orange-500">{{ \App\Models\Setting::get('bakery_name', __('Bakery')) }}</h2>
                     <p class="text-[10px] uppercase tracking-widest text-amber-600 dark:text-amber-500 opacity-80">{{ __('System Portal') }}</p>
                 </div>
             </div>
