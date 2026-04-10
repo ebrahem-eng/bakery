@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('Admin Login') }} | Bakery Secure</title>
+    <title>{{ __('Admin Login') }} | {{ \App\Models\Setting::get('bakery_name', config('app.name', 'Bakery')) }}</title>
     <!-- Tailwind CSS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -51,7 +51,7 @@
             <!-- Title -->
             <div class="text-center mb-8">
                 <h1 class="text-2xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
-                    {{ __('Bakery Portal') }}
+                    {{ \App\Models\Setting::get('bakery_name', __('Bakery')) }} {{ __('Portal') }}
                 </h1>
                 <p class="text-xs font-light tracking-widest text-slate-400 mt-2 uppercase">{{ __('Secure Admin Access') }}</p>
             </div>
