@@ -48,31 +48,34 @@
                                 @endif
                             </button>
                             <!-- Notification Dropdown -->
-                            <div x-show="notificationsOpen" x-transition class="absolute right-0 mt-2 w-80 glass-dropdown rounded-2xl py-2 z-50 origin-top-right shadow-2xl border border-slate-200 dark:border-white/10" style="display: none;">
+                            <div x-show="notificationsOpen" x-transition class="absolute right-0 rtl:right-auto rtl:left-0 mt-2 w-80 glass-dropdown rounded-2xl py-2 z-50 origin-top-right rtl:origin-top-left shadow-2xl border border-slate-200 dark:border-white/10" style="display: none;">
                                 <div class="px-4 py-2 border-b border-slate-100 dark:border-white/5 flex justify-between items-center">
-                                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">System Alerts</h3>
+                                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">{{ __('System Alerts') }}</h3>
                                     @if(auth()->guard('admin')->user()->unreadNotifications->count() > 0)
-                                        <span class="text-[10px] font-bold text-[#f43f5e] bg-[#f43f5e]/10 px-2 py-0.5 rounded-full" id="admin-notif-badge">{{ auth()->guard('admin')->user()->unreadNotifications->count() }} New</span>
+                                        <span class="text-[10px] font-bold text-[#f43f5e] bg-[#f43f5e]/10 px-2 py-0.5 rounded-full" id="admin-notif-badge">{{ auth()->guard('admin')->user()->unreadNotifications->count() }} {{ __('New') }}</span>
                                     @endif
                                 </div>
                                 <div class="max-h-64 overflow-y-auto" id="admin-notif-list">
                                     @forelse(auth()->guard('admin')->user()->unreadNotifications as $notification)
                                         <a href="{{ $notification->data['url'] ?? '#' }}" class="block px-4 py-3 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group border-b border-slate-100 dark:border-white/5 last:border-0 notif-item" data-id="{{ $notification->id }}" onclick="markNotificationReadAdmin('{{ $notification->id }}', event, '{{ $notification->data['url'] ?? '#' }}')">
-                                            <p class="text-sm text-slate-700 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-white font-medium">{{ $notification->data['title'] ?? 'Alert' }}</p>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ collect($notification->data)->get('message', 'System Notification') }}</p>
+                                            <p class="text-sm text-slate-700 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-white font-medium">{{ $notification->data['title'] ?? __('Alert') }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ collect($notification->data)->get('message', __('System Notification')) }}</p>
                                             <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-wider">{{ $notification->created_at->diffForHumans() }}</p>
                                         </a>
                                     @empty
                                         <div class="px-4 py-6 text-center text-slate-500 text-sm">
-                                            No new system alerts.
+                                            {{ __('No new system alerts.') }}
                                         </div>
                                     @endforelse
                                 </div>
-                                @if(auth()->guard('admin')->user()->unreadNotifications->count() > 0)
-                                <div class="px-4 py-2 border-t border-white/5 text-center">
-                                    <button type="button" onclick="markAllNotificationsReadAdmin()" class="text-xs font-medium text-amber-500 hover:text-white transition-colors">Clear All Unread</button>
+                                <div class="px-4 py-3 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/20 flex flex-col gap-2">
+                                    @if(auth()->guard('admin')->user()->unreadNotifications->count() > 0)
+                                    <button type="button" onclick="markAllNotificationsReadAdmin()" class="text-xs font-medium text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 transition-colors py-1">{{ __('Clear All Unread') }}</button>
+                                    @endif
+                                    @can('view notifications')
+                                    <a href="{{ route('admin.notifications.index') }}" class="text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-amber-500 dark:hover:text-amber-500 transition-colors text-center py-1">{{ __('View Notification Center') }}</a>
+                                    @endcan
                                 </div>
-                                @endif
                             </div>
                         </div>
 
@@ -82,7 +85,7 @@
                                 fetch(`/admin/notifications/${id}/mark-as-read`, {
                                     method: 'POST',
                                     headers: {
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '',
                                         'Content-Type': 'application/json',
                                         'Accept': 'application/json'
                                     }
@@ -100,7 +103,7 @@
                                 fetch(`/admin/notifications/mark-all-as-read`, {
                                     method: 'POST',
                                     headers: {
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '',
                                         'Content-Type': 'application/json',
                                         'Accept': 'application/json'
                                     }

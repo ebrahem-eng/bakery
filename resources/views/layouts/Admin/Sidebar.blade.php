@@ -128,6 +128,36 @@
                 </div>
                 @endif
 
+                <!-- Notification Center -->
+                @can('view notifications')
+                <a href="{{ route('admin.notifications.index') }}" class="{{ request()->routeIs('admin.notifications.*') ? 'sidebar-item-active text-amber-600 dark:text-[#fde047]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.notifications.*') ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        {{ __('Notification Center') }}
+                    </div>
+                </a>
+                @endcan
+
+                <!-- Contact Messages -->
+                @can('view contact messages')
+                <a href="{{ route('admin.contact-messages.index') }}" class="{{ request()->routeIs('admin.contact-messages.*') ? 'sidebar-item-active text-amber-600 dark:text-[#fde047]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl group transition-colors">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }} {{ request()->routeIs('admin.contact-messages.*') ? 'text-amber-500' : 'text-slate-400 dark:text-slate-500 group-hover:text-amber-500 dark:group-hover:text-[#fde047]' }} transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        {{ __('Contact Messages') }}
+                    </div>
+                    @php
+                        $unreadMsgs = \App\Models\ContactMessage::unread()->count();
+                    @endphp
+                    @if($unreadMsgs > 0)
+                        <span class="bg-[#f43f5e]/10 text-[#f43f5e] py-0.5 px-2 rounded-full text-xs font-bold">{{ $unreadMsgs }}</span>
+                    @endif
+                </a>
+                @endcan
+
                 <!-- Workers (HR) -->
                 @if(auth('admin')->user() && (auth('admin')->user()->can('view workers') || auth('admin')->user()->can('view attendance') || auth('admin')->user()->can('view presence') || auth('admin')->user()->can('view wages')))
                 <div x-data="{ open: {{ request()->routeIs('admin.workers.*') || request()->routeIs('admin.attendance.*') ? 'true' : 'false' }} }">

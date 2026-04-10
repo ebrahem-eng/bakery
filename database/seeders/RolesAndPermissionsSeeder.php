@@ -59,6 +59,12 @@ class RolesAndPermissionsSeeder extends Seeder
             // ── Logs & Settings ────────────────────────────────────────
             'view logs', 'clear logs', 'filter logs',
             'manage settings',
+
+            // ── Public Contact Messages ────────────────────────────────
+            'view contact messages', 'delete contact messages',
+
+            // ── System Notifications ───────────────────────────────────
+            'view notifications', 'manage notifications',
         ];
 
         // Create the guard-specific permissions

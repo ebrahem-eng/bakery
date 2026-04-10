@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\WorkerAttendanceController;
 use App\Http\Controllers\Admin\WorkerController;
 use App\Http\Controllers\Admin\WorkerWageController;
 use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\ContactMessageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'loginPage'])->name('login.page');
@@ -141,6 +142,22 @@ Route::group(['middleware' => ['admin.auth']], function () {
         Route::get('activity-log/{activity}', [ActivityLogController::class, 'show'])->name('activity-log.show');
         Route::delete('activity-log/{activity}', [ActivityLogController::class, 'destroy'])->middleware('permission:clear logs,admin')->name('activity-log.destroy');
         Route::delete('activity-log-clear/all', [ActivityLogController::class, 'clear'])->middleware('permission:clear logs,admin')->name('activity-log.clear');
+    });
+
+    // ── System Notifications ──────────────────────────────────────────
+    Route::group(['middleware' => ['permission:view notifications,admin']], function () {
+        Route::get('notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('notifications/mark-all-as-read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+        Route::post('notifications/{id}/mark-as-read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+        Route::delete('notifications/delete-all', [\App\Http\Controllers\Admin\NotificationController::class, 'deleteAll'])->middleware('permission:manage notifications,admin')->name('notifications.deleteAll');
+        Route::delete('notifications/{id}', [\App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->middleware('permission:manage notifications,admin')->name('notifications.destroy');
+    });
+
+    // ── Contact Messages ──────────────────────────────────────────────
+    Route::group(['middleware' => ['permission:view contact messages,admin']], function () {
+        Route::get('contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
+        Route::get('contact-messages/{contactMessage}', [ContactMessageController::class, 'show'])->name('contact-messages.show');
+        Route::delete('contact-messages/{contactMessage}', [ContactMessageController::class, 'destroy'])->middleware('permission:delete contact messages,admin')->name('contact-messages.destroy');
     });
 
     // ── Settings ──────────────────────────────────────────────────────

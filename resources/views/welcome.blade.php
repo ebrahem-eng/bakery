@@ -2,6 +2,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ \App\Models\Setting::get('bakery_name', config('app.name', 'Bakery')) }} - {{ __('Modern Elegance') }}</title>
 
         <!-- Fonts & Icons -->
@@ -907,20 +908,85 @@
                         <div class="absolute inset-0 bg-gradient-to-tr from-amber-500/10 to-transparent rounded-3xl transform -rotate-1 opacity-50 z-0"></div>
                         <div class="landing-glass rounded-3xl p-8 relative z-10 h-full flex flex-col justify-center">
                             <h4 class="text-2xl font-bold text-white mb-6">{{ __('Send a Message') }}</h4>
-                            <form class="space-y-4">
+                            <form id="publicContactForm" class="space-y-4">
+                                <div id="formSuccess" class="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl text-sm" style="display: none;"></div>
+                                <div id="formError" class="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm" style="display: none;"></div>
+                                
                                 <div>
-                                    <input type="text" placeholder="{{ __('Your Name') }}" class="w-full glass-input px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors">
+                                    <input type="text" id="contactName" required placeholder="{{ __('Your Name') }}" class="w-full glass-input px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors">
                                 </div>
                                 <div>
-                                    <input type="email" placeholder="{{ __('Your Email') }}" class="w-full glass-input px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors">
+                                    <input type="email" id="contactEmail" required placeholder="{{ __('Your Email') }}" class="w-full glass-input px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors">
                                 </div>
                                 <div>
-                                    <textarea placeholder="{{ __('How can we help you?') }}" rows="4" class="w-full glass-input px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors resize-none"></textarea>
+                                    <textarea id="contactMessage" required placeholder="{{ __('How can we help you?') }}" rows="4" class="w-full glass-input px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors resize-none"></textarea>
                                 </div>
-                                <button type="button" class="w-full py-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:shadow-[0_0_25px_rgba(245,158,11,0.4)]">
-                                    {{ __('Send Message') }}
+                                <button type="submit" id="contactSubmit" class="w-full py-4 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:shadow-[0_0_25px_rgba(245,158,11,0.4)] flex justify-center items-center">
+                                    <span id="submitText">{{ __('Send Message') }}</span>
+                                    <svg id="submitSpinner" class="animate-spin h-5 w-5 text-white" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
                                 </button>
                             </form>
+
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const form = document.getElementById('publicContactForm');
+                                    form.addEventListener('submit', function(e) {
+                                        e.preventDefault();
+                                        
+                                        const name = document.getElementById('contactName').value;
+                                        const email = document.getElementById('contactEmail').value;
+                                        const message = document.getElementById('contactMessage').value;
+                                        
+                                        const btn = document.getElementById('contactSubmit');
+                                        const submitText = document.getElementById('submitText');
+                                        const spinner = document.getElementById('submitSpinner');
+                                        const successDiv = document.getElementById('formSuccess');
+                                        const errorDiv = document.getElementById('formError');
+                                        
+                                        btn.disabled = true;
+                                        submitText.style.display = 'none';
+                                        spinner.style.display = 'block';
+                                        successDiv.style.display = 'none';
+                                        errorDiv.style.display = 'none';
+                                        
+                                        fetch('{{ route('contact.store') }}', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'Accept': 'application/json',
+                                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : ''
+                                            },
+                                            body: JSON.stringify({ name, email, message })
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            btn.disabled = false;
+                                            spinner.style.display = 'none';
+                                            submitText.style.display = 'block';
+                                            
+                                            if(data.status === 'success') {
+                                                successDiv.textContent = data.message;
+                                                successDiv.style.display = 'block';
+                                                form.reset();
+                                                setTimeout(() => successDiv.style.display = 'none', 5000);
+                                            } else {
+                                                errorDiv.textContent = data.message || 'Error occurred';
+                                                errorDiv.style.display = 'block';
+                                            }
+                                        })
+                                        .catch(error => {
+                                            btn.disabled = false;
+                                            spinner.style.display = 'none';
+                                            submitText.style.display = 'block';
+                                            errorDiv.textContent = 'A network error occurred. Please try again.';
+                                            errorDiv.style.display = 'block';
+                                        });
+                                    });
+                                });
+                            </script>
                         </div>
                     </div>
                 </div>
