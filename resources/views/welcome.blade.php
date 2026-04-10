@@ -62,8 +62,8 @@
             /* Premium hero 3D scene override */
             .hero-ambience {
                 background:
-                    radial-gradient(820px 560px at 75% 40%, rgba(242, 179, 111, 0.26), transparent 65%),
-                    radial-gradient(740px 520px at 85% 80%, rgba(242, 195, 160, 0.22), transparent 70%),
+                    radial-gradient(1200px 900px at 75% 40%, rgba(242, 179, 111, 0.26), transparent 65%),
+                    radial-gradient(1000px 700px at 85% 80%, rgba(242, 195, 160, 0.22), transparent 70%),
                     linear-gradient(110deg, rgba(11, 7, 4, 1) 0%, rgba(11, 7, 4, 0.68) 48%, rgba(11, 7, 4, 0.2) 100%);
             }
 
@@ -84,8 +84,8 @@
             /* RTL Overrides for Lighting */
             [dir="rtl"] .hero-ambience {
                 background:
-                    radial-gradient(820px 560px at 25% 40%, rgba(242, 179, 111, 0.26), transparent 65%),
-                    radial-gradient(740px 520px at 15% 80%, rgba(242, 195, 160, 0.22), transparent 70%),
+                    radial-gradient(1200px 900px at 25% 40%, rgba(242, 179, 111, 0.26), transparent 65%),
+                    radial-gradient(1000px 700px at 15% 80%, rgba(242, 195, 160, 0.22), transparent 70%),
                     linear-gradient(250deg, rgba(11, 7, 4, 1) 0%, rgba(11, 7, 4, 0.68) 48%, rgba(11, 7, 4, 0.2) 100%);
             }
 
@@ -112,6 +112,8 @@
             .hero-scene {
                 position: absolute;
                 inset: 0;
+                margin: 0 auto;
+                max-width: 1440px;
                 display: flex;
                 align-items: center;
                 justify-content: flex-end;
@@ -748,7 +750,7 @@
         </section>
 
         <!-- About Us Section -->
-        <section id="about" class="py-24 relative z-10 bg-[#0b0704]">
+        <section id="about" class="py-16 md:py-24 relative z-10 bg-[#0b0704]">
             <div class="absolute top-0 inset-inline-end-0 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none"></div>
             
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -798,7 +800,7 @@
         </section>
 
         <!-- What We Offer Section -->
-        <section id="offer" class="py-24 relative z-10 overflow-hidden">
+        <section id="offer" class="py-16 md:py-24 relative z-10 overflow-hidden">
             <!-- Background Elements -->
             <div class="absolute inset-0 bg-[#120c08]/70"></div>
             <div class="absolute inset-inline-start-[-12rem] bottom-0 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none"></div>
@@ -860,7 +862,7 @@
         </section>
 
         <!-- Contact Us Section -->
-        <section id="contact" class="py-24 relative bg-[#0c0805] border-t border-white/5">
+        <section id="contact" class="py-16 md:py-24 relative bg-[#0c0805] border-t border-white/5">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
                     <div>
@@ -1015,50 +1017,93 @@
         </footer>
 
         <script>
-                var currentTiltX = -8;
-                var currentTiltY = 8;
-                var targetTiltX = currentTiltX;
-                var targetTiltY = currentTiltY;
-                var rafId = null;
+            document.addEventListener('DOMContentLoaded', function() {
+                // --- Mobile Navigation Logic ---
+                const menuToggle = document.getElementById('mobile-menu-toggle');
+                const mobileMenu = document.getElementById('mobile-menu');
+                const menuOpenPath = document.querySelector('.menu-open');
+                const menuClosePath = document.querySelector('.menu-close');
+                const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+                let isMenuOpen = false;
 
-                function tick() {
-                    currentTiltX += (targetTiltX - currentTiltX) * 0.12;
-                    currentTiltY += (targetTiltY - currentTiltY) * 0.12;
-
-                    sculpture.style.setProperty('--tilt-x', currentTiltX.toFixed(2));
-                    sculpture.style.setProperty('--tilt-y', currentTiltY.toFixed(2));
-
-                    if (Math.abs(targetTiltX - currentTiltX) > 0.02 || Math.abs(targetTiltY - currentTiltY) > 0.02) {
-                        rafId = window.requestAnimationFrame(tick);
+                function toggleMenu() {
+                    isMenuOpen = !isMenuOpen;
+                    if (isMenuOpen) {
+                        mobileMenu.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[-10%]');
+                        mobileMenu.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                        menuOpenPath.classList.add('hidden');
+                        menuClosePath.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden'; // Prevent background scroll
                     } else {
-                        rafId = null;
+                        mobileMenu.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                        mobileMenu.classList.add('opacity-0', 'pointer-events-none', 'translate-y-[-10%]');
+                        menuOpenPath.classList.remove('hidden');
+                        menuClosePath.classList.add('hidden');
+                        document.body.style.overflow = '';
                     }
                 }
 
-                function scheduleTick() {
-                    if (rafId === null) {
-                        rafId = window.requestAnimationFrame(tick);
+                if (menuToggle && mobileMenu) {
+                    menuToggle.addEventListener('click', toggleMenu);
+                    // Close menu when clicking links
+                    mobileLinks.forEach(link => {
+                        link.addEventListener('click', toggleMenu);
+                    });
+                }
+
+                // --- 3D Hero Interaction Logic ---
+                var hero = document.querySelector('[data-hero-3d]');
+                var sculpture = document.querySelector('[data-hero-sculpture]');
+
+                if (hero && sculpture) {
+                    var currentTiltX = -8;
+                    var currentTiltY = 8;
+                    var targetTiltX = currentTiltX;
+                    var targetTiltY = currentTiltY;
+                    var rafId = null;
+
+                    function tick() {
+                        currentTiltX += (targetTiltX - currentTiltX) * 0.12;
+                        currentTiltY += (targetTiltY - currentTiltY) * 0.12;
+
+                        sculpture.style.setProperty('--tilt-x', currentTiltX.toFixed(2));
+                        sculpture.style.setProperty('--tilt-y', currentTiltY.toFixed(2));
+
+                        if (Math.abs(targetTiltX - currentTiltX) > 0.02 || Math.abs(targetTiltY - currentTiltY) > 0.02) {
+                            rafId = window.requestAnimationFrame(tick);
+                        } else {
+                            rafId = null;
+                        }
                     }
+
+                    function scheduleTick() {
+                        if (rafId === null) {
+                            rafId = window.requestAnimationFrame(tick);
+                        }
+                    }
+
+                    function handlePointerMove(event) {
+                        // Disable heavy 3D calculations on small screens
+                        if (window.innerWidth < 1024) return;
+                        
+                        var rect = hero.getBoundingClientRect();
+                        var normalizedX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+                        var normalizedY = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+
+                        targetTiltX = normalizedX * 12;
+                        targetTiltY = normalizedY * -10 + 2;
+                        scheduleTick();
+                    }
+
+                    function handlePointerLeave() {
+                        targetTiltX = -8;
+                        targetTiltY = 8;
+                        scheduleTick();
+                    }
+
+                    hero.addEventListener('pointermove', handlePointerMove, { passive: true });
+                    hero.addEventListener('pointerleave', handlePointerLeave);
                 }
-
-                function handlePointerMove(event) {
-                    var rect = hero.getBoundingClientRect();
-                    var normalizedX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
-                    var normalizedY = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
-
-                    targetTiltX = normalizedX * 12;
-                    targetTiltY = normalizedY * -10 + 2;
-                    scheduleTick();
-                }
-
-                function handlePointerLeave() {
-                    targetTiltX = -8;
-                    targetTiltY = 8;
-                    scheduleTick();
-                }
-
-                hero.addEventListener('pointermove', handlePointerMove, { passive: true });
-                hero.addEventListener('pointerleave', handlePointerLeave);
             });
         </script>
 
