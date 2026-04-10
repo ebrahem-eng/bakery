@@ -1346,5 +1346,7 @@
     "Delete All Notifications": "حذف جميع الإشعارات",
     "Are you sure you want to delete all notifications from your record?": "هل أنت متأكد من رغبتك في حذف جميع الإشعارات من سجلك؟",
     "All notifications deleted successfully.": "تم حذف جميع الإشعارات بنجاح.",
-    "NOT PRESENT": "غير موجود"
+    "NOT PRESENT": "غير حاضر",
+    "Show Details": "عرض التفاصيل",
+    "Hide Details": "إخفاء التفاصيل"
 }
