@@ -1296,5 +1296,8 @@
     "Paid:": "تم دفع:",
     "Log In": "تسجيل الدخول",
     "Log in": "تسجيل الدخول",
-    "Portal": "بوابة"
+    "Portal": "بوابة",
+    "Page Expired": "انتهت صلاحية الصفحة",
+    "Your session has expired due to inactivity. Please refresh the page and try again.": "انتهت صلاحية جلستك بسبب عدم النشاط. يرجى تحديث الصفحة والمحاولة مرة أخرى.",
+    "Refresh Page": "تحديث الصفحة"
 }
