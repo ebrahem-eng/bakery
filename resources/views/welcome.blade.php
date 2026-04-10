@@ -876,7 +876,7 @@
                                 </div>
                                 <div>
                                     <h4 class="text-lg font-bold text-white mb-1">{{ __('Our Location') }}</h4>
-                                    <p class="text-slate-400 font-light">{{ \App\Models\Setting::get('address', __('123 Baker Street, Artisan District, NY 10001')) }}</p>
+                                    <p class="text-slate-400 font-light">{{ \App\Models\Setting::get('bakery_address', __('123 Baker Street, Artisan District, NY 10001')) }}</p>
                                 </div>
                             </div>
                             
@@ -886,7 +886,7 @@
                                 </div>
                                 <div>
                                     <h4 class="text-lg font-bold text-white mb-1">{{ __('Email Us') }}</h4>
-                                    <p class="text-slate-400 font-light">{{ \App\Models\Setting::get('email', __('contact@bakery.com')) }}</p>
+                                    <p class="text-slate-400 font-light">{{ \App\Models\Setting::get('bakery_email', __('contact@bakery.com')) }}</p>
                                 </div>
                             </div>
                             
@@ -896,7 +896,7 @@
                                 </div>
                                 <div>
                                     <h4 class="text-lg font-bold text-white mb-1">{{ __('Call Us') }}</h4>
-                                    <p class="text-slate-400 font-light">{{ \App\Models\Setting::get('phone', __('+1 (555) 123-4567')) }}</p>
+                                    <p class="text-slate-400 font-light">{{ \App\Models\Setting::get('bakery_phone', __('+1 (555) 123-4567')) }}</p>
                                 </div>
                             </div>
                         </div>

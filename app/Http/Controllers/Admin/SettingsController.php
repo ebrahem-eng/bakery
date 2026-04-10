@@ -21,12 +21,13 @@ class SettingsController extends Controller
         $bakeryName = Setting::get('bakery_name', '');
         $bakeryPhone = Setting::get('bakery_phone', '');
         $bakeryAddress = Setting::get('bakery_address', '');
+        $bakeryEmail = Setting::get('bakery_email', '');
         $defaultLang = Setting::get('default_language', 'ar');
         $defaultPricePerBundle = Setting::get('default_price_per_bundle', '0');
 
         return view('Admin.Settings.index', compact(
             'currencies', 'categories',
-            'bakeryName', 'bakeryPhone', 'bakeryAddress', 'defaultLang', 'defaultPricePerBundle'
+            'bakeryName', 'bakeryPhone', 'bakeryAddress', 'bakeryEmail', 'defaultLang', 'defaultPricePerBundle'
         ));
     }
 
@@ -38,6 +39,7 @@ class SettingsController extends Controller
             'bakery_name' => 'nullable|string|max:255',
             'bakery_phone' => 'nullable|string|max:50',
             'bakery_address' => 'nullable|string|max:500',
+            'bakery_email' => 'nullable|email|max:255',
             'default_language' => 'nullable|in:ar,en',
             'default_price_per_bundle' => 'nullable|numeric|min:0',
         ]);
@@ -45,6 +47,7 @@ class SettingsController extends Controller
         Setting::set('bakery_name', $request->bakery_name);
         Setting::set('bakery_phone', $request->bakery_phone);
         Setting::set('bakery_address', $request->bakery_address);
+        Setting::set('bakery_email', $request->bakery_email);
         Setting::set('default_language', $request->default_language);
         Setting::set('default_price_per_bundle', $request->default_price_per_bundle);
 

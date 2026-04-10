@@ -72,6 +72,14 @@
                     class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all">
                 @error('bakery_phone') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
             </div>
+            {{-- Email --}}
+            <div>
+                <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Email Address') }}</label>
+                <input type="email" name="bakery_email" value="{{ old('bakery_email', $bakeryEmail) }}"
+                    placeholder="{{ __('e.g. contact@bakery.com') }}"
+                    class="block w-full px-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all">
+                @error('bakery_email') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
+            </div>
             {{-- Address --}}
             <div class="md:col-span-2">
                 <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('Address') }}</label>
