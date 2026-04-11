@@ -196,6 +196,7 @@
                                             placeholder="0">
                                     </div>
                                 </div>
+                                <p class="text-[9px] text-slate-500 text-center italic mt-1">{{ __('At least one bundle must be assigned to start a shift.') }}</p>
 
                                 <button type="submit" class="w-full py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors focus:ring-2 focus:ring-emerald-500">
                                     {{ $completedShifts->count() > 0 ? __('Start New Shift') : __('Clock In') }}
@@ -208,12 +209,12 @@
                     <form action="{{ route('admin.attendance.clock_out', $activeShift->id) }}" method="POST" class="flex-1 space-y-2"
                           x-data="{ 
                               bundlesReceived: {{ $activeShift->bundles_received }},
-                              bundlesReturned: 0,
+                              bundlesReturned: '',
                               pricePerBundle: {{ $defaultPricePerBundle ?? 0 }},
-                              cashCollected: 0,
-                              cashCurrencyId: '', 
-                              isLocal: true,
-                              exchangeRate: 1,
+                               cashCollected: '',
+                               cashCurrencyId: '', 
+                               isLocal: true,
+                               exchangeRate: 1,
                               get bundlesSold() { return Math.max(0, this.bundlesReceived - (parseInt(this.bundlesReturned) || 0)); },
                               get expectedCash() { return (this.bundlesSold * (parseFloat(this.pricePerBundle) || 0)).toFixed(2); },
                               get cashDiff() { return ((parseFloat(this.cashCollected) || 0) - parseFloat(this.expectedCash)).toFixed(2); },
@@ -260,15 +261,15 @@
                         </div>
 
                         <div>
-                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Bundles Returned') }}</label>
-                            <input type="number" name="bundles_returned" x-model="bundlesReturned" value="0" min="0" :max="bundlesReceived"
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Bundles Returned') }} <span class="text-red-500">*</span></label>
+                            <input type="number" name="bundles_returned" x-model="bundlesReturned" min="0" :max="bundlesReceived" required
                                 class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium"
                                 placeholder="0">
                         </div>
 
                         <div>
-                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Price per Bundle') }}</label>
-                            <input type="number" step="0.01" name="price_per_bundle" x-model="pricePerBundle" min="0"
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Price per Bundle') }} <span class="text-red-500">*</span></label>
+                            <input type="number" step="0.01" name="price_per_bundle" x-model="pricePerBundle" min="0.01" required
                                 class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium"
                                 placeholder="0.00">
                             <p class="text-[9px] text-slate-500 mt-0.5 {{ app()->getLocale() == 'ar' ? 'mr-1' : 'ml-1' }}">{{ __('From settings. Adjustable per shift.') }}</p>
@@ -276,8 +277,8 @@
 
                         {{-- Cash Currency --}}
                         <div>
-                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Currency') }}</label>
-                            <select name="cash_currency_id" x-model="cashCurrencyId" @change="setCurrency($event.target.value)"
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Currency') }} <span class="text-red-500">*</span></label>
+                            <select name="cash_currency_id" x-model="cashCurrencyId" @change="setCurrency($event.target.value)" required
                                 class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium appearance-none">
                                 <option value="">{{ __('Select Currency...') }}</option>
                                 @foreach($currencies as $curr)
@@ -326,8 +327,8 @@
 
                         {{-- Cash Collected --}}
                         <div>
-                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Cash Collected') }}</label>
-                            <input type="number" step="0.01" name="cash_collected" x-model="cashCollected" value="0" min="0" 
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1 ml-1">{{ __('Cash Collected') }} <span class="text-red-500">*</span></label>
+                            <input type="number" step="0.01" name="cash_collected" x-model="cashCollected" min="0" required
                                 class="w-full px-3 py-2 bg-white/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-amber-500/50 transition-all font-medium"
                                 placeholder="0.00">
                         </div>

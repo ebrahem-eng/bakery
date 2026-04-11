@@ -112,6 +112,10 @@ class WorkerAttendanceController extends Controller
         $fromBakery = $request->bundles_from_bakery ?? 0;
         $totalReceived = $fromOven + $fromBakery;
 
+        if ($totalReceived <= 0) {
+            return back()->with('error_message', __('A worker cannot start a shift without being given bread.'));
+        }
+
         // Check if already checked in and not checked out
         $existingShift = WorkerShift::where('worker_id', $worker->id)
             ->where('work_day_id', $activeWorkDay->id)
@@ -156,10 +160,10 @@ class WorkerAttendanceController extends Controller
         }
 
         $request->validate([
-            'bundles_returned' => 'nullable|integer|min:0',
-            'price_per_bundle' => 'nullable|numeric|min:0',
-            'cash_collected' => 'nullable|numeric|min:0',
-            'cash_currency_id' => 'nullable|exists:currencies,id',
+            'bundles_returned' => 'required|integer|min:0',
+            'price_per_bundle' => 'required|numeric|min:0.01',
+            'cash_collected' => 'required|numeric|min:0',
+            'cash_currency_id' => 'required|exists:currencies,id',
             'cash_exchange_rate' => 'nullable|numeric|min:0',
         ]);
 
