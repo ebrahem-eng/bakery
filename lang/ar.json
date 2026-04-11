@@ -1403,5 +1403,6 @@
     "Time": "الوقت",
     "Employee": "الموظف",
     "A worker cannot start a shift without being given bread.": "لا يمكن للعامل بدء وردية دون تسليمه ربطات خبز",
-    "At least one bundle must be assigned to start a shift.": "يجب تسليم ربطة واحدة على الأقل لبدء الوردية"
+    "At least one bundle must be assigned to start a shift.": "يجب تسليم ربطة واحدة على الأقل لبدء الوردية",
+    "Managing shifts for Active Work Day:": "إدارة الورديات ليوم العمل النشط:"
 }
