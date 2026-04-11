@@ -56,15 +56,15 @@
 
     <!-- Background & Glow -->
     <div class="fixed inset-0 z-[-2] bg-slate-50 dark:bg-[#0f1115]">
-        <div class="hidden dark:block absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-amber-500/10 blur-[120px] pointer-events-none"></div>
-        <div class="hidden dark:block absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-600/10 blur-[120px] pointer-events-none"></div>
+        <div class="hidden dark:block absolute top-[-15%] left-[-10%] w-[60%] h-[60%] rounded-full bg-amber-500/10 blur-[140px] pointer-events-none"></div>
+        <div class="hidden dark:block absolute bottom-[-15%] right-[-10%] w-[60%] h-[60%] rounded-full bg-orange-600/10 blur-[140px] pointer-events-none"></div>
     </div>
 
     <!-- Grid Overlay -->
     <div class="fixed inset-0 z-[-1] opacity-[0.05] dark:opacity-[0.02] pointer-events-none" style="background-image: linear-gradient(#94a3b8 1px, transparent 1px), linear-gradient(90deg, #94a3b8 1px, transparent 1px); background-size: 40px 40px;"></div>
 
-    <div class="min-h-screen flex items-center justify-center p-4">
-        <div class="error-card bg-white/80 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.06] rounded-2xl shadow-2xl dark:shadow-amber-900/10 max-w-lg w-full p-8 sm:p-12 text-center">
+    <div class="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div class="error-card bg-white/80 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.06] rounded-3xl shadow-2xl dark:shadow-amber-900/10 max-w-lg w-full p-6 sm:p-12 text-center transition-all duration-300">
 
             <!-- Compass Icon -->
             <div class="float-animation mx-auto mb-6 w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 dark:from-amber-500/10 dark:to-orange-500/10 border border-amber-500/20 flex items-center justify-center">
@@ -75,7 +75,7 @@
             </div>
 
             <!-- Error Code -->
-            <h1 class="error-code text-7xl sm:text-8xl font-extrabold mb-2 tracking-tight">404</h1>
+            <h1 class="error-code text-6xl sm:text-7xl md:text-8xl font-extrabold mb-2 tracking-tight">404</h1>
 
             <!-- Decorative Line -->
             <div class="line-decoration h-px w-32 mx-auto my-5 rounded-full"></div>
@@ -86,14 +86,14 @@
             </h2>
 
             <!-- Message -->
-            <p class="text-sm sm:text-base text-slate-500 dark:text-slate-400 leading-relaxed mb-8">
+            <p class="text-xs sm:text-sm md:text-base text-slate-500 dark:text-slate-400 leading-relaxed mb-8 px-2">
                 {{ $exception->getMessage() ? __($exception->getMessage()) : __('The page you are looking for does not exist or has been moved. Please check the URL or navigate back to the dashboard.') }}
             </p>
 
             <!-- Actions -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 px-4">
                 <a href="{{ url()->previous() }}"
-                   class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
                     <svg class="w-4 h-4 {{ app()->getLocale() == 'ar' ? 'rotate-180' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
@@ -102,7 +102,7 @@
 
                 @auth('admin')
                 <a href="{{ route('admin.dashboard') }}"
-                   class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 hover:from-amber-600 hover:to-orange-600 transition-all">
+                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 hover:from-amber-600 hover:to-orange-600 transition-all">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                     </svg>
@@ -113,7 +113,7 @@
 
             <!-- Footer info -->
             <div class="mt-8 pt-6 border-t border-slate-100 dark:border-white/5">
-                <div class="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+                <div class="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-slate-400 dark:text-slate-500">
                     <div class="w-5 h-5 rounded-lg bg-gradient-to-tr from-amber-600 to-orange-400 p-[1px]">
                         <div class="w-full h-full bg-white dark:bg-[#121419] rounded-lg flex items-center justify-center">
                             <img src="{{ asset('logo.svg') }}" alt="Logo" class="w-3 h-3">
