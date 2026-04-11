@@ -1357,5 +1357,17 @@
     "Confirmed Sold from Shifts": "تم تأكيد بيعها من الورديات",
     "Delivered to Active Shifts": "تم تسليمها للورديات النشطة",
     "Returned from Closed Shifts": "تم إرجاعها من الورديات المغلقة",
-    "In Active Shifts": "في الورديات النشطة"
+    "In Active Shifts": "في الورديات النشطة",
+    "panel Permissions": "صلاحيات اللوحة",
+    "analytics Permissions": "صلاحيات التحليلات",
+    "Permissions": "الصلاحيات",
+    "access Permissions": "صلاحيات الدخول",
+    "days Permissions": "صلاحيات الأيام",
+    "ledger Permissions": "صلاحيات السجل",
+    "debts Permissions": "صلاحيات الديون",
+    "presence Permissions": "صلاحيات الحضور",
+    "wages Permissions": "صلاحيات الأجور",
+    "logs Permissions": "صلاحيات السجلات",
+    "messages Permissions": "صلاحيات الرسائل",
+    "notifications Permissions": "صلاحيات التنبيهات"
 }
