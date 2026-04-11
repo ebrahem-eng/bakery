@@ -1369,5 +1369,16 @@
     "wages Permissions": "صلاحيات الأجور",
     "logs Permissions": "صلاحيات السجلات",
     "messages Permissions": "صلاحيات الرسائل",
-    "notifications Permissions": "صلاحيات التنبيهات"
+    "notifications Permissions": "صلاحيات التنبيهات",
+    "panel": "اللوحة",
+    "analytics": "التحليلات",
+    "access": "الدخول",
+    "days": "الأيام",
+    "ledger": "السجل",
+    "debts": "الديون",
+    "presence": "الحضور",
+    "wages": "الأجور",
+    "logs": "السجلات",
+    "messages": "الرسائل",
+    "notifications": "التنبيهات"
 }
