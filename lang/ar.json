@@ -1394,5 +1394,12 @@
     "view accounts ledger": "عرض السجل المالي",
     "filter accounts ledger": "فلترة السجل المالي",
     "view accounts debts": "عرض الديون المستحقة",
-    "pay accounts debts": "تسديد الديون"
+    "pay accounts debts": "تسديد الديون",
+    "Default Salary": "الراتب الافتراضي",
+    "Shifts Today": "ورديات اليوم",
+    "Show Today Only": "عرض اليوم فقط",
+    "From Date": "من تاريخ",
+    "To Date": "إلى تاريخ",
+    "Time": "الوقت",
+    "Employee": "الموظف"
 }

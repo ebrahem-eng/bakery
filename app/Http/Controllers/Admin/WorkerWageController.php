@@ -18,7 +18,11 @@ class WorkerWageController extends Controller
             return redirect()->route('admin.dashboard')->with('error_message', __('No active work day.'));
         }
 
-        $workers = Worker::with('currency')->get();
+        $workers = Worker::with('currency')
+            ->withCount(['shifts' => function ($query) use ($activeWorkDay) {
+                $query->where('work_day_id', $activeWorkDay->id);
+            }])
+            ->get();
         $currencies = Currency::all();
         
         $query = WorkerTransaction::with(['worker', 'currency', 'admin'])
