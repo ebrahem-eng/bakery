@@ -183,13 +183,8 @@ class WorkDay extends Model
         $previousDay = self::where('status', 'closed')->where('id', '<', $this->id)->orderBy('id', 'desc')->first();
         $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
 
-        // If bakery assigned more from_bakery stock than previousCarryOver accounts for,
-        // those bundles existed but weren't tracked. Use max() to ensure they're counted.
-        $totalFromBakeryToShifts = $this->workerShifts->sum('bundles_from_bakery');
-        $effectivePreviousCarryOver = max($previousCarryOverBundles, $totalFromBakeryToShifts);
-
         // Remaining = what's physically in the bakery (excludes both sold AND in-transit)
-        $calculatedRemainingBundles = max(0, $effectivePreviousCarryOver + $bundlesFromOvenSum - $bundlesSoldFromShifts - $bundlesDeliveredToActiveShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses);
+        $calculatedRemainingBundles = max(0, $previousCarryOverBundles + $bundlesFromOvenSum - $bundlesSoldFromShifts - $bundlesDeliveredToActiveShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses);
 
         // ── Cash collected from shifts ────────────────────────────────
         $totalCashFromShifts = $this->workerShifts->reduce(function ($carry, $s) {

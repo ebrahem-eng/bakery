@@ -51,7 +51,16 @@ class WorkerAttendanceController extends Controller
             ->orderBy('id', 'desc')
             ->first();
         
-        $defaultBundles = $lastShift ? $lastShift->bundles_returned : 0;
+        if ($lastShift) {
+            $defaultBundles = $lastShift->bundles_returned;
+        } else {
+            // First shift of the day: rely on previous day's carry-over
+            $previousWorkDay = WorkDay::where('status', 'closed')
+                ->where('id', '<', $activeWorkDay->id)
+                ->orderBy('id', 'desc')
+                ->first();
+            $defaultBundles = $previousWorkDay ? $previousWorkDay->carried_over_bundles : 0;
+        }
         $defaultPricePerBundle = Setting::get('default_price_per_bundle', '0');
 
         return view('Admin.Attendance.index', compact('workers', 'activeWorkDay', 'currencies', 'defaultBundles', 'defaultPricePerBundle', 'pendingWorkersOverall'));
