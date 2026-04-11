@@ -69,6 +69,17 @@
         <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0 -translate-x-1/4' : 'right-0 translate-x-1/4' }} w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2"></div>
         <div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
             <div class="flex-1">
+                @if($todayBundlesInActiveShifts > 0)
+                <div class="mb-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center gap-3">
+                    <div class="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center text-amber-500 shadow-sm">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-500 leading-tight">{{ __('Warning: Active Shifts Detected') }}</p>
+                        <p class="text-xs text-amber-700/70 dark:text-amber-400/70 mt-0.5 font-bold">{{ __('There are employees still clocked in. Please ensure they are settled before closing the day.') }}</p>
+                    </div>
+                </div>
+                @endif
                 <div class="flex items-center gap-3 mb-2">
                     <span class="relative flex h-3 w-3">
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

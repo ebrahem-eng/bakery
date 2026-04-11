@@ -538,8 +538,28 @@
                     </div>
                 </div>
 
-                <div class="pt-4">
+                <div class="pt-4 flex flex-col items-center gap-4">
+                    @if($activeShifts->count() > 0)
+                        <div class="w-full p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center text-amber-500 shadow-sm">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-500 leading-tight">{{ __('Closure Blocked') }}</p>
+                                    <p class="text-xs text-amber-700/70 dark:text-amber-400/70 font-bold mt-0.5">{{ __('Active shifts must be settled first.') }}</p>
+                                </div>
+                            </div>
+                            <a href="{{ route('admin.attendance.index') }}" class="px-4 py-2 bg-amber-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-amber-500/20 hover:scale-105 transition-transform flex items-center gap-1.5 leading-none">
+                                {{ __('Attendance') }}
+                                <svg class="w-3 h-3 {{ app()->getLocale() == 'ar' ? 'rotate-180' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            </a>
+                        </div>
+                    @endif
+
                     <button type="button" 
+                        {{ $activeShifts->count() > 0 ? 'disabled' : '' }}
+                        @if($activeShifts->count() == 0)
                         @click="$dispatch('confirm-action', { 
                             title: '{{ __('Close Work Day') }}', 
                             message: '{{ __('WARNING: Closing a work day freezes all sales, expenses, and HR shifts permanently. Proceed?') }}', 
@@ -547,7 +567,8 @@
                             confirmText: '{{ __('Close Permanently') }}',
                             onConfirm: () => $el.closest('form').submit()
                         })"
-                        class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white py-5 rounded-2xl text-base font-black shadow-[0_10px_30px_rgba(239,68,68,0.3)] hover:shadow-[0_15px_40px_rgba(239,68,68,0.4)] transition-all uppercase tracking-[0.2em]">
+                        @endif
+                        class="w-full {{ $activeShifts->count() > 0 ? 'bg-slate-200 dark:bg-white/5 text-slate-400 cursor-not-allowed opacity-50' : 'bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white shadow-[0_10px_30px_rgba(239,68,68,0.3)] hover:shadow-[0_15px_40px_rgba(239,68,68,0.4)]' }} py-5 rounded-2xl text-base font-black transition-all uppercase tracking-[0.2em]">
                         {{ __('Close Work Day Permanently') }}
                     </button>
                     <p class="mt-4 text-center text-[10px] text-slate-400 uppercase tracking-widest font-bold">

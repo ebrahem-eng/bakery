@@ -1404,5 +1404,10 @@
     "Employee": "الموظف",
     "A worker cannot start a shift without being given bread.": "لا يمكن للعامل بدء وردية دون تسليمه ربطات خبز",
     "At least one bundle must be assigned to start a shift.": "يجب تسليم ربطة واحدة على الأقل لبدء الوردية",
-    "Managing shifts for Active Work Day:": "إدارة الورديات ليوم العمل النشط:"
+    "Managing shifts for Active Work Day:": "إدارة الورديات ليوم العمل النشط:",
+    "Warning: Active Shifts Detected": "تحذير: تم اكتشاف ورديات نشطة",
+    "There are employees still clocked in. Please ensure they are settled before closing the day.": "لا يزال هناك موظفون مسجلون دخولهم. يرجى التأكد من تسوية حساباتهم قبل إغلاق اليوم.",
+    "Closure Blocked": "تعذر الإغلاق",
+    "Active shifts must be settled first.": "يجب تسوية الورديات النشطة أولاً.",
+    "Attendance": "الحضور"
 }

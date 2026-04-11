@@ -107,6 +107,10 @@ class WorkDayController extends Controller
 
     public function close(Request $request, WorkDay $workDay)
     {
+        if ($workDay->workerShifts()->whereNull('check_out')->exists()) {
+            return back()->withInput()->with('error_message', __('There are employees still clocked in. Please ensure you have recorded their returned bread and cash totals before finalizing the day.'));
+        }
+
         $request->validate([
             'carried_over_money' => 'required|numeric|min:0',
             'carried_over_currency_id' => 'nullable|exists:currencies,id',
@@ -174,10 +178,7 @@ class WorkDayController extends Controller
             'carried_over_exchange_rate' => $exchangeRate,
         ]);
 
-        // Auto-close any active shifts
-        $workDay->workerShifts()->whereNull('check_out')->update([
-            'check_out' => $endTime
-        ]);
+        // Auto-close logic removed — shifts must be closed manually before finalizing the day
 
         // Store Consumption Records
         if ($request->consumptions) {
