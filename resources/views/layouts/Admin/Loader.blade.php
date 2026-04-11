@@ -26,7 +26,7 @@
 
         <!-- Text -->
         <h2 class="text-lg font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 animate-pulse">
-            {{ strtoupper(__('Bakery Portal')) }}
+            {{ strtoupper(\App\Models\Setting::get('bakery_name', __('Bakery Portal'))) }}
         </h2>
         <p class="text-xs text-slate-500 mt-2 tracking-widest uppercase">{{ __('Initializing Environment...') }}</p>
     </div>
