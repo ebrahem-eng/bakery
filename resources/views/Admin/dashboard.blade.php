@@ -97,6 +97,12 @@
                         <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Bundles Sold') }}</span>
                         <span class="text-sm font-black text-emerald-600 dark:text-emerald-400">{{ number_format($todayBundlesSold) }}</span>
                     </div>
+                    @if($todayBundlesInActiveShifts > 0)
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('In Active Shifts') }}</span>
+                        <span class="text-sm font-black text-amber-500">{{ number_format($todayBundlesInActiveShifts) }}</span>
+                    </div>
+                    @endif
                     <div class="flex flex-col">
                         <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">{{ __('Debt Payments') }}</span>
                         <span class="text-sm font-black text-sky-500">{{ number_format($todaySupplierPayments, 2) }} <span class="text-[10px]">{{ $currencyCode }}</span></span>

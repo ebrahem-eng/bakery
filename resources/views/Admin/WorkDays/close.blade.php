@@ -167,9 +167,21 @@
                     <span class="font-bold text-emerald-600 dark:text-emerald-400">+ {{ $bundlesFromOvenSum }} {{ __('bundles') }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5 bg-indigo-500/5 rounded-lg px-3 -mx-1">
-                    <span class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{ __('Sold from Shifts') }}</span>
+                    <span class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{ __('Confirmed Sold from Shifts') }}</span>
                     <span class="font-bold text-indigo-600 dark:text-indigo-400">- {{ $bundlesSoldFromShifts }} {{ __('bundles') }}</span>
                 </div>
+                @if($bundlesDeliveredToActiveShifts > 0)
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5 bg-amber-500/5 rounded-lg px-3 -mx-1">
+                    <span class="text-sm font-semibold text-amber-600 dark:text-amber-400">{{ __('Delivered to Active Shifts') }}</span>
+                    <span class="font-bold text-amber-600 dark:text-amber-400">- {{ $bundlesDeliveredToActiveShifts }} {{ __('bundles') }}</span>
+                </div>
+                @endif
+                @if($bundlesReturnedByClosedShifts > 0)
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Returned from Closed Shifts') }}</span>
+                    <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ $bundlesReturnedByClosedShifts }} {{ __('bundles') }}</span>
+                </div>
+                @endif
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Distributed to Distributors') }}</span>
                     <span class="font-bold text-red-600 dark:text-red-400">- {{ $bundlesDistributed }} {{ __('bundles') }}</span>

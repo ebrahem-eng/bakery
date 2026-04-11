@@ -161,16 +161,30 @@ class WorkDay extends Model
         $bundlesFromOvenSum = $this->workerShifts->sum('bundles_from_oven');
         $bundlesFromBakerySum = $this->workerShifts->sum('bundles_from_bakery');
         
+        // Split by shift status: closed = confirmed, open = in-transit
+        $closedShifts = $this->workerShifts->whereNotNull('check_out');
+        $openShifts = $this->workerShifts->whereNull('check_out');
+
+        // Closed shifts — bundles confirmed sold & returned
+        $bundlesReceivedByClosedShifts = $closedShifts->sum('bundles_received');
+        $bundlesReturnedByClosedShifts = $closedShifts->sum('bundles_returned');
+        $bundlesSoldFromShifts = $bundlesReceivedByClosedShifts - $bundlesReturnedByClosedShifts;
+
+        // Open shifts — bundles delivered but NOT yet sold (in-transit with workers)
+        $bundlesDeliveredToActiveShifts = $openShifts->sum('bundles_received');
+
+        // Totals (all shifts, for reference)
         $bundlesReceivedByShifts = $this->workerShifts->sum('bundles_received');
         $bundlesReturnedByShiftsTotal = $this->workerShifts->sum('bundles_returned');
-        $bundlesSoldFromShifts = $bundlesReceivedByShifts - $bundlesReturnedByShiftsTotal;
+
         $breadExpenses = $this->expenses->where('category', 'bread')->sum('quantity');
 
         // Previous day carry-over
         $previousDay = self::where('status', 'closed')->where('id', '<', $this->id)->orderBy('id', 'desc')->first();
         $previousCarryOverBundles = $previousDay ? $previousDay->carried_over_bundles : 0;
 
-        $calculatedRemainingBundles = max(0, $previousCarryOverBundles + $bundlesFromOvenSum - $bundlesSoldFromShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses);
+        // Remaining = what's physically in the bakery (excludes both sold AND in-transit)
+        $calculatedRemainingBundles = max(0, $previousCarryOverBundles + $bundlesFromOvenSum - $bundlesSoldFromShifts - $bundlesDeliveredToActiveShifts - $bundlesDistributed + $bundlesReturnedByDistributors - $breadExpenses);
 
         // ── Cash collected from shifts ────────────────────────────────
         $totalCashFromShifts = $this->workerShifts->reduce(function ($carry, $s) {
@@ -220,6 +234,8 @@ class WorkDay extends Model
             'bundlesReturnedByShifts' => $bundlesReturnedByShiftsTotal,
             'bundlesSoldFromShifts' => $bundlesSoldFromShifts,
             'bundlesSold' => ($bundlesDistributed - $bundlesReturnedByDistributors) + $bundlesSoldFromShifts,
+            'bundlesDeliveredToActiveShifts' => $bundlesDeliveredToActiveShifts,
+            'bundlesReturnedByClosedShifts' => $bundlesReturnedByClosedShifts,
             'bundlesFromOvenSum' => $bundlesFromOvenSum,
             'breadExpenses' => $breadExpenses,
             'previousCarryOverBundles' => $previousCarryOverBundles,

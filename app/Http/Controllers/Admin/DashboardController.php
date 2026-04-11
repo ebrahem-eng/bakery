@@ -103,8 +103,8 @@ class DashboardController extends Controller
         $distributorBundlesSold = Distribution::whereIn('work_day_id', $periodWorkDayIds)->sum('bundle_count');
         $distributorBundlesReturned = DistributorReturn::whereIn('work_day_id', $periodWorkDayIds)->sum('bundle_count');
         
-        $shiftBundlesReceived = \App\Models\WorkerShift::whereIn('work_day_id', $periodWorkDayIds)->sum('bundles_received');
-        $shiftBundlesReturned = \App\Models\WorkerShift::whereIn('work_day_id', $periodWorkDayIds)->sum('bundles_returned');
+        $shiftBundlesReceived = \App\Models\WorkerShift::whereIn('work_day_id', $periodWorkDayIds)->whereNotNull('check_out')->sum('bundles_received');
+        $shiftBundlesReturned = \App\Models\WorkerShift::whereIn('work_day_id', $periodWorkDayIds)->whereNotNull('check_out')->sum('bundles_returned');
         $shiftBundlesSold = $shiftBundlesReceived - $shiftBundlesReturned;
 
         $netBundlesSold = ($distributorBundlesSold - $distributorBundlesReturned) + $shiftBundlesSold;
@@ -194,6 +194,7 @@ class DashboardController extends Controller
         $todaySales = 0;
         $todayExpenses = 0;
         $todayBundlesSold = 0;
+        $todayBundlesInActiveShifts = 0;
         $todaySupplierPayments = 0;
 
         if ($activeWorkDay) {
@@ -202,6 +203,7 @@ class DashboardController extends Controller
             $todaySales = $stats['totalSales'] - $stats['totalRefunds'];
             $todayExpenses = $stats['totalExpenses'];
             $todayBundlesSold = $stats['bundlesSold'];
+            $todayBundlesInActiveShifts = $stats['bundlesDeliveredToActiveShifts'];
             $todaySupplierPayments = $stats['supplierPayments'];
         }
 
@@ -214,7 +216,7 @@ class DashboardController extends Controller
             'expenseBreakdown', 'distributorBalances', 'supplierBalances',
             'topDistributors', 'trendData', 'lastDays',
             // Live stats
-            'todaySales', 'todayExpenses', 'todayBundlesSold', 'todaySupplierPayments',
+            'todaySales', 'todayExpenses', 'todayBundlesSold', 'todayBundlesInActiveShifts', 'todaySupplierPayments',
             // Starting balances (bundles only)
             'startingBundles',
             // Specific Debt tracking

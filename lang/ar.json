@@ -1353,5 +1353,9 @@
     "Fee Amount": "مبلغ الرسوم",
     "Delivery fees paid by this supplier. These are not included in bakery expenses.": "رسوم التوصيل التي دفعها هذا المورد. لا يتم تضمينها في مصاريف المخبز.",
     "No supplier-paid delivery fees found matching the filters.": "لم يتم العثور على رسوم توصيل دفعها المورد تطابق الفلاتر.",
-    "Supply": "توريد"
+    "Supply": "توريد",
+    "Confirmed Sold from Shifts": "تم تأكيد بيعها من الورديات",
+    "Delivered to Active Shifts": "تم تسليمها للورديات النشطة",
+    "Returned from Closed Shifts": "تم إرجاعها من الورديات المغلقة",
+    "In Active Shifts": "في الورديات النشطة"
 }
