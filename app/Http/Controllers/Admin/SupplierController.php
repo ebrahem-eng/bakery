@@ -101,7 +101,26 @@ class SupplierController extends Controller
 
         $supplier->load(['mobiles', 'categories']);
 
-        return view('Admin.Suppliers.show', compact('supplier', 'supplies', 'allPayments', 'deliveryStart', 'deliveryEnd', 'paymentStart', 'paymentEnd'));
+        // 3. Handle Supplier-Paid Delivery Fees
+        $feeStart = $request->get('fee_start');
+        $feeEnd = $request->get('fee_end');
+
+        $supplierFeesQuery = $supplier->supplies()
+            ->where('unloading_fee_payer', 'supplier')
+            ->where('unloading_fee', '>', 0)
+            ->with(['category', 'currency', 'unloadingFeeCurrency']);
+
+        if ($feeStart) {
+            $supplierFeesQuery->whereDate('created_at', '>=', $feeStart);
+        }
+        if ($feeEnd) {
+            $supplierFeesQuery->whereDate('created_at', '<=', $feeEnd);
+        }
+
+        $supplierFees = $supplierFeesQuery->orderBy('id', 'desc')->paginate($perPage, ['*'], 'fees_page');
+        $supplierFees->appends($request->all());
+
+        return view('Admin.Suppliers.show', compact('supplier', 'supplies', 'allPayments', 'supplierFees', 'deliveryStart', 'deliveryEnd', 'paymentStart', 'paymentEnd', 'feeStart', 'feeEnd'));
     }
 
     public function create()

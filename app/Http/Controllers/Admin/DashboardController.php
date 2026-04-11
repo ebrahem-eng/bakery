@@ -83,7 +83,7 @@ class DashboardController extends Controller
 
         // ── Expense Metrics ───────────────────────────────────────────
         $suppliesCost = Supply::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('total_cost'));
-        $unloadingFees = Supply::whereIn('work_day_id', $periodWorkDayIds)->sum(Currency::getSelectRaw('unloading_fee', 'unloading_fee_exchange_rate'));
+        $unloadingFees = Supply::whereIn('work_day_id', $periodWorkDayIds)->where('unloading_fee_payer', 'bakery')->sum(Currency::getSelectRaw('unloading_fee', 'unloading_fee_exchange_rate'));
         
         // Manual worker payments (Cash-based reporting for expenses as requested)
         $workerAllowances = WorkerTransaction::whereIn('work_day_id', $periodWorkDayIds)->where('type', 'allowance')->sum(Currency::getSelectRaw('amount'));

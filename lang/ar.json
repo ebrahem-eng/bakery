@@ -1348,5 +1348,10 @@
     "All notifications deleted successfully.": "تم حذف جميع الإشعارات بنجاح.",
     "NOT PRESENT": "غير حاضر",
     "Show Details": "عرض التفاصيل",
-    "Hide Details": "إخفاء التفاصيل"
+    "Hide Details": "إخفاء التفاصيل",
+    "Supplier-Paid Delivery Fees": "رسوم توصيل دفعها المورد",
+    "Fee Amount": "مبلغ الرسوم",
+    "Delivery fees paid by this supplier. These are not included in bakery expenses.": "رسوم التوصيل التي دفعها هذا المورد. لا يتم تضمينها في مصاريف المخبز.",
+    "No supplier-paid delivery fees found matching the filters.": "لم يتم العثور على رسوم توصيل دفعها المورد تطابق الفلاتر.",
+    "Supply": "توريد"
 }

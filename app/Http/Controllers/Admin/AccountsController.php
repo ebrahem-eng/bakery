@@ -74,7 +74,7 @@ class AccountsController extends Controller
 
         // ── Cost of Goods Sold (COGS) ─────────────────────────────────
         $rawMaterialsCost = Supply::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('total_cost'));
-        $freightUnloading = Supply::whereIn('work_day_id', $workDayIds)->sum(Currency::getSelectRaw('unloading_fee', 'unloading_fee_exchange_rate'));
+        $freightUnloading = Supply::whereIn('work_day_id', $workDayIds)->where('unloading_fee_payer', 'bakery')->sum(Currency::getSelectRaw('unloading_fee', 'unloading_fee_exchange_rate'));
         $totalCOGS = $rawMaterialsCost + $freightUnloading;
 
         // ── Gross Profit ──────────────────────────────────────────────
@@ -186,7 +186,7 @@ class AccountsController extends Controller
                 'type' => 'expense',
                 'category' => __('Raw Materials').' ('.($s->category->name ?? '').')',
                 'description' => ($s->supplier->first_name ?? '').' '.($s->supplier->last_name ?? ''),
-                'amount' => Currency::convertAmount($s->total_cost, $s->exchange_rate) + Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate),
+                'amount' => Currency::convertAmount($s->total_cost, $s->exchange_rate) + ($s->unloading_fee_payer === 'bakery' ? Currency::convertAmount($s->unloading_fee, $s->unloading_fee_exchange_rate) : 0),
                 'work_day_id' => $s->work_day_id,
             ]);
 

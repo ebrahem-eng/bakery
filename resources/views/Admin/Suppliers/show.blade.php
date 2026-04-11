@@ -47,10 +47,6 @@
             <div class="text-xs text-slate-500 mt-2">{{ __('Aggregate volume injected into the bakery.') }}</div>
         </div>
         
-        <div class="glass-panel rounded-2xl p-6 border border-purple-500/10">
-            <div class="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-2">{{ __('Unloading Deductions') }}</div>
-            <div class="text-3xl font-bold text-white">{{ number_format($supplier->supplies->sum('unloading_fee'), 2) }}</div>
-        </div>
     </div>
 
     <!-- Recent Supply Ledgers -->
@@ -64,6 +60,8 @@
                 <form action="{{ route('admin.suppliers.show', $supplier) }}" method="GET" class="flex flex-wrap items-center gap-2">
                     <input type="hidden" name="payment_start" value="{{ $paymentStart }}">
                     <input type="hidden" name="payment_end" value="{{ $paymentEnd }}">
+                    <input type="hidden" name="fee_start" value="{{ $feeStart }}">
+                    <input type="hidden" name="fee_end" value="{{ $feeEnd }}">
                     
                     <div class="flex items-center gap-1">
                         <input type="date" name="delivery_start" value="{{ $deliveryStart }}" class="bg-black/20 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white focus:border-amber-500/50 outline-none">
@@ -74,7 +72,7 @@
                         {{ __('Filter') }}
                     </button>
                     @if($deliveryStart || $deliveryEnd)
-                        <a href="{{ route('admin.suppliers.show', ['supplier' => $supplier, 'payment_start' => $paymentStart, 'payment_end' => $paymentEnd]) }}" class="text-[10px] text-slate-500 hover:text-white underline">{{ __('Clear') }}</a>
+                        <a href="{{ route('admin.suppliers.show', ['supplier' => $supplier, 'payment_start' => $paymentStart, 'payment_end' => $paymentEnd, 'fee_start' => $feeStart, 'fee_end' => $feeEnd]) }}" class="text-[10px] text-slate-500 hover:text-white underline">{{ __('Clear') }}</a>
                     @endif
                 </form>
             </div>
@@ -137,6 +135,8 @@
                     <input type="hidden" name="delivery_start" value="{{ $deliveryStart }}">
                     <input type="hidden" name="delivery_end" value="{{ $deliveryEnd }}">
                     <input type="hidden" name="deliveries_page" value="{{ request('deliveries_page') }}">
+                    <input type="hidden" name="fee_start" value="{{ $feeStart }}">
+                    <input type="hidden" name="fee_end" value="{{ $feeEnd }}">
 
                     <div class="flex items-center gap-1">
                         <input type="date" name="payment_start" value="{{ $paymentStart }}" class="bg-black/20 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white focus:border-purple-500/50 outline-none">
@@ -147,7 +147,7 @@
                         {{ __('Filter') }}
                     </button>
                     @if($paymentStart || $paymentEnd)
-                        <a href="{{ route('admin.suppliers.show', ['supplier' => $supplier, 'delivery_start' => $deliveryStart, 'delivery_end' => $deliveryEnd, 'deliveries_page' => request('deliveries_page')]) }}" class="text-[10px] text-slate-500 hover:text-white underline">{{ __('Clear') }}</a>
+                        <a href="{{ route('admin.suppliers.show', ['supplier' => $supplier, 'delivery_start' => $deliveryStart, 'delivery_end' => $deliveryEnd, 'deliveries_page' => request('deliveries_page'), 'fee_start' => $feeStart, 'fee_end' => $feeEnd]) }}" class="text-[10px] text-slate-500 hover:text-white underline">{{ __('Clear') }}</a>
                     @endif
                 </form>
             </div>
@@ -199,6 +199,79 @@
             @if($allPayments->hasPages())
                 <div class="p-4 border-t border-white/5">
                     {{ $allPayments->links() }}
+                </div>
+            @endif
+        </div>
+
+        <!-- Supplier-Paid Delivery Fees Table -->
+        <div class="glass-panel rounded-2xl border border-white/5 overflow-hidden">
+            <div class="p-6 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-white">{{ __('Supplier-Paid Delivery Fees') }}</h2>
+                    <p class="text-[10px] text-slate-500 mt-1">{{ __('Delivery fees paid by this supplier. These are not included in bakery expenses.') }}</p>
+                </div>
+                
+                {{-- Fees Filter --}}
+                <form action="{{ route('admin.suppliers.show', $supplier) }}" method="GET" class="flex flex-wrap items-center gap-2">
+                    <input type="hidden" name="delivery_start" value="{{ $deliveryStart }}">
+                    <input type="hidden" name="delivery_end" value="{{ $deliveryEnd }}">
+                    <input type="hidden" name="payment_start" value="{{ $paymentStart }}">
+                    <input type="hidden" name="payment_end" value="{{ $paymentEnd }}">
+
+                    <div class="flex items-center gap-1">
+                        <input type="date" name="fee_start" value="{{ $feeStart }}" class="bg-black/20 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white focus:border-cyan-500/50 outline-none">
+                        <span class="text-slate-500 text-[10px]">-</span>
+                        <input type="date" name="fee_end" value="{{ $feeEnd }}" class="bg-black/20 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white focus:border-cyan-500/50 outline-none">
+                    </div>
+                    <button type="submit" class="p-1 px-3 bg-cyan-600 rounded-lg text-white text-[10px] font-bold hover:bg-cyan-700 transition-colors">
+                        {{ __('Filter') }}
+                    </button>
+                    @if($feeStart || $feeEnd)
+                        <a href="{{ route('admin.suppliers.show', ['supplier' => $supplier, 'delivery_start' => $deliveryStart, 'delivery_end' => $deliveryEnd, 'payment_start' => $paymentStart, 'payment_end' => $paymentEnd]) }}" class="text-[10px] text-slate-500 hover:text-white underline">{{ __('Clear') }}</a>
+                    @endif
+                </form>
+            </div>
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+                    <thead>
+                        <tr class="text-slate-400 text-xs uppercase tracking-wider border-b border-white/5">
+                            <th class="py-4 px-4 font-medium">{{ __('Date') }}</th>
+                            <th class="py-4 px-4 font-medium">{{ __('Material Category') }}</th>
+                            <th class="py-4 px-4 font-medium">{{ __('Fee Amount') }}</th>
+                            <th class="py-4 px-4 font-medium">{{ __('Currency') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 text-sm text-slate-300">
+                        @forelse($supplierFees as $fee)
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="py-3 px-4">
+                                <div class="font-medium text-white">{{ $fee->created_at->translatedFormat('Y-m-d H:i') }}</div>
+                                <a href="{{ route('admin.supplies.show', $fee->id) }}" class="text-[10px] text-amber-500 hover:underline">{{ __('Supply') }} #{{ $fee->id }}</a>
+                            </td>
+                            <td class="py-3 px-4 text-emerald-400">
+                                {{ __($fee->category->name ?? '--') }}
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="font-bold text-white">{{ number_format($fee->unloading_fee, 2) }}</span>
+                            </td>
+                            <td class="py-3 px-4 text-xs text-slate-400 uppercase">
+                                {{ $fee->unloadingFeeCurrency->code ?? $fee->currency->code ?? '' }}
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="py-12 text-center text-slate-500 italic">
+                                <svg class="w-12 h-12 text-slate-700 mx-auto mb-3 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                {{ __('No supplier-paid delivery fees found matching the filters.') }}
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @if($supplierFees->hasPages())
+                <div class="p-4 border-t border-white/5">
+                    {{ $supplierFees->links() }}
                 </div>
             @endif
         </div>
