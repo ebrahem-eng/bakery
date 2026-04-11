@@ -161,14 +161,37 @@ Route::group(['middleware' => ['admin.auth']], function () {
     });
 
     // ── Settings ──────────────────────────────────────────────────────
-    Route::group(['middleware' => ['permission:manage settings,admin']], function () {
-        Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
-        Route::post('settings/bakery-info', [SettingsController::class, 'updateBakeryInfo'])->name('settings.bakeryInfo');
-        Route::post('settings/currencies', [SettingsController::class, 'storeCurrency'])->name('settings.currencies.store');
-        Route::put('settings/currencies/{currency}', [SettingsController::class, 'updateCurrency'])->name('settings.currencies.update');
-        Route::delete('settings/currencies/{currency}', [SettingsController::class, 'destroyCurrency'])->name('settings.currencies.destroy');
-        Route::post('settings/categories', [SettingsController::class, 'storeCategory'])->name('settings.categories.store');
-        Route::put('settings/categories/{category}', [SettingsController::class, 'updateCategory'])->name('settings.categories.update');
-        Route::delete('settings/categories/{category}', [SettingsController::class, 'destroyCategory'])->name('settings.categories.destroy');
+    Route::group(['prefix' => 'settings', 'as' => 'settings.'], function () {
+        // Universal index access if user has any view permission
+        Route::get('/', [SettingsController::class, 'index'])
+            ->middleware('permission:view settings general|view settings currencies|view settings categories,admin')
+            ->name('index');
+
+        // General Bakery Info
+        Route::post('/bakery-info', [SettingsController::class, 'updateBakeryInfo'])
+            ->middleware('permission:edit settings general,admin')
+            ->name('bakeryInfo');
+
+        // Currencies
+        Route::post('/currencies', [SettingsController::class, 'storeCurrency'])
+            ->middleware('permission:edit settings currencies,admin')
+            ->name('currencies.store');
+        Route::put('/currencies/{currency}', [SettingsController::class, 'updateCurrency'])
+            ->middleware('permission:edit settings currencies,admin')
+            ->name('currencies.update');
+        Route::delete('/currencies/{currency}', [SettingsController::class, 'destroyCurrency'])
+            ->middleware('permission:edit settings currencies,admin')
+            ->name('currencies.destroy');
+
+        // Categories
+        Route::post('/categories', [SettingsController::class, 'storeCategory'])
+            ->middleware('permission:edit settings categories,admin')
+            ->name('categories.store');
+        Route::put('/categories/{category}', [SettingsController::class, 'updateCategory'])
+            ->middleware('permission:edit settings categories,admin')
+            ->name('categories.update');
+        Route::delete('/categories/{category}', [SettingsController::class, 'destroyCategory'])
+            ->middleware('permission:edit settings categories,admin')
+            ->name('categories.destroy');
     });
 });

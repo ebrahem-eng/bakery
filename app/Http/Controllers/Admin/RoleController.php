@@ -22,8 +22,17 @@ class RoleController extends Controller
         $grouped = [];
 
         foreach ($permissions as $permission) {
-            $parts = explode(' ', $permission->name);
-            $groupName = count($parts) > 1 ? end($parts) : 'general';
+            $name = $permission->name;
+            $parts = explode(' ', $name);
+            
+            // Custom grouping logic
+            if (str_contains($name, 'settings')) {
+                $groupName = 'settings';
+            } elseif (count($parts) > 1) {
+                $groupName = end($parts);
+            } else {
+                $groupName = 'general';
+            }
 
             if (! isset($grouped[$groupName])) {
                 $grouped[$groupName] = [];

@@ -1380,5 +1380,13 @@
     "wages": "الأجور",
     "logs": "السجلات",
     "messages": "الرسائل",
-    "notifications": "التنبيهات"
+    "notifications": "التنبيهات",
+    "view settings general": "عرض المعلومات العامة",
+    "edit settings general": "تعديل المعلومات العامة",
+    "view settings currencies": "عرض العملات",
+    "edit settings currencies": "تعديل العملات",
+    "view settings categories": "عرض فئات المواد",
+    "edit settings categories": "تعديل فئات المواد",
+    "Start New Work Day": "بدء يوم عمل جديد",
+    "Invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صالحة"
 }

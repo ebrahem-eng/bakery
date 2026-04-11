@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class PermissionSeeder extends Seeder
 {
@@ -53,10 +55,28 @@ class PermissionSeeder extends Seeder
             // ── Logs & Settings ────────────────────────────────────────
             'view logs', 'clear logs', 'filter logs',
             'manage settings',
+            'view settings general', 'edit settings general',
+            'view settings currencies', 'edit settings currencies',
+            'view settings categories', 'edit settings categories',
+
+            // ── Public Contact Messages ────────────────────────────────
+            'view contact messages', 'delete contact messages',
+
+            // ── System Notifications ───────────────────────────────────
+            'view notifications', 'manage notifications',
         ];
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'admin']);
         }
+
+        // ── Super Admin Role ───────────────────────────────────────────────
+        $superAdmin = Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'admin']);
+        
+        // Reset cached roles and permissions
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // Assign ALL permissions to Super Admin
+        $superAdmin->syncPermissions(Permission::where('guard_name', 'admin')->get());
     }
 }

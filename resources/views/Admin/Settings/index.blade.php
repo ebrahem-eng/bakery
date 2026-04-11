@@ -1,7 +1,9 @@
 @extends('layouts.Admin.App')
 
 @section('content')
-<div x-data="{ activeTab: '{{ request('tab', 'general') }}' }" x-cloak>
+<div x-data="{ 
+    activeTab: '{{ request('tab', auth()->user()->can('view settings general') ? 'general' : (auth()->user()->can('view settings currencies') ? 'currencies' : (auth()->user()->can('view settings categories') ? 'categories' : 'none'))) }}' 
+}" x-cloak>
 
 {{-- Page Header --}}
 <div class="mb-6">
@@ -23,32 +25,43 @@
 
 {{-- ── Tab Navigation ────────────────────────────────────────────── --}}
 <div class="flex gap-1 mb-6 p-1 glass-panel rounded-2xl border border-slate-200 dark:border-white/5 w-fit">
+    @can('view settings general')
     <button @click="activeTab = 'general'"
         :class="activeTab === 'general' ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'"
         class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
         {{ __('General Info') }}
     </button>
+    @endcan
+
+    @can('view settings currencies')
     <button @click="activeTab = 'currencies'"
         :class="activeTab === 'currencies' ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'"
         class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         {{ __('Currencies') }}
     </button>
+    @endcan
+
+    @can('view settings categories')
     <button @click="activeTab = 'categories'"
         :class="activeTab === 'categories' ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'"
         class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/></svg>
         {{ __('Material Categories') }}
     </button>
+    @endcan
 </div>
 
 {{-- ════════════════════════════════════════════════════════════════ --}}
 {{-- TAB 1 — General Bakery Info                                     --}}
 {{-- ════════════════════════════════════════════════════════════════ --}}
+@can('view settings general')
 <div x-show="activeTab === 'general'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
     <form action="{{ route('admin.settings.bakeryInfo') }}" method="POST" class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
         @csrf
+        @php $canEditGeneral = auth()->user()->can('edit settings general'); @endphp
+
         <div class="p-4 bg-slate-50 dark:bg-black/20 border-b border-slate-200 dark:border-white/5">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
@@ -107,20 +120,25 @@
                 @error('default_price_per_bundle') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
             </div>
         </div>
+        @if($canEditGeneral)
         <div class="p-4 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20 flex justify-end">
             <button type="submit" class="bg-[#eab308]/10 text-[#eab308] border border-[#eab308]/30 hover:bg-[#eab308] hover:text-[#451a03] transition-all px-6 py-2.5 rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(234,179,8,0.15)]">
                 {{ __('Save Configuration') }}
             </button>
         </div>
+        @endif
     </form>
 </div>
+@endcan
 
 {{-- ════════════════════════════════════════════════════════════════ --}}
 {{-- TAB 2 — Currencies                                             --}}
 {{-- ════════════════════════════════════════════════════════════════ --}}
+@can('view settings currencies')
 <div x-show="activeTab === 'currencies'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
 
     {{-- Add Currency Form --}}
+    @can('edit settings currencies')
     <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden mb-6">
         <div class="p-4 bg-slate-50 dark:bg-black/20 border-b border-slate-200 dark:border-white/5">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -152,6 +170,7 @@
             </div>
         </form>
     </div>
+    @endcan
 
     {{-- Currencies Table --}}
     <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
@@ -169,7 +188,9 @@
                         <th class="py-4 px-4 font-medium">{{ __('Currency Code') }}</th>
                         <th class="py-4 px-4 font-medium">{{ __('Exchange Rate') }}</th>
                         <th class="py-4 px-4 font-medium">{{ __('Status') }}</th>
+                        @can('edit settings currencies')
                         <th class="py-4 px-4 font-medium {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">{{ __('Actions') }}</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200 dark:divide-white/5 text-sm text-slate-600 dark:text-slate-300">
@@ -197,6 +218,7 @@
                             </td>
                         </template>
                         <template x-if="!editing">
+                            @can('edit settings currencies')
                             <td class="py-3 px-4 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">
                                 <button @click="editing = true" class="text-[#38bdf8] hover:text-blue-300 transition-colors text-xs font-bold {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('Edit') }}</button>
                                 @if(!$currency->is_default)
@@ -206,6 +228,9 @@
                                 </form>
                                 @endif
                             </td>
+                            @else
+                            <td class="py-3 px-4"></td>
+                            @endcan
                         </template>
 
                         {{-- Edit Mode --}}
@@ -236,13 +261,16 @@
         </div>
     </div>
 </div>
+@endcan
 
 {{-- ════════════════════════════════════════════════════════════════ --}}
 {{-- TAB 3 — Material Categories                                     --}}
 {{-- ════════════════════════════════════════════════════════════════ --}}
+@can('view settings categories')
 <div x-show="activeTab === 'categories'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
 
     {{-- Add Category Form --}}
+    @can('edit settings categories')
     <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden mb-6">
         <div class="p-4 bg-slate-50 dark:bg-black/20 border-b border-slate-200 dark:border-white/5">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -264,6 +292,7 @@
             </div>
         </form>
     </div>
+    @endcan
 
     {{-- Categories Table --}}
     <div class="glass-panel rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden">
@@ -281,7 +310,9 @@
                         <th class="py-4 px-4 font-medium">{{ __('Category Name') }}</th>
                         <th class="py-4 px-4 font-medium">{{ __('Status') }}</th>
                         <th class="py-4 px-4 font-medium">{{ __('Suppliers') }}</th>
+                        @can('edit settings categories')
                         <th class="py-4 px-4 font-medium {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">{{ __('Actions') }}</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200 dark:divide-white/5 text-sm text-slate-600 dark:text-slate-300">
@@ -309,6 +340,7 @@
                             </td>
                         </template>
                         <template x-if="!editing">
+                            @can('edit settings categories')
                             <td class="py-3 px-4 {{ app()->getLocale() == 'ar' ? 'text-left' : 'text-right' }}">
                                 <button @click="editing = true" class="text-[#38bdf8] hover:text-blue-300 transition-colors text-xs font-bold {{ app()->getLocale() == 'ar' ? 'ml-3' : 'mr-3' }}">{{ __('Edit') }}</button>
                                 <form action="{{ route('admin.settings.categories.destroy', $category->id) }}" method="POST" class="inline-block" data-confirm data-confirm-title="{{ __('Delete Category') }}" data-confirm-message="{{ __('Are you sure you want to delete this category?') }}">
@@ -316,6 +348,9 @@
                                     <button type="submit" class="text-red-400 hover:text-red-300 transition-colors text-xs font-bold">{{ __('Delete') }}</button>
                                 </form>
                             </td>
+                            @else
+                            <td class="py-3 px-4"></td>
+                            @endcan
                         </template>
 
                         {{-- Edit Mode --}}
@@ -344,6 +379,7 @@
         </div>
     </div>
 </div>
+@endcan
 
 </div>
 @endsection

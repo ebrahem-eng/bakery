@@ -18,9 +18,9 @@ class DatabaseSeeder extends Seeder
         // 1. Core Config
         $this->call(CurrencySeeder::class);
         $this->call(CategorySeeder::class);
-        
+
         // 2. Roles & Admin
-        $this->call(RolesAndPermissionsSeeder::class);
+        $this->call(PermissionSeeder::class);
         $this->call(AdminSeeder::class);
 
         // 3. Realistic Application Data for Testing
