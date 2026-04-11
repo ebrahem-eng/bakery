@@ -1,6 +1,7 @@
 @extends('layouts.Admin.App')
 
 @section('content')
+@can('view accounts ledger')
 <div x-data="{ activeTab: 'distributors' }">
     {{-- ── Header ────────────────────────────────────────────────────── --}}
     <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -209,4 +210,5 @@
         </div>
     </div>
 </div>
+@endcan
 @endsection

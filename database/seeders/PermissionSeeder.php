@@ -34,7 +34,9 @@ class PermissionSeeder extends Seeder
             'view distributions', 'create distributions', 'edit distributions', 'delete distributions', 'filter distributions', 'return distributions',
 
             // ── Accounts & Ledger ───────────────────────────────────────
-            'view accounts', 'view ledger', 'view debts', 'filter accounts', 'filter ledger', 'pay debts',
+            'view accounts p&l', 'filter accounts p&l',
+            'view accounts ledger', 'filter accounts ledger',
+            'view accounts debts', 'pay accounts debts',
 
             // ── Expenses ───────────────────────────────────────────────
             'view expenses', 'create expenses', 'edit expenses', 'delete expenses', 'filter expenses',

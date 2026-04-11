@@ -29,7 +29,7 @@
                 @endcan
 
                 <!-- Accounts -->
-                @if(auth('admin')->user() && (auth('admin')->user()->can('view ledger') || auth('admin')->user()->can('view debts')))
+                @if(auth('admin')->user() && (auth('admin')->user()->can('view accounts p&l') || auth('admin')->user()->can('view accounts ledger') || auth('admin')->user()->can('view accounts debts')))
                 <div x-data="{ open: {{ request()->routeIs('admin.accounts.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="{{ request()->routeIs('admin.accounts.*') ? 'sidebar-item-active text-amber-500' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5' }} w-full flex justify-between items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors text-slate-600 dark:text-slate-400">
                         <div class="flex items-center">
@@ -41,11 +41,13 @@
                         <svg :class="{'rotate-180': open}" class="w-4 h-4 transition-transform text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="open" class="my-1 space-y-1">
-                        @can('view ledger')
+                        @can('view accounts p&l')
                         <a href="{{ route('admin.accounts.index') }}" class="{{ request()->routeIs('admin.accounts.index') ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }} block {{ app()->getLocale() == 'ar' ? 'pr-12' : 'pl-12' }} py-2 text-xs transition-colors">{{ __('Profit & Loss (P&L)') }}</a>
+                        @endcan
+                        @can('view accounts ledger')
                         <a href="{{ route('admin.accounts.ledger') }}" class="{{ request()->routeIs('admin.accounts.ledger') ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }} block {{ app()->getLocale() == 'ar' ? 'pr-12' : 'pl-12' }} py-2 text-xs transition-colors">{{ __('Financial Ledger') }}</a>
                         @endcan
-                        @can('view debts')
+                        @can('view accounts debts')
                         <a href="{{ route('admin.accounts.debts') }}" class="{{ request()->routeIs('admin.accounts.debts') ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }} block {{ app()->getLocale() == 'ar' ? 'pr-12' : 'pl-12' }} py-2 text-xs transition-colors">{{ __('Outstanding Debts') }}</a>
                         @endcan
                     </div>

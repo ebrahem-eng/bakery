@@ -1,6 +1,7 @@
 @extends('layouts.Admin.App')
 
 @section('content')
+@can('view accounts debts')
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h2 class="text-2xl font-black bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent flex items-center gap-3">
@@ -117,9 +118,11 @@
                                     @endif
                                 </td>
                                 <td class="py-3 px-4 text-center">
+                                    @can('pay accounts debts')
                                     <a href="{{ route('admin.supplies.pay', $supply->id) }}" class="inline-flex items-center justify-center p-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg transition-colors border border-emerald-500/20" title="{{ __('Settle Invoice') }}">
                                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                     </a>
+                                    @endcan
                                 </td>
                             </tr>
                         @empty
@@ -143,4 +146,6 @@
             @endif
         </div>
     </div>
+    </div>
+@endcan
 @endsection

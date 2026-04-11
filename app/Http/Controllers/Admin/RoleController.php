@@ -28,6 +28,8 @@ class RoleController extends Controller
             // Custom grouping logic
             if (str_contains($name, 'settings')) {
                 $groupName = 'settings';
+            } elseif (str_contains($name, 'accounts')) {
+                $groupName = 'accounts';
             } elseif (count($parts) > 1) {
                 $groupName = end($parts);
             } else {

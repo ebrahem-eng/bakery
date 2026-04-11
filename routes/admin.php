@@ -42,11 +42,11 @@ Route::group(['middleware' => ['admin.auth']], function () {
 
     // ── Accounts ──────────────────────────────────────────────────────
     Route::get('/accounts', [AccountsController::class, 'index'])
-        ->middleware('permission:view ledger,admin')->name('accounts.index');
+        ->middleware('permission:view accounts p&l,admin')->name('accounts.index');
     Route::get('/accounts/debts', [AccountsController::class, 'debts'])
-        ->middleware('permission:view debts,admin')->name('accounts.debts');
+        ->middleware('permission:view accounts debts,admin')->name('accounts.debts');
     Route::get('/accounts/ledger', [AccountsController::class, 'financialLedger'])
-        ->middleware('permission:view ledger,admin')->name('accounts.ledger');
+        ->middleware('permission:view accounts ledger,admin')->name('accounts.ledger');
 
     // ── Roles & Permissions ────────────────────────────────────────────
     Route::resource('roles', RoleController::class)->middleware('permission:view roles,admin');
@@ -81,9 +81,9 @@ Route::group(['middleware' => ['admin.auth']], function () {
         Route::get('supplies/{supply}', [SupplyController::class, 'show'])->name('supplies.show');
         
         Route::get('supplies/{supply}/pay', [SupplyController::class, 'showPaymentForm'])
-            ->middleware('permission:pay supplies,admin')->name('supplies.pay');
+            ->middleware('permission:pay accounts debts,admin')->name('supplies.pay');
         Route::post('supplies/{supply}/pay', [SupplyController::class, 'registerPayment'])
-            ->middleware('permission:pay supplies,admin')->name('supplies.pay.submit');
+            ->middleware('permission:pay accounts debts,admin')->name('supplies.pay.submit');
     });
 
     // ── Warehouse ──────────────────────────────────────────────────────

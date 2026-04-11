@@ -186,7 +186,7 @@
         @endcan
 
         {{-- 3. Pay Supplier --}}
-        @can('pay supplies')
+        @can('view accounts debts')
         <a href="{{ route('admin.accounts.debts') }}" class="glass-panel p-4 rounded-xl border border-slate-200 dark:border-white/5 hover:border-blue-500/50 hover:bg-blue-500/5 group transition-all text-center">
             <div class="w-10 h-10 mx-auto bg-blue-500/10 text-blue-500 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>

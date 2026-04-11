@@ -1388,5 +1388,11 @@
     "view settings categories": "عرض فئات المواد",
     "edit settings categories": "تعديل فئات المواد",
     "Start New Work Day": "بدء يوم عمل جديد",
-    "Invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صالحة"
+    "Invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صالحة",
+    "view accounts p&l": "عرض الأرباح والخسائر",
+    "filter accounts p&l": "فلترة الأرباح والخسائر",
+    "view accounts ledger": "عرض السجل المالي",
+    "filter accounts ledger": "فلترة السجل المالي",
+    "view accounts debts": "عرض الديون المستحقة",
+    "pay accounts debts": "تسديد الديون"
 }
