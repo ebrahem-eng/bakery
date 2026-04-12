@@ -9,12 +9,24 @@ class Setting extends Model
     protected $fillable = ['key', 'value'];
 
     /**
-     * Get a setting value by key.
+     * Get a setting value by key, with language support.
      */
     public static function get(string $key, $default = null): ?string
     {
-        $setting = static::where('key', $key)->first();
+        $locale = app()->getLocale();
+        
+        // Try current locale e.g. hero_title_ar
+        $setting = static::where('key', $key . '_' . $locale)->first();
+        if ($setting) return $setting->value;
+        
+        // Fallback to English e.g. hero_title_en
+        if ($locale !== 'en') {
+            $setting = static::where('key', $key . '_en')->first();
+            if ($setting) return $setting->value;
+        }
 
+        // Final fallback to exact key
+        $setting = static::where('key', $key)->first();
         return $setting ? $setting->value : $default;
     }
 

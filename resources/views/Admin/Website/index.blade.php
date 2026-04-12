@@ -59,27 +59,68 @@
                         </label>
                     </div>
                     
-                    <div class="grid grid-cols-1 gap-6">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Announcement Badge') }}</label>
-                            <input type="text" x-model="form.hero_badge" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all" placeholder="{{ __('Small Batch, Big Flavor') }}">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Main Heading') }}</label>
-                            <input type="text" x-model="form.hero_title" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all font-serif text-lg">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Hero Description') }}</label>
-                            <textarea x-model="form.hero_description" rows="3" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all" placeholder="{{ __('Describe your bakery...') }}"></textarea>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Primary CTA Button') }}</label>
-                                <input type="text" x-model="form.hero_cta_primary" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {{-- English Side --}}
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-white/10 text-slate-500">EN</span>
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('Hero Text Content') }}</label>
                             </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Secondary CTA Button') }}</label>
-                                <input type="text" x-model="form.hero_cta_secondary" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{{ __('Announcement Badge') }}</label>
+                                    <input type="text" x-model="form.hero_badge_en" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{{ __('Main Heading') }}</label>
+                                    <input type="text" x-model="form.hero_title_en" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{{ __('Hero Description') }}</label>
+                                    <textarea x-model="form.hero_description_en" rows="4" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all text-sm leading-relaxed"></textarea>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">{{ __('Primary CTA') }}</label>
+                                        <input type="text" x-model="form.hero_cta_primary_en" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2 text-xs">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">{{ __('Secondary CTA') }}</label>
+                                        <input type="text" x-model="form.hero_cta_secondary_en" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2 text-xs">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Arabic Side --}}
+                        <div class="space-y-4" dir="rtl">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-600">AR</span>
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">محتوى نص الهيرو (عربي)</label>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">شارة الإعلان</label>
+                                    <input type="text" x-model="form.hero_badge_ar" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">العنوان الرئيسي</label>
+                                    <input type="text" x-model="form.hero_title_ar" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all font-bold font-arabic">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">وصف قسم الهيرو</label>
+                                    <textarea x-model="form.hero_description_ar" rows="4" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all text-sm leading-relaxed font-arabic"></textarea>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">زر الإجراء الرئيسي</label>
+                                        <input type="text" x-model="form.hero_cta_primary_ar" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2 text-xs font-arabic">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">زر الإجراء الثانوي</label>
+                                        <input type="text" x-model="form.hero_cta_secondary_ar" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2 text-xs font-arabic">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -102,24 +143,59 @@
                         </label>
                     </div>
                     
-                    <div class="grid grid-cols-1 gap-6">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Section Small Heading') }}</label>
-                            <input type="text" x-model="form.about_heading" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all" placeholder="{{ __('Since 1999') }}">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                            {{-- English Side --}}
+                            <div class="space-y-6">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-white/10 text-slate-500">EN</span>
+                                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ __('About Section Content') }}</label>
+                                </div>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{{ __('Section Small Heading') }}</label>
+                                        <input type="text" x-model="form.about_heading_en" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{{ __('Main Title') }}</label>
+                                        <input type="text" x-model="form.about_title_en" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all font-bold">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{{ __('Descriptive Paragraph 1') }}</label>
+                                        <textarea x-model="form.about_desc_1_en" rows="3" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all text-sm"></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{{ __('Descriptive Paragraph 2') }}</label>
+                                        <textarea x-model="form.about_desc_2_en" rows="3" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all text-sm"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Arabic Side --}}
+                            <div class="space-y-6" dir="rtl">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-600">AR</span>
+                                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300">محتوى قسم من نحن (عربي)</label>
+                                </div>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">عنوان القسم الصغير</label>
+                                        <input type="text" x-model="form.about_heading_ar" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all font-arabic">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">العنوان الرئيسي للقسم</label>
+                                        <input type="text" x-model="form.about_title_ar" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all font-bold font-arabic">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">الفقرة الوصفية 1</label>
+                                        <textarea x-model="form.about_desc_1_ar" rows="3" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all text-sm font-arabic"></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">الفقرة الوصفية 2</label>
+                                        <textarea x-model="form.about_desc_2_ar" rows="3" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all text-sm font-arabic"></textarea>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Main Title') }}</label>
-                            <input type="text" x-model="form.about_title" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Descriptive Paragraph 1') }}</label>
-                            <textarea x-model="form.about_desc_1" rows="4" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Descriptive Paragraph 2') }}</label>
-                            <textarea x-model="form.about_desc_2" rows="4" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all"></textarea>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="glass-card p-6 rounded-3xl border border-slate-200 dark:border-white/10">
@@ -158,14 +234,36 @@
                         </label>
                     </div>
                     
-                    <div class="grid grid-cols-1 gap-6">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Main Title') }}</label>
-                            <input type="text" x-model="form.offer_title" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {{-- English Side --}}
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-white/10 text-slate-500">EN</span>
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-widest">{{ __('Offerings Section') }}</label>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">{{ __('Section Title') }}</label>
+                                <input type="text" x-model="form.offer_title_en" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">{{ __('Section Subtitle') }}</label>
+                                <input type="text" x-model="form.offer_subtitle_en" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2 text-sm">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Subtitle') }}</label>
-                            <input type="text" x-model="form.offer_subtitle" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
+                        {{-- Arabic Side --}}
+                        <div class="space-y-4" dir="rtl">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-600">AR</span>
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-widest">قسم المبيعات (عربي)</label>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">عنوان القسم</label>
+                                <input type="text" x-model="form.offer_title_ar" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2 text-sm font-arabic">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">العنوان الفرعي للقسم</label>
+                                <input type="text" x-model="form.offer_subtitle_ar" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2 text-sm font-arabic">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -173,7 +271,7 @@
                 <!-- Cards Management -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <template x-for="i in [1, 2, 3]">
-                        <div class="glass-card p-4 rounded-2xl border border-slate-200 dark:border-white/10 space-y-4">
+                        <div class="glass-card p-4 rounded-2xl border border-slate-200 dark:border-white/10 space-y-4 transition-all hover:border-amber-500/30">
                             <div class="flex items-center justify-between">
                                 <h4 class="font-bold text-amber-500" x-text="'{{ __('Card') }} ' + i"></h4>
                             </div>
@@ -188,14 +286,32 @@
                                 </div>
                             </div>
 
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">{{ __('Card Title') }}</label>
-                                <input type="text" x-model="form['offer_card'+i+'_title']" class="w-full text-sm bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2">
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1">{{ __('Card Description') }}</label>
-                                <textarea x-model="form['offer_card'+i+'_desc']" rows="3" class="w-full text-sm bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2"></textarea>
+                            <div class="space-y-4">
+                                {{-- EN --}}
+                                <div>
+                                    <div class="flex items-center gap-1.5 mb-1.5">
+                                        <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-slate-200 dark:bg-white/5 text-slate-400">EN</span>
+                                        <label class="text-[10px] font-bold text-slate-500 uppercase">{{ __('Card Title') }}</label>
+                                    </div>
+                                    <input type="text" x-model="form['offer_card'+i+'_title_en']" class="w-full text-xs bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2">
+                                </div>
+                                <div dir="rtl">
+                                    <div class="flex items-center gap-1.5 mb-1.5">
+                                        <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-amber-500/10 text-amber-600">AR</span>
+                                        <label class="text-[10px] font-bold text-slate-500 uppercase">عنوان البطاقة</label>
+                                    </div>
+                                    <input type="text" x-model="form['offer_card'+i+'_title_ar']" class="w-full text-xs bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2 text-right font-arabic">
+                                </div>
+                                
+                                {{-- Desc EN --}}
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">{{ __('Card Description') }} (EN)</label>
+                                    <textarea x-model="form['offer_card'+i+'_desc_en']" rows="3" class="w-full text-xs bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2"></textarea>
+                                </div>
+                                <div dir="rtl">
+                                    <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">وصف البطاقة (عربي)</label>
+                                    <textarea x-model="form['offer_card'+i+'_desc_ar']" rows="3" class="w-full text-xs bg-slate-100 dark:bg-white/5 border-0 rounded-lg px-3 py-2 text-right font-arabic"></textarea>
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -218,14 +334,36 @@
                         </label>
                     </div>
                     
-                    <div class="grid grid-cols-1 gap-6">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Section Title') }}</label>
-                            <input type="text" x-model="form.contact_title" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {{-- EN --}}
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-white/10 text-slate-500">EN</span>
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Contact Section Info</label>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest">{{ __('Section Title') }}</label>
+                                <input type="text" x-model="form.contact_title_en" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest">{{ __('Section Subtitle') }}</label>
+                                <textarea x-model="form.contact_subtitle_en" rows="3" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all text-sm"></textarea>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">{{ __('Section Subtitle') }}</label>
-                            <input type="text" x-model="form.contact_subtitle" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
+                        {{-- AR --}}
+                        <div class="space-y-4" dir="rtl">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-600">AR</span>
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">قسم التواصل (عربي)</label>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest">عنوان القسم</label>
+                                <input type="text" x-model="form.contact_title_ar" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest">العنوان الفرعي للقسم</label>
+                                <textarea x-model="form.contact_subtitle_ar" rows="3" class="w-full bg-slate-100 dark:bg-white/5 border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 transition-all text-sm"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -268,35 +406,60 @@ function websiteManager() {
         activeTab: 'hero',
         loading: false,
         form: {
-            // Hero
+            // Visibility (Global)
             hero_visible: {{ \App\Models\Setting::get('hero_visible', '1') == '1' ? 'true' : 'false' }},
-            hero_badge: '{{ \App\Models\Setting::get("hero_badge", __("Small Batch, Big Flavor")) }}',
-            hero_title: '{{ addslashes(\App\Models\Setting::get("hero_title", __("Artisan") . " " . __("Baking,") . " " . __("Modern Patisserie."))) }}',
-            hero_description: '{{ addslashes(\App\Models\Setting::get("hero_description", __("Slow-fermented breads, delicate pastries, and celebration cakes finished with a designer\'s touch. Every bite balances warmth, craft, and a clean modern feel."))) }}',
-            hero_cta_primary: '{{ \App\Models\Setting::get("hero_cta_primary", __("Explore Menu")) }}',
-            hero_cta_secondary: '{{ \App\Models\Setting::get("hero_cta_secondary", __("Discover Our Story")) }}',
-            // About
             about_visible: {{ \App\Models\Setting::get('about_visible', '1') == '1' ? 'true' : 'false' }},
-            about_heading: '{{ \App\Models\Setting::get("about_heading", __("Since 1999")) }}',
-            about_title: '{{ \App\Models\Setting::get("about_title", __("Where Tradition Meets True Innovation")) }}',
-            about_desc_1: '{{ addslashes(\App\Models\Setting::get("about_desc_1", __("We don\'t just bake; we create edible works of art. Rooted in traditional techniques handed down through generations, our master bakers infuse modern flavors and breathtaking designs into everything we make."))) }}',
-            about_desc_2: '{{ addslashes(\App\Models\Setting::get("about_desc_2", __("From the crackle of hand-shaped artisan loaves to the delicate crumb of our signature pastries, we guarantee an unparalleled culinary experience that tantalizes your taste buds and delights your eyes."))) }}',
-            // Offer
             offer_visible: {{ \App\Models\Setting::get('offer_visible', '1') == '1' ? 'true' : 'false' }},
-            offer_title: '{{ \App\Models\Setting::get("offer_title", __("Our Masterpieces")) }}',
-            offer_subtitle: '{{ \App\Models\Setting::get("offer_subtitle", __("Handcrafted daily using only the finest, carefully sourced ingredients.")) }}',
-            
-            offer_card1_title: '{{ \App\Models\Setting::get("offer_card1_title", __("Artisan Bread")) }}',
-            offer_card1_desc: '{{ addslashes(\App\Models\Setting::get("offer_card1_desc", __("Naturally leavened sourdough and rustic loaves, baked on stone hearths for a perfect crust and airy crumb."))) }}',
-            offer_card2_title: '{{ \App\Models\Setting::get("offer_card2_title", __("Signature Cakes")) }}',
-            offer_card2_desc: '{{ addslashes(\App\Models\Setting::get("offer_card2_desc", __("Elegant, custom-designed cakes featuring breathtaking modern aesthetics and luxurious, mouth-watering flavors."))) }}',
-            offer_card3_title: '{{ \App\Models\Setting::get("offer_card3_title", __("French Pastries")) }}',
-            offer_card3_desc: '{{ addslashes(\App\Models\Setting::get("offer_card3_desc", __("Flaky, buttery croissants, delicate macarons, and rich tartes crafted with authentic European techniques."))) }}',
-
-            // Contact
             contact_visible: {{ \App\Models\Setting::get('contact_visible', '1') == '1' ? 'true' : 'false' }},
-            contact_title: '{{ \App\Models\Setting::get("contact_title", __("Let\'s Bring Your Vision to Life.")) }}',
-            contact_subtitle: '{{ \App\Models\Setting::get("contact_subtitle", __("Whether you need a custom cake for a monumental event or just want to reserve your favorite morning pastry, our team is here for you. We\'d love to hear from you.")) }}',
+
+            // Hero (EN/AR)
+            hero_badge_en: '{{ addslashes(\App\Models\Setting::where("key", "hero_badge_en")->first()->value ?? "Small Batch, Big Flavor") }}',
+            hero_badge_ar: '{{ addslashes(\App\Models\Setting::where("key", "hero_badge_ar")->first()->value ?? "دفعات صغيرة، نكهة كبيرة") }}',
+            hero_title_en: '{{ addslashes(\App\Models\Setting::where("key", "hero_title_en")->first()->value ?? "Artisan Baking, Modern Patisserie.") }}',
+            hero_title_ar: '{{ addslashes(\App\Models\Setting::where("key", "hero_title_ar")->first()->value ?? "خَبز حرفي، حلويات حديثة.") }}',
+            hero_description_en: '{{ addslashes(\App\Models\Setting::where("key", "hero_description_en")->first()->value ?? "Slow-fermented breads, delicate pastries, and celebration cakes finished with a designer\'s touch.") }}',
+            hero_description_ar: '{{ addslashes(\App\Models\Setting::where("key", "hero_description_ar")->first()->value ?? "خبز خميرة طبيعية ومعجنات رقيقة وقوالب حلوى مميزة تنتهي بلمسة مصمم.") }}',
+            hero_cta_primary_en: '{{ addslashes(\App\Models\Setting::where("key", "hero_cta_primary_en")->first()->value ?? "Explore Menu") }}',
+            hero_cta_primary_ar: '{{ addslashes(\App\Models\Setting::where("key", "hero_cta_primary_ar")->first()->value ?? "استكشف القائمة") }}',
+            hero_cta_secondary_en: '{{ addslashes(\App\Models\Setting::where("key", "hero_cta_secondary_en")->first()->value ?? "Discover Our Story") }}',
+            hero_cta_secondary_ar: '{{ addslashes(\App\Models\Setting::where("key", "hero_cta_secondary_ar")->first()->value ?? "اكتشف قصتنا") }}',
+
+            // About (EN/AR)
+            about_heading_en: '{{ addslashes(\App\Models\Setting::where("key", "about_heading_en")->first()->value ?? "Since 1999") }}',
+            about_heading_ar: '{{ addslashes(\App\Models\Setting::where("key", "about_heading_ar")->first()->value ?? "منذ 1999") }}',
+            about_title_en: '{{ addslashes(\App\Models\Setting::where("key", "about_title_en")->first()->value ?? "Where Tradition Meets True Innovation") }}',
+            about_title_ar: '{{ addslashes(\App\Models\Setting::where("key", "about_title_ar")->first()->value ?? "حيث تلتقي التقاليد بالابتكار الحقيقي") }}',
+            about_desc_1_en: '{{ addslashes(\App\Models\Setting::where("key", "about_desc_1_en")->first()->value ?? "We don\'t just bake; we create edible works of art.") }}',
+            about_desc_1_ar: '{{ addslashes(\App\Models\Setting::where("key", "about_desc_1_ar")->first()->value ?? "نحن لا نخبز فحسب؛ بل نصنع لوحات فنية صالحة للأكل.") }}',
+            about_desc_2_en: '{{ addslashes(\App\Models\Setting::where("key", "about_desc_2_en")->first()->value ?? "From the crackle of hand-shaped artisan loaves to the delicate crumb...") }}',
+            about_desc_2_ar: '{{ addslashes(\App\Models\Setting::where("key", "about_desc_2_ar")->first()->value ?? "من قرمشة أرغفة الخبز المصنوعة يدوياً إلى القوام الهش...") }}',
+
+            // Offer (EN/AR)
+            offer_title_en: '{{ addslashes(\App\Models\Setting::where("key", "offer_title_en")->first()->value ?? "Our Masterpieces") }}',
+            offer_title_ar: '{{ addslashes(\App\Models\Setting::where("key", "offer_title_ar")->first()->value ?? "روائعنا") }}',
+            offer_subtitle_en: '{{ addslashes(\App\Models\Setting::where("key", "offer_subtitle_en")->first()->value ?? "Handcrafted daily using only the finest ingredients.") }}',
+            offer_subtitle_ar: '{{ addslashes(\App\Models\Setting::where("key", "offer_subtitle_ar")->first()->value ?? "مصنوعة يدوياً يومياً باستخدام أجود المكونات.") }}',
+            
+            offer_card1_title_en: '{{ addslashes(\App\Models\Setting::where("key", "offer_card1_title_en")->first()->value ?? "Artisan Bread") }}',
+            offer_card1_title_ar: '{{ addslashes(\App\Models\Setting::where("key", "offer_card1_title_ar")->first()->value ?? "خبز يدوي") }}',
+            offer_card1_desc_en: '{{ addslashes(\App\Models\Setting::where("key", "offer_card1_desc_en")->first()->value ?? "Naturally leavened sourdough and rustic loaves.") }}',
+            offer_card1_desc_ar: '{{ addslashes(\App\Models\Setting::where("key", "offer_card1_desc_ar")->first()->value ?? "خبز خميرة طبيعية وأرغفة ريفية.") }}',
+
+            offer_card2_title_en: '{{ addslashes(\App\Models\Setting::where("key", "offer_card2_title_en")->first()->value ?? "Signature Cakes") }}',
+            offer_card2_title_ar: '{{ addslashes(\App\Models\Setting::where("key", "offer_card2_title_ar")->first()->value ?? "قوالب حلوى مميزة") }}',
+            offer_card2_desc_en: '{{ addslashes(\App\Models\Setting::where("key", "offer_card2_desc_en")->first()->value ?? "Elegant, custom-designed cakes featuring breathtaking aesthetics.") }}',
+            offer_card2_desc_ar: '{{ addslashes(\App\Models\Setting::where("key", "offer_card2_desc_ar")->first()->value ?? "قوالب حلوى أنيقة ومصممة خصيصاً بجمالية عصرية مذهلة.") }}',
+
+            offer_card3_title_en: '{{ addslashes(\App\Models\Setting::where("key", "offer_card3_title_en")->first()->value ?? "French Pastries") }}',
+            offer_card3_title_ar: '{{ addslashes(\App\Models\Setting::where("key", "offer_card3_title_ar")->first()->value ?? "معجنات فرنسية") }}',
+            offer_card3_desc_en: '{{ addslashes(\App\Models\Setting::where("key", "offer_card3_desc_en")->first()->value ?? "Flaky, buttery croissants and delicate macarons.") }}',
+            offer_card3_desc_ar: '{{ addslashes(\App\Models\Setting::where("key", "offer_card3_desc_ar")->first()->value ?? "كرواسان هش وغني بالزبدة وماكرون ناعم.") }}',
+
+            // Contact (EN/AR)
+            contact_title_en: '{{ addslashes(\App\Models\Setting::where("key", "contact_title_en")->first()->value ?? "Let\'s Bring Your Vision to Life.") }}',
+            contact_title_ar: '{{ addslashes(\App\Models\Setting::where("key", "contact_title_ar")->first()->value ?? "فلنجعل رؤيتك تنبض بالحياة.") }}',
+            contact_subtitle_en: '{{ addslashes(\App\Models\Setting::where("key", "contact_subtitle_en")->first()->value ?? "Whether you need a custom cake or a pastry...") }}',
+            contact_subtitle_ar: '{{ addslashes(\App\Models\Setting::where("key", "contact_subtitle_ar")->first()->value ?? "سواء كنت بحاجة لقالب حلوى خاص أو معجنات...") }}',
         },
         previews: {
             about_image: '{{ \App\Models\Setting::get("about_image") ? asset("storage/" . \App\Models\Setting::get("about_image")) : "" }}',
