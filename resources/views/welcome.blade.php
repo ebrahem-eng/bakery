@@ -675,6 +675,7 @@
         </nav>
 
         <!-- Hero Section -->
+        @if(\App\Models\Setting::get('hero_visible', '1') == '1')
         <section class="relative min-h-screen flex items-center pt-20 overflow-hidden" data-hero-3d>
             <!-- Premium Bakery-Themed 3D Hero -->
             <div class="absolute inset-0 hero-ambience"></div>
@@ -722,20 +723,20 @@
                     <div class="flex flex-col justify-center max-w-xl">
                         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm font-medium mb-6 w-fit hero-reveal" style="--delay: 0.1s;">
                             <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                            {{ __('Small Batch, Big Flavor') }}
+                            {{ \App\Models\Setting::get('hero_badge', __('Small Batch, Big Flavor')) }}
                         </div>
                         <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight text-glow hero-reveal" style="--delay: 0.2s;">
-                            {{ __('Artisan') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500">{{ __('Baking,') }}</span><br>{{ __('Modern Patisserie.') }}
+                            {!! \App\Models\Setting::get('hero_title', __('Artisan') . ' <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500">' . __('Baking,') . '</span><br>' . __('Modern Patisserie.')) !!}
                         </h1>
                         <p class="text-base sm:text-lg text-slate-300 mb-8 leading-relaxed font-light hero-reveal" style="--delay: 0.3s;">
-                            {{ __('Slow-fermented breads, delicate pastries, and celebration cakes finished with a designer\'s touch. Every bite balances warmth, craft, and a clean modern feel.') }}
+                            {!! nl2br(e(\App\Models\Setting::get('hero_description', __("Slow-fermented breads, delicate pastries, and celebration cakes finished with a designer's touch. Every bite balances warmth, craft, and a clean modern feel.")))) !!}
                         </p>
                         <div class="flex flex-wrap gap-4 hero-reveal" style="--delay: 0.4s;">
                             <a href="#offer" class="px-8 py-4 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-semibold transition-all duration-300 shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:-translate-y-1 block text-center">
-                                {{ __('Explore Menu') }}
+                                {{ \App\Models\Setting::get('hero_cta_primary', __('Explore Menu')) }}
                             </a>
                             <a href="#about" class="px-8 py-4 rounded-full bg-white/5 hover:bg-white/10 text-white border border-white/10 font-semibold transition-all duration-300 hover:-translate-y-1 block text-center backdrop-blur-md">
-                                {{ __('Discover Our Story') }}
+                                {{ \App\Models\Setting::get('hero_cta_secondary', __('Discover Our Story')) }}
                             </a>
                         </div>
                     </div>
@@ -748,8 +749,10 @@
                 <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
             </div>
         </section>
+        @endif
 
         <!-- About Us Section -->
+        @if(\App\Models\Setting::get('about_visible', '1') == '1')
         <section id="about" class="py-16 md:py-24 relative z-10 bg-[#0b0704]">
             <div class="absolute top-0 inset-inline-end-0 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none"></div>
             
@@ -757,7 +760,8 @@
                 <div class="flex flex-col lg:flex-row items-center gap-16">
                     <div class="lg:w-1/2 relative">
                         <div class="absolute inset-0 bg-gradient-to-tr from-amber-500/20 to-transparent rounded-3xl transform rotate-3 scale-105 opacity-50"></div>
-                        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Beautiful fresh bread" class="rounded-3xl shadow-2xl relative z-10 w-full h-[500px] object-cover animate-float border border-white/10">
+                        @php $aboutImg = \App\Models\Setting::get('about_image'); @endphp
+                        <img src="{{ $aboutImg ? asset('storage/'.$aboutImg) : 'https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80' }}" alt="Beautiful fresh bread" class="rounded-3xl shadow-2xl relative z-10 w-full h-[500px] object-cover animate-float border border-white/10">
                         
                         <!-- Floating Badge -->
                         <div class="absolute bottom-4 lg:bottom-8 inset-inline-end-0 lg:inset-inline-end-[-2rem] z-20 landing-glass p-4 lg:p-6 rounded-2xl shadow-xl flex items-center gap-4">
@@ -765,7 +769,7 @@
                                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </div>
                             <div>
-                                <h4 class="text-white font-bold text-xl">{{ __('Since 1999') }}</h4>
+                                <h4 class="text-white font-bold text-xl">{{ \App\Models\Setting::get('about_heading', __('Since 1999')) }}</h4>
                                 <p class="text-slate-400 text-sm">{{ __('Crafting excellence') }}</p>
                             </div>
                         </div>
@@ -776,12 +780,12 @@
                             {{ __('About Us') }}
                             <span class="absolute -bottom-2 {{ app()->getLocale() == 'ar' ? 'right-0' : 'left-0' }} w-1/2 h-0.5 bg-amber-500"></span>
                         </h2>
-                        <h3 class="text-4xl lg:text-5xl font-bold text-white mb-6 mt-4">{{ __('Where Tradition Meets True Innovation') }}</h3>
+                        <h3 class="text-4xl lg:text-5xl font-bold text-white mb-6 mt-4">{{ \App\Models\Setting::get('about_title', __('Where Tradition Meets True Innovation')) }}</h3>
                         <p class="text-slate-400 mb-6 text-lg leading-relaxed font-light">
-                            {{ __('We don\'t just bake; we create edible works of art. Rooted in traditional techniques handed down through generations, our master bakers infuse modern flavors and breathtaking designs into everything we make.') }}
+                            {{ \App\Models\Setting::get('about_desc_1', __("We don't just bake; we create edible works of art. Rooted in traditional techniques handed down through generations, our master bakers infuse modern flavors and breathtaking designs into everything we make.")) }}
                         </p>
                         <p class="text-slate-400 mb-8 text-lg leading-relaxed font-light">
-                            {{ __('From the crackle of hand-shaped artisan loaves to the delicate crumb of our signature pastries, we guarantee an unparalleled culinary experience that tantalizes your taste buds and delights your eyes.') }}
+                            {{ \App\Models\Setting::get('about_desc_2', __("From the crackle of hand-shaped artisan loaves to the delicate crumb of our signature pastries, we guarantee an unparalleled culinary experience that tantalizes your taste buds and delights your eyes.")) }}
                         </p>
                         
                         <div class="grid grid-cols-2 gap-6">
@@ -798,8 +802,10 @@
                 </div>
             </div>
         </section>
+        @endif
 
         <!-- What We Offer Section -->
+        @if(\App\Models\Setting::get('offer_visible', '1') == '1')
         <section id="offer" class="py-16 md:py-24 relative z-10 overflow-hidden">
             <!-- Background Elements -->
             <div class="absolute inset-0 bg-[#120c08]/70"></div>
@@ -808,20 +814,25 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="text-center max-w-3xl mx-auto mb-16">
                     <h2 class="text-amber-500 font-semibold tracking-wider uppercase text-sm mb-3">{{ __('What We Offer') }}</h2>
-                    <h3 class="text-4xl lg:text-5xl font-bold text-white mb-6">{{ __('Our Masterpieces') }}</h3>
-                    <p class="text-slate-300 text-lg font-light leading-relaxed">{{ __('Handcrafted daily using only the finest, carefully sourced ingredients.') }}</p>
+                    <h3 class="text-4xl lg:text-5xl font-bold text-white mb-6">{{ \App\Models\Setting::get('offer_title', __('Our Masterpieces')) }}</h3>
+                    <p class="text-slate-300 text-lg font-light leading-relaxed">{{ \App\Models\Setting::get('offer_subtitle', __('Handcrafted daily using only the finest, carefully sourced ingredients.')) }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Card 1 -->
+                    @php 
+                        $c1_img = \App\Models\Setting::get('offer_card1_image');
+                        $c2_img = \App\Models\Setting::get('offer_card2_image');
+                        $c3_img = \App\Models\Setting::get('offer_card3_image');
+                    @endphp
                     <div class="glass-card group rounded-2xl overflow-hidden hover:-translate-y-2 transition-all duration-300">
                         <div class="h-64 overflow-hidden relative">
                             <div class="absolute inset-0 bg-black/20 z-10 group-hover:bg-transparent transition-all duration-300"></div>
-                            <img src="https://images.unsplash.com/photo-1586444248902-2f64eddc13df?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Artisan Bread" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <img src="{{ $c1_img ? asset('storage/'.$c1_img) : 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' }}" alt="Artisan Bread" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                         </div>
                         <div class="p-8">
-                            <h4 class="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 transition-colors lowercase first-letter:uppercase">{{ __('Artisan Bread') }}</h4>
-                            <p class="text-slate-400 mb-6 line-clamp-3">{{ __('Naturally leavened sourdough and rustic loaves, baked on stone hearths for a perfect crust and airy crumb.') }}</p>
+                            <h4 class="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 transition-colors lowercase first-letter:uppercase">{{ \App\Models\Setting::get('offer_card1_title', __('Artisan Bread')) }}</h4>
+                            <p class="text-slate-400 mb-6 line-clamp-3">{{ \App\Models\Setting::get('offer_card1_desc', __('Naturally leavened sourdough and rustic loaves, baked on stone hearths for a perfect crust and airy crumb.')) }}</p>
                             <a href="#" class="text-amber-400 font-medium inline-flex items-center hover:text-amber-300 transition-colors">
                                 {{ __('Discover More') }} <svg class="w-4 h-4 ms-1 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                             </a>
@@ -832,11 +843,11 @@
                     <div class="glass-card group rounded-2xl overflow-hidden hover:-translate-y-2 transition-all duration-300">
                         <div class="h-64 overflow-hidden relative">
                             <div class="absolute inset-0 bg-black/20 z-10 group-hover:bg-transparent transition-all duration-300"></div>
-                            <img src="https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Signature Cakes" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <img src="{{ $c2_img ? asset('storage/'.$c2_img) : 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' }}" alt="Signature Cakes" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                         </div>
                         <div class="p-8">
-                            <h4 class="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 transition-colors lowercase first-letter:uppercase">{{ __('Signature Cakes') }}</h4>
-                            <p class="text-slate-400 mb-6 line-clamp-3">{{ __('Elegant, custom-designed cakes featuring breathtaking modern aesthetics and luxurious, mouth-watering flavors.') }}</p>
+                            <h4 class="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 transition-colors lowercase first-letter:uppercase">{{ \App\Models\Setting::get('offer_card2_title', __('Signature Cakes')) }}</h4>
+                            <p class="text-slate-400 mb-6 line-clamp-3">{{ \App\Models\Setting::get('offer_card2_desc', __('Elegant, custom-designed cakes featuring breathtaking modern aesthetics and luxurious, mouth-watering flavors.')) }}</p>
                             <a href="#" class="text-amber-400 font-medium inline-flex items-center hover:text-amber-300 transition-colors">
                                 {{ __('Discover More') }} <svg class="w-4 h-4 ms-1 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                             </a>
@@ -847,11 +858,11 @@
                     <div class="glass-card group rounded-2xl overflow-hidden hover:-translate-y-2 transition-all duration-300">
                         <div class="h-64 overflow-hidden relative">
                             <div class="absolute inset-0 bg-black/20 z-10 group-hover:bg-transparent transition-all duration-300"></div>
-                            <img src="https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="French Pastries" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <img src="{{ $c3_img ? asset('storage/'.$c3_img) : 'https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' }}" alt="French Pastries" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                         </div>
                         <div class="p-8">
-                            <h4 class="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 transition-colors lowercase first-letter:uppercase">{{ __('French Pastries') }}</h4>
-                            <p class="text-slate-400 mb-6 line-clamp-3">{{ __('Flaky, buttery croissants, delicate macarons, and rich tartes crafted with authentic European techniques.') }}</p>
+                            <h4 class="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 transition-colors lowercase first-letter:uppercase">{{ \App\Models\Setting::get('offer_card3_title', __('French Pastries')) }}</h4>
+                            <p class="text-slate-400 mb-6 line-clamp-3">{{ \App\Models\Setting::get('offer_card3_desc', __('Flaky, buttery croissants, delicate macarons, and rich tartes crafted with authentic European techniques.')) }}</p>
                             <a href="#" class="text-amber-400 font-medium inline-flex items-center hover:text-amber-300 transition-colors">
                                 {{ __('Discover More') }} <svg class="w-4 h-4 ms-1 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                             </a>
@@ -860,16 +871,18 @@
                 </div>
             </div>
         </section>
+        @endif
 
         <!-- Contact Us Section -->
+        @if(\App\Models\Setting::get('contact_visible', '1') == '1')
         <section id="contact" class="py-16 md:py-24 relative bg-[#0c0805] border-t border-white/5">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
                     <div>
                         <h2 class="text-amber-500 font-semibold tracking-wider uppercase text-sm mb-3">{{ __('Contact Us') }}</h2>
-                        <h3 class="text-4xl lg:text-5xl font-bold text-white mb-8">{{ __('Let\'s Bring Your Vision to Life.') }}</h3>
+                        <h3 class="text-4xl lg:text-5xl font-bold text-white mb-8">{{ \App\Models\Setting::get('contact_title', __("Let's Bring Your Vision to Life.")) }}</h3>
                         <p class="text-slate-400 mb-10 text-lg leading-relaxed">
-                            {{ __('Whether you need a custom cake for a monumental event or just want to reserve your favorite morning pastry, our team is here for you. We\'d love to hear from you.') }}
+                            {{ \App\Models\Setting::get('contact_subtitle', __("Whether you need a custom cake for a monumental event or just want to reserve your favorite morning pastry, our team is here for you. We'd love to hear from you.")) }}
                         </p>
                         
                         <div class="space-y-8">
@@ -994,6 +1007,7 @@
                 </div>
             </div>
         </section>
+        @endif
 
         <!-- Minimal Footer -->
         <footer class="bg-[#0a0704] py-8 border-t border-white/5">
