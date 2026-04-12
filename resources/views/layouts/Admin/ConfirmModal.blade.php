@@ -29,16 +29,23 @@
              style="backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
 
             {{-- Animated Top Bar --}}
-            <div class="h-1 w-full" :class="type === 'danger' ? 'bg-gradient-to-r from-red-500 via-orange-500 to-red-500' : 'bg-gradient-to-r from-amber-500 via-orange-400 to-amber-500'"
+            <div class="h-1 w-full" 
+                 :class="{
+                    'bg-gradient-to-r from-red-500 via-orange-500 to-red-500': type === 'danger',
+                    'bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500': type === 'success',
+                    'bg-gradient-to-r from-amber-500 via-orange-400 to-amber-500': type !== 'danger' && type !== 'success'
+                 }"
                  style="background-size: 200% 100%; animation: shimmer 2s linear infinite;">
             </div>
 
             <div class="p-6">
                 {{-- Icon --}}
                 <div class="mx-auto mb-5 w-16 h-16 rounded-2xl flex items-center justify-center"
-                     :class="type === 'danger' 
-                        ? 'bg-gradient-to-br from-red-500/20 to-orange-500/20 dark:from-red-500/10 dark:to-orange-500/10 border border-red-500/20' 
-                        : 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 dark:from-amber-500/10 dark:to-orange-500/10 border border-amber-500/20'"
+                     :class="{
+                        'bg-gradient-to-br from-red-500/20 to-orange-500/20 dark:from-red-500/10 dark:to-orange-500/10 border border-red-500/20': type === 'danger',
+                        'bg-gradient-to-br from-emerald-500/20 to-teal-500/20 dark:from-emerald-500/10 dark:to-teal-500/10 border border-emerald-500/20': type === 'success',
+                        'bg-gradient-to-br from-amber-500/20 to-orange-500/20 dark:from-amber-500/10 dark:to-orange-500/10 border border-amber-500/20': type !== 'danger' && type !== 'success'
+                     }"
                      style="animation: pulse-icon 2.5s ease-in-out infinite;">
                     {{-- Danger Icon --}}
                     <template x-if="type === 'danger'">
@@ -47,9 +54,15 @@
                         </svg>
                     </template>
                     {{-- Warning Icon --}}
-                    <template x-if="type !== 'danger'">
+                    <template x-if="type !== 'danger' && type !== 'success'">
                         <svg class="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                        </svg>
+                    </template>
+                    {{-- Success Icon --}}
+                    <template x-if="type === 'success'">
+                        <svg class="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                         </svg>
                     </template>
                 </div>
@@ -62,15 +75,17 @@
 
                 {{-- Actions --}}
                 <div class="flex items-center gap-3">
-                    <button @click="cancel()" type="button"
+                    <button @click="cancel()" type="button" x-show="!hideCancel"
                             class="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
                         <span x-text="cancelText"></span>
                     </button>
                     <button @click="confirm()" type="button"
                             class="flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all shadow-lg"
-                            :class="type === 'danger' 
-                                ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-red-500/25 hover:shadow-red-500/40 hover:from-red-600 hover:to-red-700' 
-                                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-500/25 hover:shadow-amber-500/40 hover:from-amber-600 hover:to-orange-600'">
+                            :class="{
+                                'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-red-500/25 hover:shadow-red-500/40 hover:from-red-600 hover:to-red-700': type === 'danger',
+                                'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-emerald-600 hover:to-teal-700': type === 'success',
+                                'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-500/25 hover:shadow-amber-500/40 hover:from-amber-600 hover:to-orange-600': type !== 'danger' && type !== 'success'
+                            }">
                         <span x-text="confirmText"></span>
                     </button>
                 </div>
@@ -99,7 +114,7 @@
             message: '',
             type: 'danger',
             confirmText: '{{ __("Confirm") }}',
-            cancelText: '{{ __("Cancel") }}',
+            hideCancel: false,
             formEl: null,
             onConfirmCallback: null,
 
@@ -109,6 +124,7 @@
                 this.type = detail.type || 'danger';
                 this.confirmText = detail.confirmText || '{{ __("Confirm") }}';
                 this.cancelText = detail.cancelText || '{{ __("Cancel") }}';
+                this.hideCancel = detail.hideCancel || false;
                 this.formEl = detail.form || null;
                 this.onConfirmCallback = detail.onConfirm || null;
                 this.show = true;
@@ -125,6 +141,7 @@
 
             cancel() {
                 this.show = false;
+                this.hideCancel = false;
                 this.formEl = null;
                 this.onConfirmCallback = null;
             }

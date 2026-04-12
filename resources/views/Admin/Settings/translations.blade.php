@@ -164,14 +164,37 @@ document.addEventListener('alpine:init', () => {
                 const data = await response.json();
                 if (data.success) {
                     rowScope.editing = false;
-                    // Toast message if available
-                    if (window.showToast) window.showToast(data.message, 'success');
+                    window.dispatchEvent(new CustomEvent('confirm-action', {
+                        detail: {
+                            title: "{{ __('Translation Updated') }}",
+                            message: data.message,
+                            type: 'success',
+                            confirmText: "{{ __('OK') }}",
+                            hideCancel: true
+                        }
+                    }));
                 } else {
-                    alert(data.message || 'Error updating translation');
+                    window.dispatchEvent(new CustomEvent('confirm-action', {
+                        detail: {
+                            title: "{{ __('Update Error') }}",
+                            message: data.message || "{{ __('Error updating translation.') }}",
+                            type: 'danger',
+                            confirmText: "{{ __('OK') }}",
+                            hideCancel: true
+                        }
+                    }));
                 }
             } catch (error) {
                 console.error(error);
-                alert('Connection error. Please try again.');
+                window.dispatchEvent(new CustomEvent('confirm-action', {
+                    detail: {
+                        title: "{{ __('Connection Error') }}",
+                        message: "{{ __('Connection error. Please try again.') }}",
+                        type: 'danger',
+                        confirmText: "{{ __('OK') }}",
+                        hideCancel: true
+                    }
+                }));
             } finally {
                 rowScope.loading = false;
             }
@@ -194,16 +217,31 @@ document.addEventListener('alpine:init', () => {
                                 },
                                 body: JSON.stringify({ key })
                             });
-                            
                             const data = await response.json();
                             if (data.success) {
                                 window.location.reload();
                             } else {
-                                alert(data.message || 'Error deleting translation');
+                                window.dispatchEvent(new CustomEvent('confirm-action', {
+                                    detail: {
+                                        title: "{{ __('Delete Error') }}",
+                                        message: data.message || "{{ __('Error deleting translation.') }}",
+                                        type: 'danger',
+                                        confirmText: "{{ __('OK') }}",
+                                        hideCancel: true
+                                    }
+                                }));
                             }
                         } catch (error) {
                             console.error(error);
-                            alert('Connection error. Please try again.');
+                            window.dispatchEvent(new CustomEvent('confirm-action', {
+                                detail: {
+                                    title: "{{ __('Connection Error') }}",
+                                    message: "{{ __('Connection error. Please try again.') }}",
+                                    type: 'danger',
+                                    confirmText: "{{ __('OK') }}",
+                                    hideCancel: true
+                                }
+                            }));
                         }
                     }
                 }

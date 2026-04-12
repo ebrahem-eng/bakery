@@ -9,8 +9,8 @@
             <p class="text-slate-500 dark:text-slate-400 mt-1">{{ __('Manage your landing page content, visibility, and multimedia.') }}</p>
         </div>
         <div class="flex items-center gap-3">
-            <button @click="saveAll()" :disabled="loading"
-                class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-amber-500/20 transition-all flex items-center gap-2">
+            <button @click="confirmSave()" :disabled="loading"
+                class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50">
                 <template x-if="!loading">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
                 </template>
@@ -305,6 +305,17 @@ function websiteManager() {
             offer_card3_image: '{{ \App\Models\Setting::get("offer_card3_image") ? asset("storage/" . \App\Models\Setting::get("offer_card3_image")) : "" }}',
         },
 
+        confirmSave() {
+            window.dispatchEvent(new CustomEvent('confirm-action', {
+                detail: {
+                    title: "{{ __('Save Website Changes') }}",
+                    message: "{{ __('Are you sure you want to save these changes? This will immediately affect the live landing page.') }}",
+                    type: 'warning',
+                    confirmText: "{{ __('Confirm & Save') }}",
+                    onConfirm: () => this.saveAll()
+                }
+            }));
+        },
         async saveAll() {
             this.loading = true;
             try {
@@ -324,14 +335,27 @@ function websiteManager() {
                 
                 const result = await response.json();
                 if (result.success) {
-                    Toast.fire({
-                        icon: 'success',
-                        title: result.message
-                    });
+                    window.dispatchEvent(new CustomEvent('confirm-action', {
+                        detail: {
+                            title: "{{ __('Website Updated') }}",
+                            message: result.message,
+                            type: 'success',
+                            confirmText: "{{ __('OK') }}",
+                            hideCancel: true
+                        }
+                    }));
                 }
             } catch (error) {
                 console.error(error);
-                alert('Error saving settings.');
+                window.dispatchEvent(new CustomEvent('confirm-action', {
+                    detail: {
+                        title: "{{ __('System Error') }}",
+                        message: "{{ __('Error saving settings. Please check your connection.') }}",
+                        type: 'danger',
+                        confirmText: "{{ __('OK') }}",
+                        hideCancel: true
+                    }
+                }));
             } finally {
                 this.loading = false;
             }
@@ -355,14 +379,27 @@ function websiteManager() {
                 const result = await response.json();
                 if (result.success) {
                     this.previews[key] = result.path;
-                    Toast.fire({
-                        icon: 'success',
-                        title: result.message
-                    });
+                    window.dispatchEvent(new CustomEvent('confirm-action', {
+                        detail: {
+                            title: "{{ __('Image Updated') }}",
+                            message: result.message,
+                            type: 'success',
+                            confirmText: "{{ __('OK') }}",
+                            hideCancel: true
+                        }
+                    }));
                 }
             } catch (error) {
                 console.error(error);
-                alert('Error uploading image.');
+                window.dispatchEvent(new CustomEvent('confirm-action', {
+                    detail: {
+                        title: "{{ __('Upload Error') }}",
+                        message: "{{ __('Error uploading image. Please try again.') }}",
+                        type: 'danger',
+                        confirmText: "{{ __('OK') }}",
+                        hideCancel: true
+                    }
+                }));
             }
         }
     }
