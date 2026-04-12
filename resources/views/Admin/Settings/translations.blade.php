@@ -177,29 +177,37 @@ document.addEventListener('alpine:init', () => {
             }
         },
         async remove(key) {
-            if (!confirm("{{ __('Are you sure you want to delete this key?') }}")) return;
-
-            try {
-                const response = await fetch("{{ route('admin.settings.translations.destroy') }}", {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ key })
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    // Refresh the page to update the list and pagination
-                    window.location.reload();
-                } else {
-                    alert(data.message || 'Error deleting translation');
+            window.dispatchEvent(new CustomEvent('confirm-action', {
+                detail: {
+                    title: "{{ __('Delete Translation Key') }}",
+                    message: "{{ __('Are you sure you want to delete this key?') }}",
+                    type: 'danger',
+                    confirmText: "{{ __('Confirm') }}",
+                    cancelText: "{{ __('Cancel') }}",
+                    onConfirm: async () => {
+                        try {
+                            const response = await fetch("{{ route('admin.settings.translations.destroy') }}", {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({ key })
+                            });
+                            
+                            const data = await response.json();
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                alert(data.message || 'Error deleting translation');
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            alert('Connection error. Please try again.');
+                        }
+                    }
                 }
-            } catch (error) {
-                console.error(error);
-                alert('Connection error. Please try again.');
-            }
+            }));
         }
     }));
 });
