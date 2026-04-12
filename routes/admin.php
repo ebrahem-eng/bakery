@@ -162,6 +162,35 @@ Route::group(['middleware' => ['admin.auth', 'dashboard.status']], function () {
         Route::delete('contact-messages/{contactMessage}', [ContactMessageController::class, 'destroy'])->middleware('permission:delete contact messages,admin')->name('contact-messages.destroy');
     });
 
+    // ── Website Management ──────────────────────────────────────────
+    Route::group(['prefix' => 'website', 'as' => 'website.'], function () {
+        Route::get('/', [WebsiteManagementController::class, 'index'])
+            ->middleware('permission:view settings website_content,admin')
+            ->name('index');
+        Route::post('/update', [WebsiteManagementController::class, 'update'])
+            ->middleware('permission:edit settings website_content,admin')
+            ->name('update');
+        Route::post('/image', [WebsiteManagementController::class, 'updateImage'])
+            ->middleware('permission:edit settings website_content,admin')
+            ->name('image');
+    });
+
+    // ── Translations Management ─────────────────────────────────────
+    Route::group(['prefix' => 'translations', 'as' => 'translations.'], function () {
+        Route::get('/', [TranslationController::class, 'index'])
+            ->middleware('permission:view settings translations,admin')
+            ->name('index');
+        Route::post('/update', [TranslationController::class, 'update'])
+            ->middleware('permission:edit settings translations,admin')
+            ->name('update');
+        Route::post('/store', [TranslationController::class, 'store'])
+            ->middleware('permission:edit settings translations,admin')
+            ->name('store');
+        Route::delete('/destroy', [TranslationController::class, 'destroy'])
+            ->middleware('permission:edit settings translations,admin')
+            ->name('destroy');
+    });
+
     // ── Settings ──────────────────────────────────────────────────────
     Route::group(['prefix' => 'settings', 'as' => 'settings.'], function () {
         // Universal index access if user has any view permission
@@ -195,30 +224,5 @@ Route::group(['middleware' => ['admin.auth', 'dashboard.status']], function () {
         Route::delete('/categories/{category}', [SettingsController::class, 'destroyCategory'])
             ->middleware('permission:edit settings categories,admin')
             ->name('categories.destroy');
-
-        // Translations
-        Route::get('/translations', [TranslationController::class, 'index'])
-            ->middleware('permission:view settings translations,admin')
-            ->name('translations.index');
-        Route::post('/translations/update', [TranslationController::class, 'update'])
-            ->middleware('permission:edit settings translations,admin')
-            ->name('translations.update');
-        Route::post('/translations/store', [TranslationController::class, 'store'])
-            ->middleware('permission:edit settings translations,admin')
-            ->name('translations.store');
-        Route::delete('/translations/destroy', [TranslationController::class, 'destroy'])
-            ->middleware('permission:edit settings translations,admin')
-            ->name('translations.destroy');
-
-        // Website Management
-        Route::get('/website', [WebsiteManagementController::class, 'index'])
-            ->middleware('permission:view settings website_content,admin')
-            ->name('website.index');
-        Route::post('/website/update', [WebsiteManagementController::class, 'update'])
-            ->middleware('permission:edit settings website_content,admin')
-            ->name('website.update');
-        Route::post('/website/image', [WebsiteManagementController::class, 'updateImage'])
-            ->middleware('permission:edit settings website_content,admin')
-            ->name('website.image');
     });
 });

@@ -313,7 +313,7 @@ function websiteManager() {
                     if (typeof data[key] === 'boolean') data[key] = data[key] ? '1' : '0';
                 });
 
-                const response = await fetch("{{ route('admin.settings.website.update') }}", {
+                const response = await fetch("{{ route('admin.website.update') }}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -347,7 +347,7 @@ function websiteManager() {
             formData.append('_token', '{{ csrf_token() }}');
 
             try {
-                const response = await fetch("{{ route('admin.settings.website.image') }}", {
+                const response = await fetch("{{ route('admin.website.image') }}", {
                     method: 'POST',
                     body: formData
                 });

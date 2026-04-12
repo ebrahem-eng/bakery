@@ -24,14 +24,14 @@
     {{-- Search & UI Controls --}}
     <div class="mb-6 glass-panel p-4 rounded-2xl border border-slate-200 dark:border-white/5 flex flex-col md:flex-row gap-4">
         <div class="relative flex-1">
-            <form action="{{ route('admin.settings.translations.index') }}" method="GET">
+            <form action="{{ route('admin.translations.index') }}" method="GET">
                 <input type="text" name="search" value="{{ $search }}" placeholder="{{ __('Search keys or translations...') }}"
                     class="block w-full pl-10 pr-4 py-3 bg-white dark:bg-[#0f1115] border border-slate-200 dark:border-white/5 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 </div>
                 @if($search)
-                <a href="{{ route('admin.settings.translations.index') }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-red-500">
+                <a href="{{ route('admin.translations.index') }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-red-500">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </a>
                 @endif
@@ -123,7 +123,7 @@
                 </button>
             </div>
             
-            <form action="{{ route('admin.settings.translations.store') }}" method="POST" class="p-6 space-y-4">
+            <form action="{{ route('admin.translations.store') }}" method="POST" class="p-6 space-y-4">
                 @csrf
                 <div>
                     <label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">{{ __('English Key') }}</label>
@@ -152,7 +152,7 @@ document.addEventListener('alpine:init', () => {
         async save(key, value, rowScope) {
             rowScope.loading = true;
             try {
-                const response = await fetch("{{ route('admin.settings.translations.update') }}", {
+                const response = await fetch("{{ route('admin.translations.update') }}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -186,7 +186,7 @@ document.addEventListener('alpine:init', () => {
                     cancelText: "{{ __('Cancel') }}",
                     onConfirm: async () => {
                         try {
-                            const response = await fetch("{{ route('admin.settings.translations.destroy') }}", {
+                            const response = await fetch("{{ route('admin.translations.destroy') }}", {
                                 method: 'DELETE',
                                 headers: {
                                     'Content-Type': 'application/json',

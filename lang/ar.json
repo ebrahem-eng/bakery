@@ -1510,5 +1510,9 @@
     "Search keys or translations...": "البحث في المفاتيح أو الترجمات...",
     "Translation updated successfully.": "تم تحديث الترجمة بنجاح.",
     "New translation key added.": "تم إضافة مفتاح ترجمة جديد.",
-    "Key already exists.": "المفتاح موجود بالفعل."
+    "Key already exists.": "المفتاح موجود بالفعل.",
+    "view settings translations": "عرض إعدادات الترجمات",
+    "edit settings translations": "تعديل إعدادات الترجمات",
+    "view settings website_content": "عرض إعدادات محتوى الموقع",
+    "edit settings website_content": "تعديل إعدادات محتوى الموقع"
 }
