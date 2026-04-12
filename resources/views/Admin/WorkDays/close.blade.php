@@ -57,7 +57,7 @@
 {{-- SUMMARY STATS CARDS                                             --}}
 {{-- ════════════════════════════════════════════════════════════════ --}}
 <div x-data="{
-    carriedOver: {{ $workDay->status === 'closed' ? $workDay->carried_over_money : 0 }},
+    carriedOver: {{ $workDay->status === 'closed' ? $workDay->carried_over_money : "''" }},
     isClosed: {{ $workDay->status === 'closed' ? 'true' : 'false' }},
     currencyId: '{{ $defaultCurrency->id ?? '' }}',
     isLocal: true,
@@ -496,9 +496,9 @@
                         </label>
                         <div class="relative">
                             <input type="number" step="0.01" name="carried_over_money" required min="0" 
-                                x-model.number="carriedOver"
-                                class="block w-full px-4 py-4 bg-white dark:bg-[#1a1c23] border border-amber-500/30 rounded-xl text-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 transition-all font-bold"
-                                placeholder="0.00">
+                                x-model="carriedOver"
+                                class="block w-full px-4 py-4 bg-white dark:bg-[#1a1c23] border border-amber-500/30 rounded-xl text-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 transition-all font-bold placeholder:text-slate-400/30"
+                                placeholder="{{ __('Enter cash amount...') }}">
                         </div>
                     </div>
 

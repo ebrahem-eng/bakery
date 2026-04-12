@@ -113,7 +113,7 @@ class WorkDayController extends Controller
 
         $request->validate([
             'carried_over_money' => 'required|numeric|min:0',
-            'carried_over_currency_id' => 'nullable|exists:currencies,id',
+            'carried_over_currency_id' => 'required|exists:currencies,id',
             'carried_over_exchange_rate' => 'nullable|numeric|min:0',
             'total_expenses_at_close' => 'required|numeric',
             'total_sales_at_close' => 'required|numeric',

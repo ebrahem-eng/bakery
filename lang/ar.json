@@ -1409,5 +1409,6 @@
     "There are employees still clocked in. Please ensure they are settled before closing the day.": "لا يزال هناك موظفون مسجلون دخولهم. يرجى التأكد من تسوية حساباتهم قبل إغلاق اليوم.",
     "Closure Blocked": "تعذر الإغلاق",
     "Active shifts must be settled first.": "يجب تسوية الورديات النشطة أولاً.",
-    "Attendance": "الحضور"
+    "Attendance": "الحضور",
+    "Enter cash amount...": "أدخل مبلغ النقود..."
 }
