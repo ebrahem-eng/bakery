@@ -58,7 +58,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // ── Logs & Settings ────────────────────────────────────────
             'view logs', 'clear logs', 'filter logs',
-            'manage settings',
+            'manage settings', 'manage settings website', 'manage settings dashboard',
 
             // ── Public Contact Messages ────────────────────────────────
             'view contact messages', 'delete contact messages',

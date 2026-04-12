@@ -33,7 +33,7 @@ Route::get('/lang/{locale}', function ($locale) {
     return redirect()->back();
 })->name('setLang');
 
-Route::group(['middleware' => ['admin.auth']], function () {
+Route::group(['middleware' => ['admin.auth', 'dashboard.status']], function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // ── Dashboard ──────────────────────────────────────────────────────

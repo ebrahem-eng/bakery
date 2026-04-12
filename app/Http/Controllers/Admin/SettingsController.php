@@ -24,10 +24,13 @@ class SettingsController extends Controller
         $bakeryEmail = Setting::get('bakery_email', '');
         $defaultLang = Setting::get('default_language', 'ar');
         $defaultPricePerBundle = Setting::get('default_price_per_bundle', '0');
+        $isWebsiteDisabled = Setting::get('is_website_disabled', '0');
+        $isDashboardDisabled = Setting::get('is_dashboard_disabled', '0');
 
         return view('Admin.Settings.index', compact(
             'currencies', 'categories',
-            'bakeryName', 'bakeryPhone', 'bakeryAddress', 'bakeryEmail', 'defaultLang', 'defaultPricePerBundle'
+            'bakeryName', 'bakeryPhone', 'bakeryAddress', 'bakeryEmail', 'defaultLang', 'defaultPricePerBundle',
+            'isWebsiteDisabled', 'isDashboardDisabled'
         ));
     }
 
@@ -42,6 +45,8 @@ class SettingsController extends Controller
             'bakery_email' => 'nullable|email|max:255',
             'default_language' => 'nullable|in:ar,en',
             'default_price_per_bundle' => 'nullable|numeric|min:0',
+            'is_website_disabled' => 'nullable|boolean',
+            'is_dashboard_disabled' => 'nullable|boolean',
         ]);
 
         Setting::set('bakery_name', $request->bakery_name);
@@ -50,6 +55,14 @@ class SettingsController extends Controller
         Setting::set('bakery_email', $request->bakery_email);
         Setting::set('default_language', $request->default_language);
         Setting::set('default_price_per_bundle', $request->default_price_per_bundle);
+
+        if ($request->has('is_website_disabled') && auth()->user()->can('manage settings website')) {
+            Setting::set('is_website_disabled', $request->is_website_disabled);
+        }
+
+        if ($request->has('is_dashboard_disabled') && auth()->user()->can('manage settings dashboard')) {
+            Setting::set('is_dashboard_disabled', $request->is_dashboard_disabled);
+        }
 
         return redirect()->route('admin.settings.index')
             ->with('success', __('Settings saved successfully.'));

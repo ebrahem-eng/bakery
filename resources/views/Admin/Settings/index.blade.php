@@ -51,6 +51,15 @@
         {{ __('Material Categories') }}
     </button>
     @endcan
+
+    @if(auth()->user()->can('manage settings website') || auth()->user()->can('manage settings dashboard'))
+    <button @click="activeTab = 'system'"
+        :class="activeTab === 'system' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'text-slate-500 dark:text-slate-400 hover:text-red-500 hover:bg-red-500/10'"
+        class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        {{ __('System Controls') }}
+    </button>
+    @endif
 </div>
 
 {{-- ════════════════════════════════════════════════════════════════ --}}
@@ -380,6 +389,86 @@
     </div>
 </div>
 @endcan
+
+{{-- ════════════════════════════════════════════════════════════════ --}}
+{{-- TAB 4 — System Status & Controls                                --}}
+{{-- ════════════════════════════════════════════════════════════════ --}}
+@if(auth()->user()->can('manage settings website') || auth()->user()->can('manage settings dashboard'))
+<div x-show="activeTab === 'system'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+    <form action="{{ route('admin.settings.bakeryInfo') }}" method="POST" class="glass-panel rounded-2xl border border-red-500/10 overflow-hidden shadow-lg shadow-red-500/5">
+        @csrf
+        <div class="p-4 bg-red-500/5 border-b border-red-500/10 flex items-center justify-between">
+            <h3 class="text-sm font-bold text-red-600 dark:text-red-400 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                {{ __('Administrative Kill Switches') }}
+            </h3>
+            <span class="px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-500/20">
+                {{ __('High Security Area') }}
+            </span>
+        </div>
+        
+        <div class="p-8 space-y-8">
+            {{-- Website Kill Switch --}}
+            @can('manage settings website')
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20 group hover:border-red-500/30 transition-all">
+                <div class="max-w-xl">
+                    <h4 class="text-base font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+                        {{ __('Disable Public Website') }}
+                        @if($isWebsiteDisabled == '1')
+                            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                        @endif
+                    </h4>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                        {{ __('Turning this ON will immediately block all public visitors from accessing the homepage and contact pages, showing them a maintenance message instead. Logged-in administrators can still see the front-end.') }}
+                    </p>
+                </div>
+                <div x-data="{ enabled: {{ $isWebsiteDisabled == '1' ? 'true' : 'false' }} }" class="shrink-0">
+                    <input type="hidden" name="is_website_disabled" :value="enabled ? '1' : '0'">
+                    <button type="button" @click="enabled = !enabled"
+                        :class="enabled ? 'bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]' : 'bg-slate-200 dark:bg-slate-700'"
+                        class="relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ring-offset-2 focus:ring-2 focus:ring-red-500">
+                        <span :class="enabled ? '{{ app()->getLocale() == 'ar' ? '-translate-x-6' : 'translate-x-6' }}' : 'translate-x-0'"
+                            class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                    </button>
+                </div>
+            </div>
+            @endcan
+
+            {{-- Dashboard Kill Switch --}}
+            @can('manage settings dashboard')
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20 group hover:border-red-500/30 transition-all">
+                <div class="max-w-xl">
+                    <h4 class="text-base font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+                        {{ __('Restrict Admin Dashboard') }}
+                        @if($isDashboardDisabled == '1')
+                            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                        @endif
+                    </h4>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                        {{ __('When active, the dashboard will only be accessible to Super Administrators. All other staff and administrators will be logged out immediately and their access blocked.') }}
+                    </p>
+                </div>
+                <div x-data="{ enabled: {{ $isDashboardDisabled == '1' ? 'true' : 'false' }} }" class="shrink-0">
+                    <input type="hidden" name="is_dashboard_disabled" :value="enabled ? '1' : '0'">
+                    <button type="button" @click="enabled = !enabled"
+                        :class="enabled ? 'bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]' : 'bg-slate-200 dark:bg-slate-700'"
+                        class="relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ring-offset-2 focus:ring-2 focus:ring-red-500">
+                        <span :class="enabled ? '{{ app()->getLocale() == 'ar' ? '-translate-x-6' : 'translate-x-6' }}' : 'translate-x-0'"
+                            class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                    </button>
+                </div>
+            </div>
+            @endcan
+        </div>
+
+        <div class="p-4 border-t border-slate-200 dark:border-white/5 bg-red-500/5 flex justify-end">
+            <button type="submit" class="bg-red-600 hover:bg-red-500 text-white transition-all px-8 py-3 rounded-xl text-sm font-black uppercase tracking-widest shadow-lg shadow-red-600/20">
+                {{ __('Apply Security Changes') }}
+            </button>
+        </div>
+    </form>
+</div>
+@endif
 
 </div>
 @endsection

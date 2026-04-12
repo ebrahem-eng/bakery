@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Middleware\AdminAuthMiddleware;
+use App\Http\Middleware\CheckDashboardStatus;
+use App\Http\Middleware\CheckWebsiteStatus;
 use App\Http\Middleware\LocalizationMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,10 +26,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             LocalizationMiddleware::class,
+            CheckWebsiteStatus::class,
         ]);
 
         $middleware->alias([
             'admin.auth' => AdminAuthMiddleware::class,
+            'dashboard.status' => CheckDashboardStatus::class,
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,

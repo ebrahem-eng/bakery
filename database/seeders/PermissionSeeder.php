@@ -56,7 +56,7 @@ class PermissionSeeder extends Seeder
 
             // ── Logs & Settings ────────────────────────────────────────
             'view logs', 'clear logs', 'filter logs',
-            'manage settings',
+            'manage settings', 'manage settings website', 'manage settings dashboard',
             'view settings general', 'edit settings general',
             'view settings currencies', 'edit settings currencies',
             'view settings categories', 'edit settings categories',

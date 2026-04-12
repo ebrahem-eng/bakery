@@ -1410,5 +1410,17 @@
     "Closure Blocked": "تعذر الإغلاق",
     "Active shifts must be settled first.": "يجب تسوية الورديات النشطة أولاً.",
     "Attendance": "الحضور",
-    "Enter cash amount...": "أدخل مبلغ النقود..."
+    "Enter cash amount...": "أدخل مبلغ النقود...",
+    "System Controls": "ضوابط النظام",
+    "Administrative Kill Switches": "مفاتيح التعطيل الإدارية",
+    "High Security Area": "منطقة أمنية عالية",
+    "Disable Public Website": "تعطيل الموقع العام",
+    "Turning this ON will immediately block all public visitors from accessing the homepage and contact pages, showing them a maintenance message instead. Logged-in administrators can still see the front-end.": "تفعيل هذا الخيار سيحجب الموقع عن جميع الزوار فوراً ويظهر لهم رسالة صيانة. يمكن للمسؤولين المسجل دخولهم رؤية الموقع.",
+    "Restrict Admin Dashboard": "تقييد لوحة التحكم",
+    "When active, the dashboard will only be accessible to Super Administrators. All other staff and administrators will be logged out immediately and their access blocked.": "عند التفعيل، ستكون لوحة التحكم متاحة فقط لكبار المسؤولين. سيتم تسجيل خروج جميع الموظفين والمسؤولين الآخرين فوراً ومنع وصولهم.",
+    "Apply Security Changes": "تطبيق التغييرات الأمنية",
+    "Website Under Maintenance": "الموقع قيد الصيانة",
+    "We are currently performing scheduled maintenance to improve our services. Please check back shortly.": "نقوم حالياً بإجراء صيانة دورية لتحسين خدماتنا. يرجى العودة لاحقاً.",
+    "The dashboard is currently disabled for maintenance. Only Super Administrators can access it.": "لوحة التحكم معطلة حالياً للصيانة. يتاح الوصول لكبار المسؤولين فقط.",
+    "Back to Home": "العودة للرئيسية"
 }
