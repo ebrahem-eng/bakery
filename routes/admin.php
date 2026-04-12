@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\WorkerController;
 use App\Http\Controllers\Admin\WorkerWageController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\ContactMessageController;
+use App\Http\Controllers\Admin\TranslationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'loginPage'])->name('login.page');
@@ -193,5 +194,19 @@ Route::group(['middleware' => ['admin.auth', 'dashboard.status']], function () {
         Route::delete('/categories/{category}', [SettingsController::class, 'destroyCategory'])
             ->middleware('permission:edit settings categories,admin')
             ->name('categories.destroy');
+
+        // Translations
+        Route::get('/translations', [TranslationController::class, 'index'])
+            ->middleware('permission:view settings translations,admin')
+            ->name('translations.index');
+        Route::post('/translations/update', [TranslationController::class, 'update'])
+            ->middleware('permission:edit settings translations,admin')
+            ->name('translations.update');
+        Route::post('/translations/store', [TranslationController::class, 'store'])
+            ->middleware('permission:edit settings translations,admin')
+            ->name('translations.store');
+        Route::delete('/translations/destroy', [TranslationController::class, 'destroy'])
+            ->middleware('permission:edit settings translations,admin')
+            ->name('translations.destroy');
     });
 });
