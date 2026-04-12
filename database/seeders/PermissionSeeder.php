@@ -59,6 +59,7 @@ class PermissionSeeder extends Seeder
             'manage settings', 'manage settings website', 'manage settings dashboard',
             'view settings general', 'edit settings general',
             'view settings currencies', 'edit settings currencies',
+            'view settings website_content', 'edit settings website_content',
             'view settings translations', 'edit settings translations',
             'view settings categories', 'edit settings categories',
 

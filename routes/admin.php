@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\WorkerWageController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\TranslationController;
+use App\Http\Controllers\Admin\WebsiteManagementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'loginPage'])->name('login.page');
@@ -208,5 +209,16 @@ Route::group(['middleware' => ['admin.auth', 'dashboard.status']], function () {
         Route::delete('/translations/destroy', [TranslationController::class, 'destroy'])
             ->middleware('permission:edit settings translations,admin')
             ->name('translations.destroy');
+
+        // Website Management
+        Route::get('/website', [WebsiteManagementController::class, 'index'])
+            ->middleware('permission:view settings website_content,admin')
+            ->name('website.index');
+        Route::post('/website/update', [WebsiteManagementController::class, 'update'])
+            ->middleware('permission:edit settings website_content,admin')
+            ->name('website.update');
+        Route::post('/website/image', [WebsiteManagementController::class, 'updateImage'])
+            ->middleware('permission:edit settings website_content,admin')
+            ->name('website.image');
     });
 });
