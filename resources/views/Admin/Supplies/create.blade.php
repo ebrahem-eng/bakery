@@ -37,7 +37,7 @@
                         <label class="block text-xs text-slate-400 mb-1">{{ __('Category') }}</label>
                         <select x-bind:name="`supplies[${index}][category_id]`" x-model="item.category_id" @change="updateCategory(item)" required class="glass-input w-full px-3 py-2 rounded-lg text-sm">
                             <option value="">{{ __('Select...') }}</option>
-                            <template x-for="cat in categories" :key="cat.id">
+                            <template x-for="cat in availableCategories" :key="cat.id">
                                 <option :value="cat.id" x-text="cat.name"></option>
                             </template>
                         </select>
@@ -228,6 +228,30 @@ document.addEventListener('alpine:init', () => {
         items: [],
         init() {
             this.addItem();
+            
+            // Watch for supplier changes to reset invalid categories in the list
+            this.$watch('supplier_id', (newId) => {
+                if (!newId) {
+                    this.items.forEach(item => {
+                        item.category_id = '';
+                        this.updateCategory(item);
+                    });
+                    return;
+                }
+                
+                const validCatIds = this.availableCategories.map(c => c.id.toString());
+                this.items.forEach(item => {
+                    if (item.category_id && !validCatIds.includes(item.category_id.toString())) {
+                        item.category_id = '';
+                        this.updateCategory(item);
+                    }
+                });
+            });
+        },
+        get availableCategories() {
+            if (!this.supplier_id) return [];
+            let supplier = this.suppliers.find(s => s.id == this.supplier_id);
+            return supplier ? (supplier.categories || []) : [];
         },
         addItem() {
             this.items.push({

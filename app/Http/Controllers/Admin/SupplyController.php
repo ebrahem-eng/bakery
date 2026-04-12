@@ -27,7 +27,9 @@ class SupplyController extends Controller
             return redirect()->route('admin.dashboard')->with('error_message', __('You must start a new Work Day before adding supplies.'));
         }
 
-        $suppliers = Supplier::with('categories')->get();
+        $suppliers = Supplier::with(['categories' => function($q) {
+            $q->where('is_active', true);
+        }])->get();
         // Passing suppliers with categories to filter selections via Alpine
         $categories = Category::where('is_active', true)->get();
         $currencies = Currency::all();
