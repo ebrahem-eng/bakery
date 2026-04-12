@@ -1422,5 +1422,8 @@
     "Website Under Maintenance": "الموقع قيد الصيانة",
     "We are currently performing scheduled maintenance to improve our services. Please check back shortly.": "نقوم حالياً بإجراء صيانة دورية لتحسين خدماتنا. يرجى العودة لاحقاً.",
     "The dashboard is currently disabled for maintenance. Only Super Administrators can access it.": "لوحة التحكم معطلة حالياً للصيانة. يتاح الوصول لكبار المسؤولين فقط.",
-    "Back to Home": "العودة للرئيسية"
+    "Back to Home": "العودة للرئيسية",
+    "manage settings website": "إدارة تعطيل الموقع العام",
+    "manage settings dashboard": "إدارة تقييد لوحة التحكم",
+    "Status: Maintenance Mode": "الحالة: وضع الصيانة"
 }
