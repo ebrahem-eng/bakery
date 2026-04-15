@@ -127,7 +127,7 @@ class AccountsController extends Controller
         $cashToAdvances = $workerAdvances;
         $cashToAllowances = $workerAllowances;
         $cashToExpenses = $operationalExpenses;
-        $totalCashOut = $cashToSuppliers + $cashToSupplierDebts + $cashToFreight + $cashToAdvances + $cashToAllowances + $cashToWages + $cashToExpenses;
+        $totalCashOut = $cashToSupplierDebts + $cashToFreight + $cashToAdvances + $cashToAllowances + $cashToWages + $cashToExpenses;
 
         $netCashFlow = $totalCashIn - $totalCashOut;
 
@@ -318,15 +318,12 @@ class AccountsController extends Controller
             ->withSum(['supplies as total_owed' => function ($q) use ($workDayIds) {
                 $q->whereIn('supplies.work_day_id', $workDayIds);
             }], Currency::getSelectRaw('supplies.total_cost', 'supplies.exchange_rate'))
-            ->withSum(['supplies as total_paid_to' => function ($q) use ($workDayIds) {
-                $q->whereIn('supplies.work_day_id', $workDayIds);
-            }], Currency::getSelectRaw('supplies.paid_amount', 'supplies.exchange_rate'))
             ->withSum(['payments as total_settlements' => function ($q) use ($workDayIds) {
                 $q->whereIn('supplier_payments.work_day_id', $workDayIds);
             }], Currency::getSelectRaw('supplier_payments.amount', 'supplier_payments.exchange_rate'))
             ->get()
             ->map(function ($s) {
-                $s->total_paid_combined = ($s->total_paid_to ?? 0) + ($s->total_settlements ?? 0);
+                $s->total_paid_combined = $s->total_settlements ?? 0;
                 $s->balance = ($s->total_owed ?? 0) - $s->total_paid_combined;
 
                 return $s;
@@ -467,11 +464,10 @@ class AccountsController extends Controller
         // ── Supplier Balances (Lifetime) ─────────────────────────────
         $supplierBalances = Supplier::select('suppliers.*')
             ->withSum('supplies as total_owed', Currency::getSelectRaw('supplies.total_cost', 'supplies.exchange_rate'))
-            ->withSum('supplies as total_paid_initial', Currency::getSelectRaw('supplies.paid_amount', 'supplies.exchange_rate'))
             ->withSum('payments as total_paid_later', Currency::getSelectRaw('supplier_payments.amount', 'supplier_payments.exchange_rate'))
             ->get()
             ->map(function ($s) {
-                $s->total_paid = ($s->total_paid_initial ?? 0) + ($s->total_paid_later ?? 0);
+                $s->total_paid = $s->total_paid_later ?? 0;
                 $s->outstanding = ($s->total_owed ?? 0) - $s->total_paid;
                 return $s;
             })

@@ -304,9 +304,16 @@
                 </h3>
             </div>
             <div class="p-5 space-y-1">
-                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Supplies Purchased') }}</span>
+                {{-- Reference Only (Doesn't add to expenses) --}}
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5 opacity-60">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Total Invoice Cost') }} ({{ __('Reference') }})</span>
                     <span class="font-bold text-slate-900 dark:text-white">{{ number_format($suppliesCost, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
+                </div>
+                
+                {{-- Actual Cash Outflow --}}
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Supplier Debts Paid') }}</span>
+                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($supplierPayments ?? 0, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Freight & Unloading Fees') }}</span>
@@ -327,22 +334,6 @@
                 <div class="flex justify-between items-center py-3 bg-red-500/5 rounded-xl px-3 -mx-1 mt-2">
                     <span class="text-sm font-bold text-red-600 dark:text-red-400">{{ __('Total Expenses') }}</span>
                     <span class="font-bold text-red-600 dark:text-red-400 text-lg">{{ number_format($totalExpenses, 2) }} {{ __($currencyCode) }}</span>
-                </div>
-            </div>
-        </div>
-
-        {{-- ── Cash Flow Details (Outside P&L) ─────────────── --}}
-        <div class="glass-panel rounded-2xl border border-sky-500/10 overflow-hidden mt-6">
-            <div class="p-4 bg-sky-500/5 border-b border-sky-500/10">
-                <h3 class="text-sm font-bold text-sky-600 dark:text-sky-400 flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    {{ __('Cash Flow Details') }}
-                </h3>
-            </div>
-            <div class="p-5 space-y-1">
-                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Supplier Debts Paid') }}</span>
-                    <span class="font-bold text-sky-600 dark:text-sky-400">{{ number_format($supplierPayments ?? 0, 2) }} <span class="text-xs text-sky-400/50">{{ __($currencyCode) }}</span></span>
                 </div>
             </div>
         </div>

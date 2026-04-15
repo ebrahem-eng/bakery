@@ -151,7 +151,7 @@ class WorkDay extends Model
         
         $supplierPayments = $this->supplierPayments->reduce(fn($carry, $sp) => $carry + Currency::convertAmount($sp->amount, $sp->exchange_rate), 0);
 
-        $totalExpenses = $suppliesCost + $unloadingFees + $workerPayouts - $workerDeductions + $operationalExpenses;
+        $totalExpenses = $supplierPayments + $unloadingFees + $workerPayouts - $workerDeductions + $operationalExpenses;
         $netDayBalance = $netSales - $totalExpenses;
 
         // ── Bundle Flow ───────────────────────────────────────────────

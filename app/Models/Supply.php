@@ -69,14 +69,12 @@ class Supply extends Model
 
     public function getTotalPaidBase(): float
     {
-        $paidInBase = Currency::convertAmount($this->paid_amount ?? 0, $this->paid_exchange_rate ?? 1);
-        
-        $laterPaymentsBase = 0;
+        $totalPaymentsBase = 0;
         foreach ($this->payments as $payment) {
-            $laterPaymentsBase += Currency::convertAmount($payment->amount, $payment->exchange_rate);
+            $totalPaymentsBase += Currency::convertAmount($payment->amount, $payment->exchange_rate);
         }
 
-        return $paidInBase + $laterPaymentsBase;
+        return $totalPaymentsBase;
     }
 
     public function getTotalPaidNativeAttribute(): float

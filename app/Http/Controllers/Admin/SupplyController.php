@@ -98,7 +98,7 @@ class SupplyController extends Controller
             $paid = $item['paid_amount'];
             $fee_currency = ! empty($item['unloading_fee_currency_id']) ? $item['unloading_fee_currency_id'] : $item['currency_id'];
 
-            Supply::create([
+            $supply = Supply::create([
                 'admin_id' => auth()->guard('admin')->id(),
                 'work_day_id' => $activeWorkDay->id,
                 'supplier_id' => $request->supplier_id,
@@ -125,6 +125,17 @@ class SupplyController extends Controller
                 'notes' => $item['notes'] ?? null,
                 'due_date' => $item['due_date'] ?? null,
             ]);
+
+            if ($paid > 0) {
+                \App\Models\SupplierPayment::create([
+                    'supply_id' => $supply->id,
+                    'work_day_id' => $activeWorkDay->id,
+                    'admin_id' => auth()->guard('admin')->id(),
+                    'amount' => $paid,
+                    'currency_id' => $item['paid_currency_id'],
+                    'exchange_rate' => $item['paid_exchange_rate'],
+                ]);
+            }
         }
 
         return redirect()->route('admin.supplies.index')->with('success', __('Supply registered and mapped securely into the Active Work Day ledger.'));
