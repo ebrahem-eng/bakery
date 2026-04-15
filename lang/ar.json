@@ -1500,5 +1500,8 @@
   "view settings translations": "عرض إعدادات الترجمات",
   "edit settings translations": "تعديل إعدادات الترجمات",
   "view settings website_content": "عرض إعدادات محتوى الموقع",
-  "edit settings website_content": "تعديل إعدادات محتوى الموقع"
+  "edit settings website_content": "تعديل إعدادات محتوى الموقع",
+  "Total Invoiced Sales": "إجمالي المبيعات المفوترة",
+  "Distributor Payments (Cash)": "مدفوعات الموزعين (نقداً)",
+  "Net Cash Receipts": "صافي المقبوضات النقدية"
 }
