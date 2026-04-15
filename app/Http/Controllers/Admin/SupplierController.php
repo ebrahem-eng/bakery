@@ -41,27 +41,8 @@ class SupplierController extends Controller
         $paymentStart = $request->get('payment_start');
         $paymentEnd = $request->get('payment_end');
 
-        // Aggregation A: Initial Payments on Supplies
-        $initialPayments = $supplier->supplies()
-            ->where('paid_amount', '>', 0)
-            ->when($paymentStart, fn($q) => $q->whereDate('created_at', '>=', $paymentStart))
-            ->when($paymentEnd, fn($q) => $q->whereDate('created_at', '<=', $paymentEnd))
-            ->with(['paidCurrency', 'currency', 'admin'])
-            ->get()
-            ->map(function ($s) {
-                $amount = (float) $s->paid_amount;
-                $rate = (float) ($s->paid_exchange_rate ?? $s->exchange_rate ?? 1);
-                return (object) [
-                    'date' => $s->created_at,
-                    'type' => 'initial_payment',
-                    'amount' => $amount,
-                    'currency' => $s->paidCurrency ?? $s->currency,
-                    'exchange_rate' => $rate,
-                    'base_amount' => \App\Models\Currency::convertAmount($amount, $rate),
-                    'supply_id' => $s->id,
-                    'admin_name' => ($s->admin->first_name ?? '') . ' ' . ($s->admin->last_name ?? ''),
-                ];
-            });
+        // Aggregation: Initial Payments & Subsequent Debt Settlements
+        $initialPayments = collect();
 
         // Aggregation B: Subsequent Debt Settlements
         $settlementPayments = \App\Models\SupplierPayment::whereIn('supply_id', $supplier->supplies()->pluck('id'))
