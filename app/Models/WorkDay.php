@@ -108,7 +108,7 @@ class WorkDay extends Model
         $currencyCode = $defaultCurrency->code ?? 'SYP';
 
         // ── Sales Statistics ──────────────────────────────────────────
-        // wholesaleSales (Distributors)
+        // wholesaleSales (Distributors Reference Invoiced)
         $wholesaleSales = $this->distributions->reduce(fn($carry, $d) => $carry + Currency::convertAmount($d->total_price, $d->exchange_rate), 0);
         // retailSales (Worker Shifts)
         $retailSales = $this->workerShifts->reduce(fn($carry, $s) => $carry + Currency::convertAmount($s->cash_collected, $s->cash_exchange_rate), 0);
@@ -121,14 +121,19 @@ class WorkDay extends Model
         // Use settlement cash if closed, otherwise use reported retail sales as estimate
         $cashRevenue = ($this->status === 'closed') ? $settlementCashBase : $retailSales;
 
-        $totalSales = $wholesaleSales + $cashRevenue;
+        // Refunds processed (Usually debt-reduction, left for reference)
         $totalRefunds = $this->distributorReturns->reduce(fn($carry, $r) => $carry + Currency::convertAmount($r->total_refund, $r->exchange_rate), 0);
         
+        // Cash collected from distributors (Initial Deposit + Debt Settlements)
         $explicitPayments = $this->distributorTransactions->where('type', 'payment')->reduce(fn($carry, $t) => $carry + Currency::convertAmount($t->amount, $t->exchange_rate), 0);
         $downPayments = $this->distributions->reduce(fn($carry, $d) => $carry + Currency::convertAmount($d->amount_paid, $d->exchange_rate), 0);
-        $totalPaymentsReceived = $explicitPayments + $downPayments + $cashRevenue;
+        $distributorPayments = $explicitPayments + $downPayments;
         
-        $netSales = $totalSales - $totalRefunds;
+        $totalPaymentsReceived = $distributorPayments + $cashRevenue;
+        
+        // Transition strict reporting to Cash-Flow (Sales = Cash Receipts)
+        $totalSales = $totalPaymentsReceived;
+        $netSales = $totalPaymentsReceived;
 
         // ── Expense Breakdown ─────────────────────────────────────────
         $suppliesCost = $this->supplies->reduce(function ($carry, $s) {
@@ -216,6 +221,7 @@ class WorkDay extends Model
             'wholesaleSales' => $wholesaleSales,
             'retailSales' => $retailSales,
             'totalRefunds' => $totalRefunds,
+            'distributorPayments' => $distributorPayments,
             'totalPaymentsReceived' => $totalPaymentsReceived,
             'netSales' => $netSales,
             // Expenses Metrics

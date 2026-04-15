@@ -96,7 +96,7 @@
         <div class="absolute top-0 {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} p-3 opacity-10 group-hover:scale-110 transition-transform">
             <svg class="w-12 h-12 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
         </div>
-        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Net Sales') }}</p>
+        <p class="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1 leading-none">{{ __('Net Cash Receipts') }}</p>
         <div class="text-2xl font-black text-slate-900 dark:text-white" x-text="formatMoney(getDynamicNetSales())">{{ number_format($netSales, 2) }}</div>
         <div class="mt-1 text-[10px] text-emerald-500 font-bold uppercase tracking-wider">{{ __($currencyCode) }}</div>
     </div>
@@ -267,30 +267,30 @@
                 </h3>
             </div>
             <div class="p-5 space-y-1">
-                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Wholesale Sales (Distributors)') }}</span>
-                    <span class="font-bold text-slate-900 dark:text-white">+ {{ number_format($wholesaleSales, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5 opacity-60">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Total Invoiced Sales') }} ({{ __('Reference') }})</span>
+                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($wholesaleSales, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
+                </div>
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5 opacity-60">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Refunds Processed') }} ({{ __('Reference') }})</span>
+                    <span class="font-bold text-red-600 dark:text-red-400">{{ number_format($totalRefunds, 2) }} <span class="text-xs text-red-400/50">{{ __($currencyCode) }}</span></span>
+                </div>
+                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5 mt-4">
+                    <span class="text-sm text-emerald-600 font-bold uppercase tracking-tight">{{ __('Distributor Payments (Cash)') }}</span>
+                    <span class="font-bold text-emerald-600 dark:text-emerald-400">+ {{ number_format($distributorPayments, 2) }} <span class="text-xs text-emerald-400/60">{{ __($currencyCode) }}</span></span>
                 </div>
                 <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
                     <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Retail Sales (Shifts)') }}</span>
                     <span class="font-bold text-slate-900 dark:text-white">+ {{ number_format($retailSales, 2) }} <span class="text-xs text-slate-400">{{ __($currencyCode) }}</span></span>
-                </div>
-                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Refunds Processed') }}</span>
-                    <span class="font-bold text-red-600 dark:text-red-400">- {{ number_format($totalRefunds, 2) }} <span class="text-xs text-red-400/50">{{ __($currencyCode) }}</span></span>
                 </div>
                 {{-- Settlement Cash --}}
                 <div class="flex justify-between items-center py-2.5 bg-emerald-500/5 rounded-lg px-2 my-1">
                     <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{ __('Settlement Cash') }}</span>
                     <span class="font-bold text-emerald-600 dark:text-emerald-400" x-text="'+ ' + formatMoney(getSettlementInBase()) + ' {{ __($currencyCode) }}'">+ {{ number_format($settlementCashBase, 2) }} {{ __($currencyCode) }}</span>
                 </div>
-                <div class="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/5">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('Payments Received') }}</span>
-                    <span class="font-bold text-emerald-600 dark:text-emerald-400" x-text="formatMoney({{ $totalPaymentsReceived - ($workDay->status === 'closed' ? $settlementCashBase : 0) }} + getSettlementInBase()) + ' {{ __($currencyCode) }}'">{{ number_format($totalPaymentsReceived, 2) }} <span class="text-xs text-emerald-400/50">{{ __($currencyCode) }}</span></span>
-                </div>
-                <div class="flex justify-between items-center py-3 bg-emerald-500/5 rounded-xl px-3 -mx-1 mt-2">
-                    <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">{{ __('Net Sales') }}</span>
-                    <span class="font-bold text-emerald-600 dark:text-emerald-400 text-lg" x-text="formatMoney(getDynamicNetSales()) + ' {{ __($currencyCode) }}'">{{ number_format($netSales, 2) }} {{ __($currencyCode) }}</span>
+                <div class="flex justify-between items-center py-3 bg-emerald-500/10 rounded-xl px-3 -mx-1 mt-2">
+                    <span class="text-sm font-black text-emerald-600 dark:text-emerald-400">{{ __('Net Cash Receipts') }}</span>
+                    <span class="font-black text-emerald-600 dark:text-emerald-400 text-lg" x-text="formatMoney(getDynamicNetSales()) + ' {{ __($currencyCode) }}'">{{ number_format($netSales, 2) }} {{ __($currencyCode) }}</span>
                 </div>
             </div>
         </div>
