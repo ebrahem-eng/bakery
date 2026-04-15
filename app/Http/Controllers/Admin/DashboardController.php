@@ -126,11 +126,13 @@ class DashboardController extends Controller
         // ── Distributor Outstanding Balances ──────────────────────────
         $distributorBalances = Distributor::select('distributors.*')
             ->withSum('distributions as total_billed', Currency::getSelectRaw('total_price'))
-            ->withSum('transactions as total_paid', Currency::getSelectRaw('amount'))
+            ->withSum('distributions as total_initial_paid', Currency::getSelectRaw('amount_paid'))
+            ->withSum('transactions as total_paid_settlements', Currency::getSelectRaw('amount'))
             ->withSum('returns as total_refunded', Currency::getSelectRaw('total_refund'))
             ->get()
             ->map(function ($d) {
-                $d->outstanding = ($d->total_billed ?? 0) - ($d->total_paid ?? 0) - ($d->total_refunded ?? 0);
+                $d->total_paid = ($d->total_paid_settlements ?? 0) + ($d->total_initial_paid ?? 0);
+                $d->outstanding = ($d->total_billed ?? 0) - $d->total_paid - ($d->total_refunded ?? 0);
 
                 return $d;
             })
