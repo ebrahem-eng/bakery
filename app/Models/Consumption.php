@@ -8,7 +8,7 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 
 class Consumption extends Model
 {
-    use LogsActivity;
+    use LogsActivity, \App\Traits\SyncsWithActiveWorkDay;
 
     protected $table = 'work_day_consumptions';
 

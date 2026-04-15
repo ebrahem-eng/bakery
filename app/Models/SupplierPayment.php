@@ -8,7 +8,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class SupplierPayment extends Model
 {
-    use LogsActivity;
+    use LogsActivity, \App\Traits\SyncsWithActiveWorkDay;
 
     protected $fillable = [
         'supply_id', 'work_day_id', 'admin_id',

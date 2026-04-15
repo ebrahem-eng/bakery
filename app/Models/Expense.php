@@ -9,7 +9,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class Expense extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, \App\Traits\SyncsWithActiveWorkDay;
 
     protected $fillable = [
         'work_day_id', 'admin_id', 'category', 'quantity', 'unit_price', 'title', 'amount',

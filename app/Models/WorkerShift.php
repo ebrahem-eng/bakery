@@ -9,7 +9,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class WorkerShift extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, \App\Traits\SyncsWithActiveWorkDay;
 
     protected $fillable = [
         'worker_id',

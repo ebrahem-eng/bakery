@@ -9,7 +9,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class DistributorReturn extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, \App\Traits\SyncsWithActiveWorkDay;
 
     protected $fillable = [
         'distributor_id', 'work_day_id', 'bundle_count',

@@ -9,7 +9,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class Supply extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, \App\Traits\SyncsWithActiveWorkDay;
 
     protected $fillable = [
         'admin_id',

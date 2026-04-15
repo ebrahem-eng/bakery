@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
 class WorkerAttendance extends Model
 {
+    use \App\Traits\SyncsWithActiveWorkDay;
+
     protected $fillable = [
         'worker_id',
         'work_day_id',

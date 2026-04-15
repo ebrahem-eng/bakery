@@ -9,7 +9,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class WorkerTransaction extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, \App\Traits\SyncsWithActiveWorkDay;
 
     const TYPE_ADVANCE = 'advance';
     const TYPE_ALLOWANCE = 'allowance';
