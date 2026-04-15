@@ -142,11 +142,10 @@ class DashboardController extends Controller
         // ── Supplier Outstanding Balances ─────────────────────────────
         $supplierBalances = Supplier::select('suppliers.*')
             ->withSum('supplies as total_owed', Currency::getSelectRaw('total_cost'))
-            ->withSum('supplies as total_paid_amount', Currency::getSelectRaw('paid_amount'))
-            ->withSum('payments as total_later_payments', Currency::getSelectRaw('supplier_payments.amount', 'supplier_payments.exchange_rate'))
+            ->withSum('payments as total_paid_amount', Currency::getSelectRaw('supplier_payments.amount', 'supplier_payments.exchange_rate'))
             ->get()
             ->map(function ($s) {
-                $s->outstanding = ($s->total_owed ?? 0) - ($s->total_paid_amount ?? 0) - ($s->total_later_payments ?? 0);
+                $s->outstanding = ($s->total_owed ?? 0) - ($s->total_paid_amount ?? 0);
 
                 return $s;
             })
