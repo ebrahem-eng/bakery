@@ -345,11 +345,12 @@
                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                 </div>
                 <h3 class="text-xs font-black text-amber-700 dark:text-amber-500 uppercase tracking-widest">
-                    {{ __('Raw Material Consumption') }}
+                    {{ $workDay->status == 'active' ? __('Raw Material Consumption') : __('Recorded Material Consumption') }}
                 </h3>
             </div>
             
             <div class="p-5 space-y-6">
+                @if($workDay->status == 'active')
                 @foreach($materialCategories as $cat)
                 <div class="p-4 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/5">
                     <div class="flex justify-between items-center mb-3">
@@ -423,6 +424,18 @@
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     {{ __('Material usage will be subtracted from current stock levels.') }}
                 </p>
+                @else
+                <div class="space-y-1">
+                    @forelse($workDay->consumptions as $consumption)
+                    <div class="flex justify-between items-center py-3 border-b border-slate-200 dark:border-white/5 last:border-0">
+                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ $consumption->category->name ?? __('Unknown') }}</span>
+                        <span class="font-black text-amber-600 dark:text-amber-500">{{ number_format($consumption->quantity, 2) }} <span class="text-xs text-amber-600/60 dark:text-amber-500/60">{{ __($consumption->category->unit ?? 'kg') }}</span></span>
+                    </div>
+                    @empty
+                    <div class="text-sm text-slate-400 py-2">{{ __('No materials consumed.') }}</div>
+                    @endforelse
+                </div>
+                @endif
             </div>
         </div>
 
