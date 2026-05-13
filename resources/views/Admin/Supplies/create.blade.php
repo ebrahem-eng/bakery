@@ -149,7 +149,7 @@
                                     <option value="supplier">{{ __('Supplier (Tracked without Expense)') }}</option>
                                 </select>
                             </div>
-                            <div>
+                            <div x-show="item.unloading_fee_payer === 'bakery'" x-transition>
                                 <label class="block text-[10px] text-slate-400 mb-1">{{ __('Fee Amount') }}</label>
                                 <div class="flex gap-1">
                                     <input type="number" step="0.01" x-bind:name="`supplies[${index}][unloading_fee]`" x-model="item.unloading_fee" class="glass-input w-2/3 px-2 py-1.5 rounded text-xs bg-black/40 text-slate-200 border-none outline-none">
@@ -160,7 +160,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div x-show="!syp_ids.includes(parseInt(item.unloading_fee_currency_id))" x-transition>
+                            <div x-show="item.unloading_fee_payer === 'bakery' && !syp_ids.includes(parseInt(item.unloading_fee_currency_id))" x-transition>
                                 <label class="block text-[10px] text-slate-400 mb-1">{{ __('Fee Ex-Rate') }}</label>
                                 <input type="number" step="0.01" x-bind:name="`supplies[${index}][unloading_fee_exchange_rate]`" x-model="item.unloading_fee_exchange_rate" class="glass-input w-full px-2 py-1.5 rounded text-xs bg-black/40 text-slate-200 border-none outline-none" :title="'{{ __('Exchange rate for unloading fee') }}'">
                             </div>
