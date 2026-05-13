@@ -1503,5 +1503,9 @@
   "edit settings website_content": "تعديل إعدادات محتوى الموقع",
   "Total Invoiced Sales": "إجمالي المبيعات المفوترة",
   "Distributor Payments (Cash)": "مدفوعات الموزعين (نقداً)",
-  "Net Cash Receipts": "صافي المقبوضات النقدية"
+  "Net Cash Receipts": "صافي المقبوضات النقدية",
+  "Recorded Material Consumption": "استهلاك المواد المسجل",
+  "No materials consumed.": "لم يتم استهلاك أي مواد.",
+  "This period has been permanently sealed and locked.": "تم ختم وإقفال هذه الفترة بشكل نهائي.",
+  "Work day is permanently sealed.": "يوم العمل مختوم نهائياً."
 }
