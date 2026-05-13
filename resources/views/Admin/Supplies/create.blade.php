@@ -176,7 +176,7 @@
                             <label class="block text-[10px] text-emerald-400 mb-2 {{ app()->getLocale() == 'ar' ? 'text-right' : 'text-left' }}">{{ __('Amount Paid From Register') }}</label>
                             <div class="flex gap-2 mb-2">
                                 <div class="relative w-2/3">
-                                    <input type="number" step="0.01" x-bind:name="`supplies[${index}][paid_amount]`" x-model="item.paid_amount" 
+                                    <input type="number" step="0.01" min="0" x-bind:max="getMaxPaidAmount(item)" x-bind:name="`supplies[${index}][paid_amount]`" x-model="item.paid_amount" 
                                         class="glass-input block w-full px-4 py-2 rounded-lg text-sm font-bold text-emerald-300 {{ app()->getLocale() == 'ar' ? 'text-right' : 'text-left' }}">
                                 </div>
                                 <select x-bind:name="`supplies[${index}][paid_currency_id]`" x-model="item.paid_currency_id" @change="updatePaidExchangeRate(item)" class="glass-input w-1/3 px-2 py-2 rounded-lg text-sm bg-white/50 dark:bg-black/40 text-slate-900 dark:text-slate-200 focus:ring-[#eab308]">
@@ -346,6 +346,20 @@ document.addEventListener('alpine:init', () => {
             }
             
             return cost;
+        },
+        getMaxPaidAmount(item) {
+            let invoiceCostInItsCurrency = this.calcTotalCost(item);
+            let invoiceExchangeRate = parseFloat(item.exchange_rate) || 1;
+            
+            // Total cost in system base currency
+            let costInBase = invoiceCostInItsCurrency * invoiceExchangeRate;
+            
+            // Convert to the selected paid currency
+            let paidExchangeRate = parseFloat(item.paid_exchange_rate) || 1;
+            let maxPaidInPaidCurrency = costInBase / paidExchangeRate;
+            
+            // Round slightly up to prevent float rounding errors blocking valid full payments
+            return (Math.ceil(maxPaidInPaidCurrency * 100) / 100).toFixed(2);
         }
     }))
 })
